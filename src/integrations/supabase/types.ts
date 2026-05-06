@@ -14,8 +14,68 @@ export type Database = {
   }
   public: {
     Tables: {
+      conversations: {
+        Row: {
+          created_at: string
+          id: string
+          openai_thread_id: string | null
+          title: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          openai_thread_id?: string | null
+          title?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          openai_thread_id?: string | null
+          title?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string
+          id: string
+          role: string
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          role: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
+          cardio_days_per_week: number | null
           created_at: string
           display_name: string | null
           email: string | null
@@ -23,14 +83,21 @@ export type Database = {
           goal: string | null
           id: string
           limitations: string | null
+          nutrition_context: string | null
+          other_notes: string | null
+          pain_notes: string | null
+          profile_completed_at: string | null
+          strength_days_per_week: number | null
           stripe_customer_id: string | null
           subscription_current_period_end: string | null
           subscription_status: string
+          time_per_session: string | null
           training_level: string | null
           updated_at: string
           weekly_schedule: string | null
         }
         Insert: {
+          cardio_days_per_week?: number | null
           created_at?: string
           display_name?: string | null
           email?: string | null
@@ -38,14 +105,21 @@ export type Database = {
           goal?: string | null
           id: string
           limitations?: string | null
+          nutrition_context?: string | null
+          other_notes?: string | null
+          pain_notes?: string | null
+          profile_completed_at?: string | null
+          strength_days_per_week?: number | null
           stripe_customer_id?: string | null
           subscription_current_period_end?: string | null
           subscription_status?: string
+          time_per_session?: string | null
           training_level?: string | null
           updated_at?: string
           weekly_schedule?: string | null
         }
         Update: {
+          cardio_days_per_week?: number | null
           created_at?: string
           display_name?: string | null
           email?: string | null
@@ -53,12 +127,54 @@ export type Database = {
           goal?: string | null
           id?: string
           limitations?: string | null
+          nutrition_context?: string | null
+          other_notes?: string | null
+          pain_notes?: string | null
+          profile_completed_at?: string | null
+          strength_days_per_week?: number | null
           stripe_customer_id?: string | null
           subscription_current_period_end?: string | null
           subscription_status?: string
+          time_per_session?: string | null
           training_level?: string | null
           updated_at?: string
           weekly_schedule?: string | null
+        }
+        Relationships: []
+      }
+      usage: {
+        Row: {
+          billing_period_end: string
+          billing_period_start: string
+          created_at: string
+          id: string
+          input_tokens: number
+          output_tokens: number
+          total_tokens: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          billing_period_end: string
+          billing_period_start: string
+          created_at?: string
+          id?: string
+          input_tokens?: number
+          output_tokens?: number
+          total_tokens?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          billing_period_end?: string
+          billing_period_start?: string
+          created_at?: string
+          id?: string
+          input_tokens?: number
+          output_tokens?: number
+          total_tokens?: number
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -68,6 +184,10 @@ export type Database = {
     }
     Functions: {
       has_active_subscription: { Args: { _user_id: string }; Returns: boolean }
+      owns_conversation: {
+        Args: { _conversation_id: string; _user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never

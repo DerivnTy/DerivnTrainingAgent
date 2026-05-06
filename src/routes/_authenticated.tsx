@@ -52,7 +52,10 @@ function AuthGuard() {
           new Date(p.subscription_current_period_end) > new Date());
 
       const path = location.pathname;
-      const exempt = path === "/subscribe" || path === "/account";
+      const exempt =
+        path === "/subscribe" ||
+        path === "/account" ||
+        path === "/onboarding";
       if (!isActive && !exempt) {
         navigate({ to: "/subscribe" });
       }

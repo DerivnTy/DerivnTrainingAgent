@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { authedFetch } from "@/lib/auth-helpers";
@@ -74,6 +74,18 @@ function AccountPage() {
         >
           {loading ? "Opening…" : "Manage billing"}
         </button>
+        <Link
+          to="/onboarding"
+          className="block w-full rounded-sm border border-rule px-6 py-3 text-center text-sm font-medium text-foreground hover:bg-accent"
+        >
+          Update profile
+        </Link>
+        <Link
+          to="/resource"
+          className="block w-full rounded-sm border border-rule px-6 py-3 text-center text-sm font-medium text-foreground hover:bg-accent"
+        >
+          Built for Motion PDF
+        </Link>
         <button
           onClick={signOut}
           className="w-full rounded-sm border border-rule px-6 py-3 text-sm font-medium text-foreground hover:bg-accent"

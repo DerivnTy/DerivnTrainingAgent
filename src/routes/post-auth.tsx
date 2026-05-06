@@ -28,7 +28,9 @@ function PostAuthPage() {
 
       const { data: profile, error } = await supabase
         .from("profiles")
-        .select("subscription_status, subscription_current_period_end")
+        .select(
+          "subscription_status, subscription_current_period_end, profile_completed_at, goal"
+        )
         .eq("id", session.user.id)
         .single();
 
@@ -41,7 +43,13 @@ function PostAuthPage() {
         profile?.subscription_status === "active" &&
         (!profile.subscription_current_period_end ||
           new Date(profile.subscription_current_period_end) > new Date());
-      navigate({ to: active ? "/chat" : "/subscribe" });
+      if (!active) {
+        navigate({ to: "/subscribe" });
+        return;
+      }
+      const profileComplete =
+        Boolean(profile?.profile_completed_at) || Boolean(profile?.goal);
+      navigate({ to: profileComplete ? "/chat" : "/onboarding" });
     })();
     return () => {
       cancelled = true;

@@ -15,13 +15,16 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiPortalRouteImport } from './routes/api/portal'
+import { Route as ApiConversationsRouteImport } from './routes/api/conversations'
 import { Route as ApiCheckoutRouteImport } from './routes/api/checkout'
+import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AuthenticatedSubscribeRouteImport } from './routes/_authenticated.subscribe'
 import { Route as AuthenticatedResourceRouteImport } from './routes/_authenticated.resource'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated.onboarding'
 import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated.chat'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated.account'
 import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe-webhook'
+import { Route as ApiConversationsIdRouteImport } from './routes/api/conversations.$id'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -52,9 +55,19 @@ const ApiPortalRoute = ApiPortalRouteImport.update({
   path: '/api/portal',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiConversationsRoute = ApiConversationsRouteImport.update({
+  id: '/api/conversations',
+  path: '/api/conversations',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiCheckoutRoute = ApiCheckoutRouteImport.update({
   id: '/api/checkout',
   path: '/api/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiChatRoute = ApiChatRouteImport.update({
+  id: '/api/chat',
+  path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedSubscribeRoute = AuthenticatedSubscribeRouteImport.update({
@@ -87,6 +100,11 @@ const ApiPublicStripeWebhookRoute = ApiPublicStripeWebhookRouteImport.update({
   path: '/api/public/stripe-webhook',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiConversationsIdRoute = ApiConversationsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ApiConversationsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -98,8 +116,11 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/resource': typeof AuthenticatedResourceRoute
   '/subscribe': typeof AuthenticatedSubscribeRoute
+  '/api/chat': typeof ApiChatRoute
   '/api/checkout': typeof ApiCheckoutRoute
+  '/api/conversations': typeof ApiConversationsRouteWithChildren
   '/api/portal': typeof ApiPortalRoute
+  '/api/conversations/$id': typeof ApiConversationsIdRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
 }
 export interface FileRoutesByTo {
@@ -112,8 +133,11 @@ export interface FileRoutesByTo {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/resource': typeof AuthenticatedResourceRoute
   '/subscribe': typeof AuthenticatedSubscribeRoute
+  '/api/chat': typeof ApiChatRoute
   '/api/checkout': typeof ApiCheckoutRoute
+  '/api/conversations': typeof ApiConversationsRouteWithChildren
   '/api/portal': typeof ApiPortalRoute
+  '/api/conversations/$id': typeof ApiConversationsIdRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
 }
 export interface FileRoutesById {
@@ -128,8 +152,11 @@ export interface FileRoutesById {
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/resource': typeof AuthenticatedResourceRoute
   '/_authenticated/subscribe': typeof AuthenticatedSubscribeRoute
+  '/api/chat': typeof ApiChatRoute
   '/api/checkout': typeof ApiCheckoutRoute
+  '/api/conversations': typeof ApiConversationsRouteWithChildren
   '/api/portal': typeof ApiPortalRoute
+  '/api/conversations/$id': typeof ApiConversationsIdRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
 }
 export interface FileRouteTypes {
@@ -144,8 +171,11 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/resource'
     | '/subscribe'
+    | '/api/chat'
     | '/api/checkout'
+    | '/api/conversations'
     | '/api/portal'
+    | '/api/conversations/$id'
     | '/api/public/stripe-webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -158,8 +188,11 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/resource'
     | '/subscribe'
+    | '/api/chat'
     | '/api/checkout'
+    | '/api/conversations'
     | '/api/portal'
+    | '/api/conversations/$id'
     | '/api/public/stripe-webhook'
   id:
     | '__root__'
@@ -173,8 +206,11 @@ export interface FileRouteTypes {
     | '/_authenticated/onboarding'
     | '/_authenticated/resource'
     | '/_authenticated/subscribe'
+    | '/api/chat'
     | '/api/checkout'
+    | '/api/conversations'
     | '/api/portal'
+    | '/api/conversations/$id'
     | '/api/public/stripe-webhook'
   fileRoutesById: FileRoutesById
 }
@@ -184,7 +220,9 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   PostAuthRoute: typeof PostAuthRoute
   SignupRoute: typeof SignupRoute
+  ApiChatRoute: typeof ApiChatRoute
   ApiCheckoutRoute: typeof ApiCheckoutRoute
+  ApiConversationsRoute: typeof ApiConversationsRouteWithChildren
   ApiPortalRoute: typeof ApiPortalRoute
   ApiPublicStripeWebhookRoute: typeof ApiPublicStripeWebhookRoute
 }
@@ -233,11 +271,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPortalRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/conversations': {
+      id: '/api/conversations'
+      path: '/api/conversations'
+      fullPath: '/api/conversations'
+      preLoaderRoute: typeof ApiConversationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/checkout': {
       id: '/api/checkout'
       path: '/api/checkout'
       fullPath: '/api/checkout'
       preLoaderRoute: typeof ApiCheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/chat': {
+      id: '/api/chat'
+      path: '/api/chat'
+      fullPath: '/api/chat'
+      preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/subscribe': {
@@ -282,6 +334,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicStripeWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/conversations/$id': {
+      id: '/api/conversations/$id'
+      path: '/$id'
+      fullPath: '/api/conversations/$id'
+      preLoaderRoute: typeof ApiConversationsIdRouteImport
+      parentRoute: typeof ApiConversationsRoute
+    }
   }
 }
 
@@ -305,13 +364,26 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
   AuthenticatedRouteChildren,
 )
 
+interface ApiConversationsRouteChildren {
+  ApiConversationsIdRoute: typeof ApiConversationsIdRoute
+}
+
+const ApiConversationsRouteChildren: ApiConversationsRouteChildren = {
+  ApiConversationsIdRoute: ApiConversationsIdRoute,
+}
+
+const ApiConversationsRouteWithChildren =
+  ApiConversationsRoute._addFileChildren(ApiConversationsRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   LoginRoute: LoginRoute,
   PostAuthRoute: PostAuthRoute,
   SignupRoute: SignupRoute,
+  ApiChatRoute: ApiChatRoute,
   ApiCheckoutRoute: ApiCheckoutRoute,
+  ApiConversationsRoute: ApiConversationsRouteWithChildren,
   ApiPortalRoute: ApiPortalRoute,
   ApiPublicStripeWebhookRoute: ApiPublicStripeWebhookRoute,
 }
