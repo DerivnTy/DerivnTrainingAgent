@@ -1,3 +1,4 @@
+import { redirect } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 
 export type PostAuthDestination =
@@ -39,4 +40,44 @@ export async function waitForSession(maxTries = 10, delayMs = 200) {
     session = (await supabase.auth.getSession()).data.session;
   }
   return session;
+}
+
+/**
+ * Used in `beforeLoad` for the public root route.
+ * Logged-out users fall through (render landing). Logged-in users redirect
+ * to whatever the resolver returns, before the landing page mounts.
+ */
+export async function rootBeforeLoad() {
+  if (typeof window === "undefined") return;
+  const { data } = await supabase.auth.getSession();
+  const session = data.session;
+  if (!session) return;
+  const dest = await resolvePostAuthDestination(session.user.id);
+  throw redirect({ to: dest });
+}
+
+/**
+ * Used in `beforeLoad` for `/_authenticated`.
+ * Centralized funnel: enforces session + subscription + profile state.
+ * `pathname` is the requested path so we can allow the one page each
+ * intermediate state is allowed to see.
+ */
+export async function authenticatedBeforeLoad(pathname: string) {
+  if (typeof window === "undefined") return;
+  const { data } = await supabase.auth.getSession();
+  const session = data.session;
+  if (!session) {
+    throw redirect({ to: "/login" });
+  }
+  const dest = await resolvePostAuthDestination(session.user.id);
+
+  // Unsubscribed: only /subscribe is allowed.
+  if (dest === "/subscribe" && pathname !== "/subscribe") {
+    throw redirect({ to: "/subscribe" });
+  }
+  // Subscribed but profile incomplete: only /onboarding is allowed.
+  if (dest === "/onboarding" && pathname !== "/onboarding") {
+    throw redirect({ to: "/onboarding" });
+  }
+  // dest === "/chat" → fully active, allow whatever route they asked for.
 }
