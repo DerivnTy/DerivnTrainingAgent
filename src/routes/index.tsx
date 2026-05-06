@@ -168,6 +168,28 @@ function LandingPage() {
             </div>
           </div>
         </section>
+
+        <section className="border-t border-rule">
+          <div className="mx-auto max-w-5xl px-6 py-24 text-center">
+            <h2 className="font-serif text-4xl tracking-tight md:text-5xl">
+              Ready when you are.
+            </h2>
+            <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+              <Link
+                to="/signup"
+                className="rounded-sm bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
+              >
+                Get Access
+              </Link>
+              <Link
+                to="/login"
+                className="rounded-sm border border-rule px-6 py-3 text-sm font-medium text-foreground hover:bg-accent"
+              >
+                Sign In
+              </Link>
+            </div>
+          </div>
+        </section>
       </main>
 
       <SiteFooter />
