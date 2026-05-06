@@ -64,7 +64,7 @@ function AuthGuard() {
               </SheetContent>
             </Sheet>
             <span className="font-serif text-base tracking-tight">
-              AskDerivn
+              {location.pathname.startsWith("/chat") ? "AskDerivn" : ""}
             </span>
             <span className="w-5" />
           </div>
