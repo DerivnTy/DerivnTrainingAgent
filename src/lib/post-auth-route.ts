@@ -1,5 +1,6 @@
 import { redirect } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
+import { isDevBypassEmail } from "@/lib/dev-bypass";
 
 export type PostAuthDestination =
   | "/login"
@@ -8,7 +9,8 @@ export type PostAuthDestination =
   | "/chat";
 
 export async function resolvePostAuthDestination(
-  userId: string
+  userId: string,
+  email?: string | null
 ): Promise<PostAuthDestination> {
   const { data: profile, error } = await supabase
     .from("profiles")
@@ -20,10 +22,14 @@ export async function resolvePostAuthDestination(
 
   if (error || !profile) return "/subscribe";
 
+  // TODO: remove before public launch — preview-only dev bypass
+  const bypass = isDevBypassEmail(email);
+
   const active =
-    profile.subscription_status === "active" &&
-    (!profile.subscription_current_period_end ||
-      new Date(profile.subscription_current_period_end) > new Date());
+    bypass ||
+    (profile.subscription_status === "active" &&
+      (!profile.subscription_current_period_end ||
+        new Date(profile.subscription_current_period_end) > new Date()));
 
   if (!active) return "/subscribe";
 
@@ -52,7 +58,10 @@ export async function rootBeforeLoad() {
   const { data } = await supabase.auth.getSession();
   const session = data.session;
   if (!session) return;
-  const dest = await resolvePostAuthDestination(session.user.id);
+  const dest = await resolvePostAuthDestination(
+    session.user.id,
+    session.user.email
+  );
   throw redirect({ to: dest });
 }
 
@@ -69,7 +78,10 @@ export async function authenticatedBeforeLoad(pathname: string) {
   if (!session) {
     throw redirect({ to: "/login" });
   }
-  const dest = await resolvePostAuthDestination(session.user.id);
+  const dest = await resolvePostAuthDestination(
+    session.user.id,
+    session.user.email
+  );
 
   // Unsubscribed: only /subscribe is allowed.
   if (dest === "/subscribe" && pathname !== "/subscribe") {
