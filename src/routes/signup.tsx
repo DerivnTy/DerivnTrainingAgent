@@ -120,13 +120,23 @@ function SignupPage() {
                 className="w-full border-b border-rule bg-transparent py-2 text-sm outline-none focus:border-foreground"
               />
             </Field>
+            <Field label="Confirm password">
+              <input
+                type="password"
+                required
+                minLength={8}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full border-b border-rule bg-transparent py-2 text-sm outline-none focus:border-foreground"
+              />
+            </Field>
             {error && <p className="text-sm text-red-700">{error}</p>}
             <button
               type="submit"
               disabled={loading}
               className="w-full rounded-sm bg-primary px-4 py-3 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
             >
-              {loading ? "Creating…" : "Create account"}
+              {loading ? "Creating…" : "Next"}
             </button>
           </form>
         </>
