@@ -63,7 +63,7 @@ function SubscribePage() {
 
       <button
         onClick={signOut}
-        className="mt-4 w-full rounded-sm border border-rule px-6 py-4 text-sm font-medium text-foreground hover:bg-accent"
+        className="mt-6 text-sm text-ink-soft underline-offset-4 hover:text-foreground hover:underline"
       >
         Sign out
       </button>

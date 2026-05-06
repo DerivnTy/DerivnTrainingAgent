@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
+import { SiteFooter } from "@/components/site-footer";
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
@@ -44,7 +45,7 @@ function LoginPage() {
   };
 
   return (
-    <AuthShell title="Sign in" subtitle="Welcome back to AskDerivn.">
+    <AuthShell title="Sign in" subtitle="Welcome back to AskDerivn." rightLink={{ to: "/signup", label: "Get access" }}>
       <button
         onClick={onGoogle}
         className="w-full rounded-sm border border-rule px-4 py-3 text-sm font-medium text-foreground hover:bg-accent"
@@ -93,28 +94,36 @@ function LoginPage() {
 export function AuthShell({
   title,
   subtitle,
+  rightLink,
   children,
 }: {
   title: string;
   subtitle?: string;
+  rightLink?: { to: "/login" | "/signup"; label: string };
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="flex min-h-screen flex-col bg-background text-foreground">
       <header className="border-b border-rule">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
           <Link to="/" className="font-serif text-lg tracking-tight">
             AskDerivn
           </Link>
+          {rightLink && (
+            <Link to={rightLink.to} className="text-sm text-ink-soft hover:text-foreground">
+              {rightLink.label}
+            </Link>
+          )}
         </div>
       </header>
-      <main className="mx-auto max-w-md px-6 pt-20 pb-24">
+      <main className="mx-auto w-full max-w-md flex-1 px-6 pt-20 pb-24">
         <h1 className="font-serif text-4xl tracking-tight">{title}</h1>
         {subtitle && (
           <p className="mt-3 text-sm text-ink-soft">{subtitle}</p>
         )}
         <div className="mt-10 space-y-6">{children}</div>
       </main>
+      <SiteFooter />
     </div>
   );
 }
