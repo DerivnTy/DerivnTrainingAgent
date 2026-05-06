@@ -180,10 +180,15 @@ function OnboardingPage() {
     const { data: s } = await supabase.auth.getSession();
     if (!s.session) {
       setSaving(false);
+      setError("Your session expired. Please sign in again.");
+      navigate({ to: "/login" });
       return;
     }
+    const userId = s.session.user.id;
 
     const update = {
+      id: userId,
+      email: s.session.user.email ?? null,
       goal: form.goal.join(", "),
       training_level: form.training_level,
       strength_days_per_week: Number(form.strength_days_per_week),
@@ -203,13 +208,17 @@ function OnboardingPage() {
       profile_completed_at: new Date().toISOString(),
     };
 
-    const { error } = await supabase
+    const { error: upsertError } = await supabase
       .from("profiles")
-      .update(update)
-      .eq("id", s.session.user.id);
+      .upsert(update, { onConflict: "id" });
+
     setSaving(false);
-    if (error) setError(error.message);
-    else navigate({ to: "/chat" });
+    if (upsertError) {
+      console.error("[onboarding] save failed", upsertError);
+      setError(`Profile save failed: ${upsertError.message}`);
+      return;
+    }
+    navigate({ to: "/chat" });
   };
 
   if (loading) {
