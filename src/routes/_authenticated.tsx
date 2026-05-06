@@ -1,8 +1,8 @@
 import {
   createFileRoute,
   Outlet,
-  useNavigate,
   useLocation,
+  useNavigate,
 } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,76 +10,32 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { ChatProvider } from "@/lib/chat-context";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
-
-type Profile = {
-  subscription_status: string | null;
-  subscription_current_period_end: string | null;
-};
+import { authenticatedBeforeLoad } from "@/lib/post-auth-route";
 
 export const Route = createFileRoute("/_authenticated")({
+  beforeLoad: ({ location }) => authenticatedBeforeLoad(location.pathname),
   component: AuthGuard,
 });
 
 function AuthGuard() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [loading, setLoading] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  // Sign-out listener: if the session disappears mid-session, kick to /login.
   useEffect(() => {
-    let cancelled = false;
-    const load = async () => {
-      const { data } = await supabase.auth.getSession();
-      const session = data.session;
-      if (!session) {
-        navigate({ to: "/login" });
-        return;
-      }
-      const { data: p } = await supabase
-        .from("profiles")
-        .select("subscription_status, subscription_current_period_end")
-        .eq("id", session.user.id)
-        .single();
-      if (cancelled) return;
-      setLoading(false);
-
-      const profile = p as Profile | null;
-      const isActive =
-        profile?.subscription_status === "active" &&
-        (!profile.subscription_current_period_end ||
-          new Date(profile.subscription_current_period_end) > new Date());
-
-      const path = location.pathname;
-      const exempt =
-        path === "/subscribe" ||
-        path === "/account" ||
-        path === "/onboarding";
-      if (!isActive && !exempt) {
-        navigate({ to: "/subscribe" });
-      }
-    };
-    load();
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
       if (!session) navigate({ to: "/login" });
     });
     return () => {
-      cancelled = true;
       sub.subscription.unsubscribe();
     };
-  }, [navigate, location.pathname]);
+  }, [navigate]);
 
   // Close mobile sheet on route change
   useEffect(() => {
     setMobileOpen(false);
   }, [location.pathname, location.search]);
-
-  if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background text-foreground">
-        <p className="text-sm text-ink-soft">Loading…</p>
-      </div>
-    );
-  }
 
   return (
     <ChatProvider>
