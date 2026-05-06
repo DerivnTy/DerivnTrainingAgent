@@ -382,7 +382,7 @@ function Question({
 }) {
   return (
     <div>
-      <div className="font-mono text-xs uppercase tracking-wider text-ink-soft">
+      <div className="text-xs uppercase tracking-wider text-ink-soft">
         {label}
         {required && <span className="ml-1 text-foreground">*</span>}
       </div>
