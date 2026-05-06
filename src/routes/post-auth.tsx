@@ -23,7 +23,10 @@ function PostAuthPage() {
         navigate({ to: "/login" });
         return;
       }
-      const dest = await resolvePostAuthDestination(session.user.id);
+      const dest = await resolvePostAuthDestination(
+        session.user.id,
+        session.user.email
+      );
       if (cancelled) return;
       navigate({ to: dest });
     })();

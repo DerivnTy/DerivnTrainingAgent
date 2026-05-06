@@ -91,5 +91,8 @@ export async function authenticatedBeforeLoad(pathname: string) {
   if (dest === "/onboarding" && pathname !== "/onboarding") {
     throw redirect({ to: "/onboarding" });
   }
-  // dest === "/chat" → fully active, allow whatever route they asked for.
+  // Subscribed + complete: /subscribe and /onboarding are no longer relevant.
+  if (dest === "/chat" && (pathname === "/subscribe" || pathname === "/onboarding")) {
+    throw redirect({ to: "/chat" });
+  }
 }
