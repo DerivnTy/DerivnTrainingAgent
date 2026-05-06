@@ -129,14 +129,14 @@ function OnboardingPage() {
 
   if (loading) {
     return (
-      <main className="mx-auto max-w-2xl px-6 pt-20 pb-24">
+      <main className="mx-auto h-full max-w-2xl overflow-y-auto px-6 pt-20 pb-24">
         <p className="text-sm text-ink-soft">Loading…</p>
       </main>
     );
   }
 
   return (
-    <main className="mx-auto max-w-2xl px-6 pt-20 pb-24">
+    <main className="mx-auto h-full max-w-2xl overflow-y-auto px-6 pt-20 pb-24">
       <h1 className="font-serif text-4xl tracking-tight">Your profile</h1>
       <p className="mt-3 text-sm text-ink-soft">
         Context AskDerivn uses when answering your questions.

@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { authedFetch } from "@/lib/auth-helpers";
@@ -50,7 +50,7 @@ function AccountPage() {
   };
 
   return (
-    <main className="mx-auto max-w-2xl px-6 pt-20 pb-24">
+    <main className="mx-auto h-full max-w-2xl overflow-y-auto px-6 pt-20 pb-24">
       <h1 className="font-serif text-4xl tracking-tight">Account</h1>
 
       <dl className="mt-10 space-y-6 text-sm">
@@ -74,18 +74,6 @@ function AccountPage() {
         >
           {loading ? "Opening…" : "Manage billing"}
         </button>
-        <Link
-          to="/onboarding"
-          className="block w-full rounded-sm border border-rule px-6 py-3 text-center text-sm font-medium text-foreground hover:bg-accent"
-        >
-          Update profile
-        </Link>
-        <Link
-          to="/resource"
-          className="block w-full rounded-sm border border-rule px-6 py-3 text-center text-sm font-medium text-foreground hover:bg-accent"
-        >
-          Built for Motion PDF
-        </Link>
         <button
           onClick={signOut}
           className="w-full rounded-sm border border-rule px-6 py-3 text-sm font-medium text-foreground hover:bg-accent"
