@@ -1,18 +1,14 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { z } from "zod";
-import { fallback, zodValidator } from "@tanstack/zod-adapter";
 import ReactMarkdown from "react-markdown";
 import { authedFetch } from "@/lib/auth-helpers";
 import { useChatContext } from "@/lib/chat-context";
 import { AddToHomeScreenBanner } from "@/components/add-to-home-screen-banner";
 
-const chatSearchSchema = z.object({
-  c: fallback(z.string().optional(), undefined),
-});
-
 export const Route = createFileRoute("/_authenticated/chat")({
-  validateSearch: zodValidator(chatSearchSchema),
+  validateSearch: (s: Record<string, unknown>) => ({
+    c: typeof s.c === "string" ? s.c : undefined,
+  }),
   component: ChatPage,
   head: () => ({ meta: [{ title: "AskDerivn" }] }),
 });

@@ -49,7 +49,7 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
   async function remove(id: string) {
     if (!window.confirm("Delete this conversation?")) return;
     await authedFetch(`/api/conversations/${id}`, { method: "DELETE" });
-    if (activeId === id) navigate({ to: "/chat", search: {} });
+    if (activeId === id) navigate({ to: "/chat" });
     refreshConversations();
   }
 
@@ -71,7 +71,6 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
         </Link>
         <Link
           to="/chat"
-          search={{}}
           onClick={onNavigate}
           className="mt-5 block font-mono text-xs uppercase tracking-wider text-ink-soft hover:text-foreground"
         >
