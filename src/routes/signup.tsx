@@ -66,7 +66,7 @@ function SignupPage() {
     return (
       <AuthShell
         title="Check your email"
-        subtitle="We sent you a confirmation link. Click it to finish creating your account."
+        subtitle="Confirm your email to continue to payment."
       >
         <p className="text-sm text-ink-soft">
           Already confirmed?{" "}
