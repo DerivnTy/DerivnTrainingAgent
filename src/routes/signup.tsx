@@ -1,8 +1,8 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
-import { AuthShell, Field, Divider } from "@/components/auth-shell";
+import { AuthShell, Field, Divider } from "./login";
 
 export const Route = createFileRoute("/signup")({
   component: SignupPage,
@@ -23,17 +23,7 @@ function SignupPage() {
     e.preventDefault();
     setError(null);
     setLoading(true);
-
-    // Try sign-in first — if the user already has an account, this just logs them in.
-    const signIn = await supabase.auth.signInWithPassword({ email, password });
-    if (!signIn.error) {
-      setLoading(false);
-      navigate({ to: "/post-auth" });
-      return;
-    }
-
-    // Otherwise create a new account.
-    const { error: signUpErr } = await supabase.auth.signUp({
+    const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -41,8 +31,8 @@ function SignupPage() {
       },
     });
     setLoading(false);
-    if (signUpErr) {
-      setError(signUpErr.message);
+    if (error) {
+      setError(error.message);
       return;
     }
     setSent(true);
@@ -68,7 +58,10 @@ function SignupPage() {
         subtitle="We sent you a confirmation link. Click it to finish creating your account."
       >
         <p className="text-sm text-ink-soft">
-          Once confirmed, return to this page to sign in.
+          Already confirmed?{" "}
+          <Link to="/login" className="text-foreground underline">
+            Sign in
+          </Link>
         </p>
       </AuthShell>
     );
@@ -77,7 +70,8 @@ function SignupPage() {
   return (
     <AuthShell
       title="Get access"
-      subtitle="New or returning — enter your email and password to continue. Membership is $50/month."
+      subtitle="Create your AskDerivn account. Membership is $50/month."
+      rightLink={{ to: "/login", label: "Sign in" }}
     >
       <button
         onClick={onGoogle}
@@ -112,9 +106,15 @@ function SignupPage() {
           disabled={loading}
           className="w-full rounded-sm bg-primary px-4 py-3 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
         >
-          {loading ? "Continuing…" : "Continue"}
+          {loading ? "Creating…" : "Create account"}
         </button>
       </form>
+      <p className="mt-8 text-center text-sm text-ink-soft">
+        Already have an account?{" "}
+        <Link to="/login" className="text-foreground underline">
+          Sign in
+        </Link>
+      </p>
     </AuthShell>
   );
 }
