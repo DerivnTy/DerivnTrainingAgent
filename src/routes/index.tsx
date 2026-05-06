@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import tylerPhoto from "@/assets/tyler.jpeg";
 
 export const Route = createFileRoute("/")({
   component: LandingPage,
@@ -94,6 +95,42 @@ function LandingPage() {
             <p className="mx-auto mt-16 max-w-2xl text-center font-serif text-xl text-foreground">
               The PDF gives you the system. AskDerivn helps you apply it.
             </p>
+          </div>
+        </section>
+
+        <section className="border-t border-rule">
+          <div className="mx-auto max-w-5xl px-6 py-24">
+            <div className="grid gap-12 md:grid-cols-2 md:items-center">
+              <div className="mx-auto w-full max-w-md md:mx-0">
+                <img
+                  src={tylerPhoto}
+                  alt="Tyler, founder and coach behind AskDerivn"
+                  className="aspect-[4/5] w-full object-cover"
+                />
+              </div>
+              <div>
+                <div className="font-mono text-xs tracking-widest text-ink-soft">
+                  THE COACH
+                </div>
+                <h2 className="mt-3 font-serif text-4xl leading-tight tracking-tight md:text-5xl">
+                  Built from real coaching, not generic fitness advice.
+                </h2>
+                <div className="mt-6 space-y-4 text-base leading-relaxed text-foreground">
+                  <p>
+                    Derivn came from years of training, coaching, trial and error, and seeing the same problems show up in different forms.
+                  </p>
+                  <p>
+                    Different people ask different questions, but most are trying to solve the same core issues: how to train consistently, how to eat without overcorrecting, how to balance lifting and running, how to recover, and how to keep going when life gets messy.
+                  </p>
+                  <p>
+                    AskDerivn was built to make that coaching logic easier to access. It turns the Derivn system into a private decision-support tool that helps users get clear answers and one practical next action.
+                  </p>
+                  <p className="text-ink-soft">
+                    The goal is not to replace coaching. The goal is to help people think more clearly between decisions.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
