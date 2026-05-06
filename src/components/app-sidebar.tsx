@@ -71,7 +71,6 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
         </Link>
         <Link
           to="/chat"
-          search={{}}
           onClick={onNavigate}
           className="mt-5 block font-mono text-xs uppercase tracking-wider text-ink-soft hover:text-foreground"
         >
