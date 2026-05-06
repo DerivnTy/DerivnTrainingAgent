@@ -66,12 +66,6 @@ function LandingPage() {
               <h2 className="font-serif text-4xl tracking-tight md:text-5xl">
                 What you get
               </h2>
-              <p className="mx-auto mt-6 text-base leading-relaxed text-ink-soft md:text-lg">
-                AskDerivn gives you access to the Derivn system in two forms:
-                a 100-page PDF handbook and a private coaching brain built to
-                help you think through training, running, nutrition, recovery,
-                and consistency.
-              </p>
             </div>
 
             <div className="mx-auto mt-16 grid max-w-4xl gap-12 md:grid-cols-2 text-center">
