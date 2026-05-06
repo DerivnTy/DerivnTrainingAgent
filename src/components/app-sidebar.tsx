@@ -1,0 +1,165 @@
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { authedFetch } from "@/lib/auth-helpers";
+import { useChatContext } from "@/lib/chat-context";
+
+type ConversationSummary = {
+  id: string;
+  title: string | null;
+  updated_at: string;
+};
+
+export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
+  const navigate = useNavigate();
+  const { conversationsVersion, refreshConversations } = useChatContext();
+  const [conversations, setConversations] = useState<ConversationSummary[]>([]);
+
+  const routerState = useRouterState();
+  const pathname = routerState.location.pathname;
+  const activeId =
+    pathname === "/chat"
+      ? (routerState.location.search as { c?: string }).c ?? null
+      : null;
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const res = await authedFetch("/api/conversations");
+      if (!res.ok) return;
+      const data = await res.json();
+      if (!cancelled) setConversations(data.conversations ?? []);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [conversationsVersion]);
+
+  async function rename(id: string) {
+    const current = conversations.find((c) => c.id === id);
+    const title = window.prompt("Rename conversation", current?.title ?? "");
+    if (!title) return;
+    await authedFetch(`/api/conversations/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ title }),
+    });
+    refreshConversations();
+  }
+
+  async function remove(id: string) {
+    if (!window.confirm("Delete this conversation?")) return;
+    await authedFetch(`/api/conversations/${id}`, { method: "DELETE" });
+    if (activeId === id) navigate({ to: "/chat", search: {} });
+    refreshConversations();
+  }
+
+  async function signOut() {
+    await supabase.auth.signOut();
+    window.location.href = "/";
+  }
+
+  return (
+    <div className="flex h-full flex-col bg-background">
+      {/* Top */}
+      <div className="border-b border-rule px-5 pb-4 pt-6">
+        <Link
+          to="/chat"
+          search={{}}
+          onClick={onNavigate}
+          className="block font-serif text-lg tracking-tight text-foreground"
+        >
+          AskDerivn
+        </Link>
+        <Link
+          to="/chat"
+          search={{}}
+          onClick={onNavigate}
+          className="mt-5 block font-mono text-xs uppercase tracking-wider text-ink-soft hover:text-foreground"
+        >
+          + New chat
+        </Link>
+      </div>
+
+      {/* Conversations */}
+      <div className="flex-1 overflow-y-auto px-3 py-4">
+        {conversations.length === 0 ? (
+          <p className="px-2 text-xs text-ink-soft">No conversations yet.</p>
+        ) : (
+          <ul className="space-y-0.5">
+            {conversations.map((c) => {
+              const isActive = c.id === activeId;
+              return (
+                <li
+                  key={c.id}
+                  className="group flex items-center justify-between gap-1 rounded-sm px-2 py-1 hover:bg-accent"
+                >
+                  <Link
+                    to="/chat"
+                    search={{ c: c.id }}
+                    onClick={onNavigate}
+                    className={`flex-1 truncate text-left text-sm ${
+                      isActive ? "text-foreground" : "text-ink-soft hover:text-foreground"
+                    }`}
+                    title={c.title ?? "Untitled"}
+                  >
+                    {c.title || "Untitled"}
+                  </Link>
+                  <div className="flex shrink-0 gap-2 opacity-0 transition-opacity group-hover:opacity-100">
+                    <button
+                      onClick={() => rename(c.id)}
+                      className="text-[10px] uppercase tracking-wider text-ink-soft hover:text-foreground"
+                    >
+                      Rename
+                    </button>
+                    <button
+                      onClick={() => remove(c.id)}
+                      className="text-[10px] uppercase tracking-wider text-ink-soft hover:text-foreground"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
+
+      {/* Utility links */}
+      <div className="border-t border-rule px-5 py-4">
+        <nav className="flex flex-col gap-2 font-mono text-xs uppercase tracking-wider text-ink-soft">
+          <Link
+            to="/resource"
+            onClick={onNavigate}
+            className="hover:text-foreground"
+            activeProps={{ className: "text-foreground" }}
+          >
+            PDF
+          </Link>
+          <Link
+            to="/onboarding"
+            onClick={onNavigate}
+            className="hover:text-foreground"
+            activeProps={{ className: "text-foreground" }}
+          >
+            Profile
+          </Link>
+          <Link
+            to="/account"
+            onClick={onNavigate}
+            className="hover:text-foreground"
+            activeProps={{ className: "text-foreground" }}
+          >
+            Account
+          </Link>
+          <button
+            onClick={signOut}
+            className="text-left hover:text-foreground"
+          >
+            Sign out
+          </button>
+        </nav>
+      </div>
+    </div>
+  );
+}
