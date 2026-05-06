@@ -32,7 +32,7 @@ function SubscribePage() {
   };
 
   return (
-    <main className="mx-auto max-w-2xl px-6 pt-20 pb-24">
+    <main className="mx-auto h-full max-w-2xl overflow-y-auto px-6 pt-20 pb-24">
       <h1 className="font-serif text-5xl tracking-tight">AskDerivn Membership</h1>
       <p className="mt-4 text-lg text-ink-soft">$50 / month</p>
 

@@ -50,7 +50,7 @@ function AccountPage() {
   };
 
   return (
-    <main className="mx-auto max-w-2xl px-6 pt-20 pb-24">
+    <main className="mx-auto h-full max-w-2xl overflow-y-auto px-6 pt-20 pb-24">
       <h1 className="font-serif text-4xl tracking-tight">Account</h1>
 
       <dl className="mt-10 space-y-6 text-sm">
