@@ -41,12 +41,11 @@ function LandingPage() {
             AskDerivn
           </h1>
           <p className="mx-auto mt-8 max-w-2xl text-lg leading-relaxed text-foreground md:text-xl">
-            Trained on the Derivn coaching system, thousands of workouts, and
-            real coaching transcripts.
+            Built to give clear answers and clarity toward fitness goals.
           </p>
           <p className="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-ink-soft">
-            Built to give clear answers and clarity toward reaching fitness
-            goals.
+            Trained on the Derivn coaching system, thousands of workouts, and
+            real coaching transcripts.
           </p>
 
           <div className="mt-12 flex flex-wrap items-center justify-center gap-3">
