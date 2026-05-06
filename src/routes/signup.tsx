@@ -71,6 +71,7 @@ function SignupPage() {
     <AuthShell
       title="Get access"
       subtitle="Create your AskDerivn account. Membership is $50/month."
+      rightLink={{ to: "/login", label: "Sign in" }}
     >
       <button
         onClick={onGoogle}
