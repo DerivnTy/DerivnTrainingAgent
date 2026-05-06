@@ -18,6 +18,7 @@ function SignupPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sent, setSent] = useState(false);
+  const [showEmailForm, setShowEmailForm] = useState(false);
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
