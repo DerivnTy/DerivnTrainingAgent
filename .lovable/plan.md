@@ -1,9 +1,20 @@
-Remove the intro paragraph under the "What you get" headline in `src/routes/index.tsx`:
+Add a final call-to-action block at the bottom of the homepage so users have a clear next step after reading the page, without leaving the existing design language.
 
-> "AskDerivn gives you access to the Derivn system in two forms: a 100-page PDF handbook and a private coaching brain built to help you think through training, running, nutrition, recovery, and consistency."
+## Placement
 
-No other changes:
-- Keep the "What you get" headline
-- Keep the 01 / 02 blocks
-- Keep the closing line ("The PDF gives you the system. AskDerivn helps you apply it.")
-- No layout, spacing, or styling changes
+`src/routes/index.tsx` — insert a new `<section>` after "How it works" and before `<SiteFooter />`. It becomes the page's closing CTA.
+
+## Design
+
+- Same `border-t border-rule` divider, `mx-auto max-w-5xl px-6 py-24`, centered.
+- Short serif headline: "Ready when you are."
+- Two buttons, identical to the hero pair (so the page opens and closes on the same action):
+  - Primary ink: `Get Access` → `/signup`
+  - Outline: `Sign In` → `/login`
+- No new copy block, no extra paragraph, no card.
+
+## Out of scope
+
+- No token, color, or font changes.
+- No header changes.
+- No new routes or components.
