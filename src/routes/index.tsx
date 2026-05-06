@@ -1,6 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import tylerPhoto from "@/assets/tyler.jpeg";
 import { SiteFooter } from "@/components/site-footer";
+import { supabase } from "@/integrations/supabase/client";
+import { resolvePostAuthDestination } from "@/lib/post-auth-route";
 
 export const Route = createFileRoute("/")({
   component: LandingPage,
@@ -16,6 +19,37 @@ export const Route = createFileRoute("/")({
 });
 
 function LandingPage() {
+  const navigate = useNavigate();
+  const [checking, setChecking] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data } = await supabase.auth.getSession();
+      const session = data.session;
+      if (cancelled) return;
+      if (!session) {
+        setChecking(false);
+        return;
+      }
+      const dest = await resolvePostAuthDestination(session.user.id);
+      if (cancelled) return;
+      navigate({ to: dest });
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [navigate]);
+
+  if (checking) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background text-foreground">
+        <p className="text-sm text-ink-soft">Loading…</p>
+      </div>
+    );
+  }
+
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="border-b border-rule">
