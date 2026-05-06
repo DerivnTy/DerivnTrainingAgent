@@ -7,6 +7,7 @@ import {
 } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { SiteFooter } from "@/components/site-footer";
 
 type Profile = {
   subscription_status: string | null;
@@ -51,7 +52,7 @@ function AuthGuard() {
           new Date(p.subscription_current_period_end) > new Date());
 
       const path = location.pathname;
-      const exempt = path === "/subscribe" || path === "/account";
+      const exempt = path === "/subscribe" || path === "/account" || path === "/resource";
       if (!isActive && !exempt) {
         navigate({ to: "/subscribe" });
       }
@@ -75,26 +76,32 @@ function AuthGuard() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="flex min-h-screen flex-col bg-background text-foreground">
       <header className="border-b border-rule">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
           <Link to="/" className="font-serif text-lg tracking-tight">
             AskDerivn
           </Link>
           <nav className="flex items-center gap-6 text-sm text-ink-soft">
-            <Link to="/chat" className="hover:text-foreground">
+            <Link to="/chat" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>
               Chat
             </Link>
-            <Link to="/onboarding" className="hover:text-foreground">
+            <Link to="/resource" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>
+              PDF
+            </Link>
+            <Link to="/onboarding" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>
               Profile
             </Link>
-            <Link to="/account" className="hover:text-foreground">
+            <Link to="/account" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>
               Account
             </Link>
           </nav>
         </div>
       </header>
-      <Outlet />
+      <div className="flex-1">
+        <Outlet />
+      </div>
+      <SiteFooter />
     </div>
   );
 }

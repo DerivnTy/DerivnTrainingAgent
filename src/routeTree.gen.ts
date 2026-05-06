@@ -17,6 +17,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiPortalRouteImport } from './routes/api/portal'
 import { Route as ApiCheckoutRouteImport } from './routes/api/checkout'
 import { Route as AuthenticatedSubscribeRouteImport } from './routes/_authenticated.subscribe'
+import { Route as AuthenticatedResourceRouteImport } from './routes/_authenticated.resource'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated.onboarding'
 import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated.chat'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated.account'
@@ -61,6 +62,11 @@ const AuthenticatedSubscribeRoute = AuthenticatedSubscribeRouteImport.update({
   path: '/subscribe',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedResourceRoute = AuthenticatedResourceRouteImport.update({
+  id: '/resource',
+  path: '/resource',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
@@ -90,6 +96,7 @@ export interface FileRoutesByFullPath {
   '/account': typeof AuthenticatedAccountRoute
   '/chat': typeof AuthenticatedChatRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/resource': typeof AuthenticatedResourceRoute
   '/subscribe': typeof AuthenticatedSubscribeRoute
   '/api/checkout': typeof ApiCheckoutRoute
   '/api/portal': typeof ApiPortalRoute
@@ -103,6 +110,7 @@ export interface FileRoutesByTo {
   '/account': typeof AuthenticatedAccountRoute
   '/chat': typeof AuthenticatedChatRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/resource': typeof AuthenticatedResourceRoute
   '/subscribe': typeof AuthenticatedSubscribeRoute
   '/api/checkout': typeof ApiCheckoutRoute
   '/api/portal': typeof ApiPortalRoute
@@ -118,6 +126,7 @@ export interface FileRoutesById {
   '/_authenticated/account': typeof AuthenticatedAccountRoute
   '/_authenticated/chat': typeof AuthenticatedChatRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
+  '/_authenticated/resource': typeof AuthenticatedResourceRoute
   '/_authenticated/subscribe': typeof AuthenticatedSubscribeRoute
   '/api/checkout': typeof ApiCheckoutRoute
   '/api/portal': typeof ApiPortalRoute
@@ -133,6 +142,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/chat'
     | '/onboarding'
+    | '/resource'
     | '/subscribe'
     | '/api/checkout'
     | '/api/portal'
@@ -146,6 +156,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/chat'
     | '/onboarding'
+    | '/resource'
     | '/subscribe'
     | '/api/checkout'
     | '/api/portal'
@@ -160,6 +171,7 @@ export interface FileRouteTypes {
     | '/_authenticated/account'
     | '/_authenticated/chat'
     | '/_authenticated/onboarding'
+    | '/_authenticated/resource'
     | '/_authenticated/subscribe'
     | '/api/checkout'
     | '/api/portal'
@@ -235,6 +247,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSubscribeRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/resource': {
+      id: '/_authenticated/resource'
+      path: '/resource'
+      fullPath: '/resource'
+      preLoaderRoute: typeof AuthenticatedResourceRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/onboarding': {
       id: '/_authenticated/onboarding'
       path: '/onboarding'
@@ -270,6 +289,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedAccountRoute: typeof AuthenticatedAccountRoute
   AuthenticatedChatRoute: typeof AuthenticatedChatRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
+  AuthenticatedResourceRoute: typeof AuthenticatedResourceRoute
   AuthenticatedSubscribeRoute: typeof AuthenticatedSubscribeRoute
 }
 
@@ -277,6 +297,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAccountRoute: AuthenticatedAccountRoute,
   AuthenticatedChatRoute: AuthenticatedChatRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
+  AuthenticatedResourceRoute: AuthenticatedResourceRoute,
   AuthenticatedSubscribeRoute: AuthenticatedSubscribeRoute,
 }
 
