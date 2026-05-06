@@ -22,11 +22,11 @@ function LandingPage() {
             AskDerivn
           </Link>
           <nav className="flex items-center gap-6 text-sm">
-            <Link to="/" className="text-ink-soft hover:text-foreground">
+            <Link to="/login" className="text-ink-soft hover:text-foreground">
               Sign In
             </Link>
             <Link
-              to="/"
+              to="/signup"
               className="rounded-sm bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
             >
               Get Access
@@ -51,13 +51,13 @@ function LandingPage() {
 
           <div className="mt-12 flex flex-wrap items-center justify-center gap-3">
             <Link
-              to="/"
+              to="/signup"
               className="rounded-sm bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
             >
               Get Access
             </Link>
             <Link
-              to="/"
+              to="/login"
               className="rounded-sm border border-rule px-6 py-3 text-sm font-medium text-foreground hover:bg-accent"
             >
               Sign In
