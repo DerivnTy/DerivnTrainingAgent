@@ -51,13 +51,13 @@ function LandingPage() {
 
           <div className="mt-12 flex flex-wrap items-center justify-center gap-3">
             <Link
-              to="/"
+              to="/signup"
               className="rounded-sm bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
             >
               Get Access
             </Link>
             <Link
-              to="/"
+              to="/login"
               className="rounded-sm border border-rule px-6 py-3 text-sm font-medium text-foreground hover:bg-accent"
             >
               Sign In
