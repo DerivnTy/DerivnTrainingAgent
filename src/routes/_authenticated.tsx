@@ -11,6 +11,7 @@ import { ChatProvider } from "@/lib/chat-context";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 import { authenticatedBeforeLoad } from "@/lib/post-auth-route";
+import { DevAccessBadge } from "@/components/dev-access-badge";
 
 export const Route = createFileRoute("/_authenticated")({
   beforeLoad: ({ location }) => authenticatedBeforeLoad(location.pathname),
@@ -73,6 +74,7 @@ function AuthGuard() {
           </div>
         </div>
       </div>
+      <DevAccessBadge />
     </ChatProvider>
   );
 }
