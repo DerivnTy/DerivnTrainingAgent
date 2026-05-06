@@ -37,21 +37,21 @@ function LandingPage() {
       </header>
 
       <main>
-        <section className="mx-auto max-w-3xl px-6 pt-24 pb-20">
+        <section className="mx-auto max-w-5xl px-6 pt-24 pb-20 text-center">
           <p className="mb-6 text-xs uppercase tracking-[0.2em] text-ink-soft">
             Private coaching intelligence
           </p>
-          <h1 className="font-serif text-5xl leading-[1.05] tracking-tight md:text-6xl">
+          <h1 className="font-serif text-5xl leading-[1.05] tracking-tight md:text-7xl">
             The Derivn system,<br />in conversation.
           </h1>
-          <p className="mt-8 max-w-xl text-lg leading-relaxed text-ink-soft">
+          <p className="mx-auto mt-8 max-w-2xl text-lg leading-relaxed text-ink-soft">
             Ask Derivn is a private assistant trained on the Derivn operating
             system — a structured way to think about training, running,
             nutrition, recovery, and consistency. Ask a question, get a clear
             answer. No noise. No hype.
           </p>
 
-          <div className="mt-10 flex flex-wrap items-center gap-3">
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
             <Link
               to="/"
               className="rounded-sm bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
@@ -68,7 +68,7 @@ function LandingPage() {
         </section>
 
         <section className="border-t border-rule">
-          <div className="mx-auto grid max-w-5xl gap-12 px-6 py-20 md:grid-cols-3">
+          <div className="mx-auto grid max-w-5xl gap-12 px-6 py-20 md:grid-cols-3 text-center">
             {[
               {
                 k: "01",
@@ -96,9 +96,9 @@ function LandingPage() {
         </section>
 
         <section className="border-t border-rule">
-          <div className="mx-auto max-w-3xl px-6 py-20">
-            <h2 className="font-serif text-3xl tracking-tight">How it works</h2>
-            <ol className="mt-8 space-y-6 text-sm leading-relaxed text-ink-soft">
+          <div className="mx-auto max-w-5xl px-6 py-20 text-center">
+            <h2 className="font-serif text-4xl tracking-tight md:text-5xl">How it works</h2>
+            <ol className="mx-auto mt-10 max-w-2xl space-y-6 text-left text-sm leading-relaxed text-ink-soft">
               {[
                 "Create an account and complete a short client context form — goal, training level, available time, equipment, limitations.",
                 "Subscribe to unlock Ask Derivn. Monthly access, cancel anytime.",
