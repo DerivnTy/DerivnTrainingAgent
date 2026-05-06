@@ -15,6 +15,7 @@ function SignupPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sent, setSent] = useState(false);
@@ -23,8 +24,12 @@ function SignupPage() {
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -34,6 +39,11 @@ function SignupPage() {
     setLoading(false);
     if (error) {
       setError(error.message);
+      return;
+    }
+    // If session is established immediately (auto-confirm), go to pay portal.
+    if (data.session) {
+      navigate({ to: "/subscribe" });
       return;
     }
     setSent(true);
