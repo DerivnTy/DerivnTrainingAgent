@@ -63,8 +63,7 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
       {/* Top */}
       <div className="border-b border-rule px-5 pb-4 pt-6">
         <Link
-          to="/chat"
-          search={{}}
+          to="/"
           onClick={onNavigate}
           className="block font-serif text-lg tracking-tight text-foreground"
         >
