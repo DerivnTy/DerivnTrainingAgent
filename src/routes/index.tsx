@@ -4,11 +4,10 @@ export const Route = createFileRoute("/")({
   component: LandingPage,
   head: () => ({
     meta: [
-      { title: "Derivn Brain" },
+      { title: "AskDerivn" },
       {
         name: "description",
-        content:
-          "The closest thing to the Derivn system for thinking through training, running, nutrition, recovery, and consistency.",
+        content: "AskDerivn",
       },
     ],
   }),
@@ -20,17 +19,17 @@ function LandingPage() {
       <header className="border-b border-rule">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
           <Link to="/" className="font-serif text-lg tracking-tight">
-            Derivn Brain
+            AskDerivn
           </Link>
           <nav className="flex items-center gap-6 text-sm">
             <Link to="/" className="text-ink-soft hover:text-foreground">
-              Sign in
+              Sign In
             </Link>
             <Link
               to="/"
               className="rounded-sm bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
             >
-              Get access
+              Get Access
             </Link>
           </nav>
         </div>
@@ -39,16 +38,15 @@ function LandingPage() {
       <main>
         <section className="mx-auto max-w-5xl px-6 pt-32 pb-24 text-center">
           <h1 className="font-serif text-6xl leading-[1.02] tracking-tight md:text-8xl">
-            Derivn Brain
+            AskDerivn
           </h1>
           <p className="mx-auto mt-8 max-w-2xl text-lg leading-relaxed text-foreground md:text-xl">
-            The closest thing to the Derivn system for thinking through
-            training, running, nutrition, recovery, and consistency.
+            Trained on the Derivn coaching system, thousands of workouts, and
+            real coaching transcripts.
           </p>
           <p className="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-ink-soft">
-            Trained on the Derivn coaching system, thousands of workouts, and
-            real coaching transcripts. Built to give clear answers, not generic
-            fitness advice.
+            Built to give clear answers and clarity toward reaching fitness
+            goals.
           </p>
 
           <div className="mt-12 flex flex-wrap items-center justify-center gap-3">
@@ -68,36 +66,10 @@ function LandingPage() {
         </section>
 
         <section className="border-t border-rule">
-          <div className="mx-auto grid max-w-5xl gap-12 px-6 py-24 md:grid-cols-3 text-center">
-            {[
-              {
-                k: "01",
-                t: "Built from Derivn",
-                d: "Trained on Derivn's coaching philosophy, programming logic, nutrition principles, and decision-making system.",
-              },
-              {
-                k: "02",
-                t: "Filtered, not generic",
-                d: "Every answer is shaped through the DerivnOS reasoning layer so users get practical guidance, not random fitness advice.",
-              },
-              {
-                k: "03",
-                t: "Ask better. Train smarter.",
-                d: "Use it to think through workouts, running, meals, recovery, missed days, plateaus, and real-life schedule problems.",
-              },
-            ].map((f) => (
-              <div key={f.k}>
-                <div className="font-mono text-xs text-ink-soft">{f.k}</div>
-                <h3 className="mt-3 font-serif text-xl">{f.t}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-ink-soft">{f.d}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="border-t border-rule">
           <div className="mx-auto max-w-5xl px-6 py-24 text-center">
-            <h2 className="font-serif text-4xl tracking-tight md:text-5xl">How it works</h2>
+            <h2 className="font-serif text-4xl tracking-tight md:text-5xl">
+              How it works
+            </h2>
             <div className="mx-auto mt-14 grid max-w-4xl gap-12 md:grid-cols-3 text-center">
               {[
                 {
@@ -105,12 +77,12 @@ function LandingPage() {
                   d: "Set your goal, training level, schedule, equipment, and limitations.",
                 },
                 {
-                  t: "Ask anything",
-                  d: "Training, running, nutrition, recovery, consistency, plateaus, or what to do next.",
+                  t: "Ask your question",
+                  d: "Training, running, nutrition, recovery, consistency, or what to do next.",
                 },
                 {
-                  t: "Get a clear next move",
-                  d: "Every answer is filtered through the Derivn system so you leave with one practical action.",
+                  t: "Get a clear answer",
+                  d: "AskDerivn filters the question through the Derivn system and gives one practical next action.",
                 },
               ].map((step, i) => (
                 <div key={i}>
@@ -118,7 +90,9 @@ function LandingPage() {
                     {String(i + 1).padStart(2, "0")}
                   </div>
                   <h3 className="mt-3 font-serif text-xl">{step.t}</h3>
-                  <p className="mt-3 text-sm leading-relaxed text-ink-soft">{step.d}</p>
+                  <p className="mt-3 text-sm leading-relaxed text-ink-soft">
+                    {step.d}
+                  </p>
                 </div>
               ))}
             </div>
