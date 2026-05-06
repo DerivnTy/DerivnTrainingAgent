@@ -69,7 +69,7 @@ const GUIDANCE_OPTIONS = [
 ];
 
 type Form = {
-  goal: string;
+  goal: string[];
   training_level: string;
   strength_days_per_week: string;
   cardio_days_per_week: string;
@@ -85,7 +85,7 @@ type Form = {
 };
 
 const empty: Form = {
-  goal: "",
+  goal: [],
   training_level: "",
   strength_days_per_week: "",
   cardio_days_per_week: "",
@@ -120,7 +120,9 @@ function OnboardingPage() {
         .single();
       if (data) {
         setForm({
-          goal: data.goal ?? "",
+          goal: data.goal
+            ? data.goal.split(",").map((g: string) => g.trim()).filter(Boolean)
+            : [],
           training_level: data.training_level ?? "",
           strength_days_per_week:
             data.strength_days_per_week != null
@@ -149,7 +151,10 @@ function OnboardingPage() {
   const setField = <K extends keyof Form>(k: K, v: Form[K]) =>
     setForm((f) => ({ ...f, [k]: v }));
 
-  const toggleMulti = (k: "main_barriers" | "nutrition_tags" | "guidance_preference", v: string) =>
+  const toggleMulti = (
+    k: "goal" | "main_barriers" | "nutrition_tags" | "guidance_preference",
+    v: string
+  ) =>
     setForm((f) => ({
       ...f,
       [k]: f[k].includes(v) ? f[k].filter((x) => x !== v) : [...f[k], v],
@@ -157,7 +162,7 @@ function OnboardingPage() {
 
   const canSubmit = useMemo(() => {
     return (
-      !!form.goal &&
+      form.goal.length > 0 &&
       !!form.training_level &&
       form.strength_days_per_week !== "" &&
       form.cardio_days_per_week !== "" &&
@@ -179,7 +184,7 @@ function OnboardingPage() {
     }
 
     const update = {
-      goal: form.goal,
+      goal: form.goal.join(", "),
       training_level: form.training_level,
       strength_days_per_week: Number(form.strength_days_per_week),
       cardio_days_per_week: Number(form.cardio_days_per_week),
@@ -225,13 +230,13 @@ function OnboardingPage() {
 
       <form onSubmit={onSubmit} className="mt-12 divide-y divide-rule">
         <Question
-          label="What are you mainly working toward right now?"
+          label="What are you mainly working toward right now? (Select all that apply)"
           required
         >
-          <Chips
+          <MultiChips
             options={GOAL_OPTIONS}
-            value={form.goal}
-            onChange={(v) => setField("goal", v)}
+            values={form.goal}
+            onToggle={(v) => toggleMulti("goal", v)}
           />
         </Question>
 
