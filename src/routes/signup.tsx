@@ -80,36 +80,47 @@ function SignupPage() {
       >
         Continue with Google
       </button>
-      <Divider />
-      <form onSubmit={onSubmit} className="space-y-4">
-        <Field label="Email">
-          <input
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full border-b border-rule bg-transparent py-2 text-sm outline-none focus:border-foreground"
-          />
-        </Field>
-        <Field label="Password">
-          <input
-            type="password"
-            required
-            minLength={8}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full border-b border-rule bg-transparent py-2 text-sm outline-none focus:border-foreground"
-          />
-        </Field>
-        {error && <p className="text-sm text-red-700">{error}</p>}
+      {!showEmailForm ? (
         <button
-          type="submit"
-          disabled={loading}
-          className="w-full rounded-sm bg-primary px-4 py-3 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
+          onClick={() => setShowEmailForm(true)}
+          className="mt-3 w-full rounded-sm bg-primary px-4 py-3 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
         >
-          {loading ? "Creating…" : "Create account"}
+          Create an account
         </button>
-      </form>
+      ) : (
+        <>
+          <Divider />
+          <form onSubmit={onSubmit} className="space-y-4">
+            <Field label="Email">
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full border-b border-rule bg-transparent py-2 text-sm outline-none focus:border-foreground"
+              />
+            </Field>
+            <Field label="Password">
+              <input
+                type="password"
+                required
+                minLength={8}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full border-b border-rule bg-transparent py-2 text-sm outline-none focus:border-foreground"
+              />
+            </Field>
+            {error && <p className="text-sm text-red-700">{error}</p>}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full rounded-sm bg-primary px-4 py-3 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
+            >
+              {loading ? "Creating…" : "Create account"}
+            </button>
+          </form>
+        </>
+      )}
       <p className="mt-8 text-center text-sm text-ink-soft">
         Already have an account?{" "}
         <Link to="/login" className="text-foreground underline">
