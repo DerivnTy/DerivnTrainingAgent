@@ -1,91 +1,50 @@
-## Confirming current routing
+## Goal
 
-Yes — the funnel is working as designed:
+After "Create an account" or "Continue with Google" on `/signup`, the user must end up at the paid checkout (Stripe portal) before reaching the app.
 
-- No session → `/login`
-- Logged in, no active subscription → `/subscribe`
-- Active sub, onboarding incomplete → `/onboarding`
-- Active sub, onboarding complete → `/chat`
+## Current state
 
-If you're previewing without a paid subscription, the hard paywall blocks `/chat`. That's the gate doing its job, not a bug.
+- `/signup` → "Continue with Google" already triggers OAuth → `/post-auth` → `resolvePostAuthDestination` → `/subscribe` (which calls `/api/checkout` and redirects to Stripe). The pay portal is already wired for Google.
+- `/signup` → "Create an account" reveals an inline email + password form. On submit it calls `supabase.auth.signUp` and shows "Check your email" until the user confirms. After confirmation, `/post-auth` routes to `/subscribe` (pay portal).
 
-## Plan: preview-only dev bypass
+So the pay portal already exists at `/subscribe` for both flows. What's missing is the explicit confirm-password step and a clearer post-signup hand-off to payment.
 
-Add a narrow allowlist that treats any logged-in user with an `@derivn.com` email as having an active subscription — but only in preview/dev, never in production. Onboarding is NOT bypassed (you'll still complete it once per test account, as requested).
+## Changes
 
-### Where the bypass applies
+### 1. `src/routes/signup.tsx` — email signup form
 
-Two checkpoints, both must agree:
+- Add a third field: **Confirm password**.
+- Add client-side validation:
+  - both passwords must match (show inline error, no submit)
+  - min 8 chars (already enforced)
+- Change the submit button label from "Create account" to **"Next"**.
+- On successful `signUp`:
+  - If Supabase returns a session immediately (email confirmation disabled), navigate straight to `/subscribe`.
+  - If no session (confirmation required), keep current "Check your email" view but update the copy to: *"Confirm your email to continue to payment."* and link to `/login`.
+- Validation messages still only appear after the user opens the inline form and presses Next (existing behavior preserved).
 
-1. **Frontend funnel** — `src/lib/post-auth-route.ts` `resolvePostAuthDestination()`: if bypass user, treat subscription as active and route based on profile completion only.
-2. **Backend chat API guard** — `src/server/auth.server.ts` `requireActiveSubscription()`: if bypass user, skip the 402 paywall check and return a synthetic active profile.
+### 2. Google flow
 
-### Bypass condition (single helper)
+No code change needed — it already lands on `/subscribe` via `/post-auth`. Confirm by walking the path in `resolvePostAuthDestination`.
 
-New file `src/lib/dev-bypass.ts` exporting `isDevBypassEmail(email)`:
+### 3. Subscribe page (pay portal)
 
-```ts
-export function isDevBypassEmail(email?: string | null): boolean {
-  if (!email) return false;
-  if (!email.toLowerCase().endsWith("@derivn.com")) return false;
-  // Preview/dev only — never on the published production domain.
-  if (typeof window !== "undefined") {
-    const host = window.location.hostname;
-    const isProd = host === "ask.derivn.com" || host === "derivn-ai-buddy.lovable.app";
-    if (isProd) return false;
-  } else {
-    // Server: block on production hostnames via request header check at call site.
-    // The server-side guard reads the Host header and applies the same rule.
-  }
-  return true;
-}
-```
+No structural change. It already:
+- shows membership summary
+- calls `/api/checkout` (Stripe Checkout Session)
+- redirects to Stripe-hosted payment
 
-Server-side equivalent uses the incoming `Request` Host header (passed in) — same allowlist, same prod-host blocklist.
+Optional small polish: tighten the heading copy to "Complete your membership" so it reads as the next step after signup. (Confirm with user before changing.)
 
-### Frontend changes
+## Out of scope
 
-- `resolvePostAuthDestination(userId)` — also fetch the session email; if `isDevBypassEmail(email)`, skip the subscription check and return `/onboarding` or `/chat` based on `profile_completed_at`/`goal`.
-- `authenticatedBeforeLoad` — unchanged (it just consumes the resolver).
+- Changing email-confirmation requirement (that's an auth-settings decision; ask if the user wants signup to skip the confirmation email so "Next" goes directly to Stripe).
+- Replacing Stripe Checkout with an embedded payment form.
 
-### Backend changes
+## Open question
 
-- `requireActiveSubscription` — new signature accepts `(userId, email, request)`. If `isDevBypassEmail(email)` and host is non-prod, fetch the profile but don't enforce status; return it as-is so the downstream `requireCompleteProfile` still runs.
-- `src/routes/api/chat.ts` — pass `authedUser.email` and `request` into `requireActiveSubscription`.
+Right now Supabase requires email confirmation before a session exists. If the user wants pressing **Next** to go *immediately* to Stripe (no email confirmation step in between), we need to disable "Confirm email" in auth settings. Otherwise the flow is: Next → check email → click link → Stripe.
 
-### Visible "DEV ACCESS" indicator
-
-Small fixed pill in the bottom-right corner of authenticated routes when `isDevBypassEmail(session.user.email)` is true:
-
-- Component: `src/components/dev-access-badge.tsx`
-- Mounted in `src/routes/_authenticated.tsx`
-- Plain text "DEV ACCESS", muted background, no icon, dismissible via close button (session-only)
-
-### Out of scope
-
-- No DB changes
-- No new secrets
-- No changes to Stripe webhook, onboarding, or chat logic
-- No bypass of onboarding (you'll complete it once per test account)
-- No changes to landing, login, or public routes
-
-### Files to edit
-
-- create `src/lib/dev-bypass.ts`
-- create `src/components/dev-access-badge.tsx`
-- edit `src/lib/post-auth-route.ts`
-- edit `src/server/auth.server.ts`
-- edit `src/routes/api/chat.ts`
-- edit `src/routes/_authenticated.tsx`
-
-### Acceptance
-
-1. Sign up in preview with a `@derivn.com` email → land on `/onboarding` (not `/subscribe`).
-2. Complete onboarding → land on `/chat`, send message, get assistant response.
-3. "DEV ACCESS" pill is visible in preview but absent in production.
-4. A non-`@derivn.com` user in preview still hits the paywall.
-5. A `@derivn.com` user on the production domain (`ask.derivn.com`) still hits the paywall — bypass is host-gated.
-
-### Removal before launch
-
-Single grep for `dev-bypass` removes the entire mechanism. I'll add a `// TODO: remove before public launch` marker in each file.
+Which behavior do you want?
+- **A.** Keep email confirmation (most secure). Next → "check your email" → after click → Stripe.
+- **B.** Disable email confirmation. Next → straight to Stripe.
