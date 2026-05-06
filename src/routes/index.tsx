@@ -43,10 +43,6 @@ function LandingPage() {
           <p className="mx-auto mt-8 max-w-2xl text-lg leading-relaxed text-foreground md:text-xl">
             Built to give clear answers and clarity toward fitness goals.
           </p>
-          <p className="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-ink-soft">
-            Trained on the Derivn coaching system, thousands of workouts, and
-            real coaching transcripts.
-          </p>
 
           <div className="mt-12 flex flex-wrap items-center justify-center gap-3">
             <Link
