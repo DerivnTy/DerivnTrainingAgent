@@ -75,17 +75,22 @@ export type Database = {
       }
       profiles: {
         Row: {
+          average_steps: number | null
           cardio_days_per_week: number | null
           created_at: string
           display_name: string | null
           email: string | null
           equipment: string | null
           goal: string | null
+          guidance_preference: string[] | null
           id: string
           limitations: string | null
+          main_barriers: string[] | null
           nutrition_context: string | null
+          nutrition_tags: string[] | null
           other_notes: string | null
           pain_notes: string | null
+          pain_or_injury_flag: boolean | null
           profile_completed_at: string | null
           strength_days_per_week: number | null
           stripe_customer_id: string | null
@@ -97,17 +102,22 @@ export type Database = {
           weekly_schedule: string | null
         }
         Insert: {
+          average_steps?: number | null
           cardio_days_per_week?: number | null
           created_at?: string
           display_name?: string | null
           email?: string | null
           equipment?: string | null
           goal?: string | null
+          guidance_preference?: string[] | null
           id: string
           limitations?: string | null
+          main_barriers?: string[] | null
           nutrition_context?: string | null
+          nutrition_tags?: string[] | null
           other_notes?: string | null
           pain_notes?: string | null
+          pain_or_injury_flag?: boolean | null
           profile_completed_at?: string | null
           strength_days_per_week?: number | null
           stripe_customer_id?: string | null
@@ -119,17 +129,22 @@ export type Database = {
           weekly_schedule?: string | null
         }
         Update: {
+          average_steps?: number | null
           cardio_days_per_week?: number | null
           created_at?: string
           display_name?: string | null
           email?: string | null
           equipment?: string | null
           goal?: string | null
+          guidance_preference?: string[] | null
           id?: string
           limitations?: string | null
+          main_barriers?: string[] | null
           nutrition_context?: string | null
+          nutrition_tags?: string[] | null
           other_notes?: string | null
           pain_notes?: string | null
+          pain_or_injury_flag?: boolean | null
           profile_completed_at?: string | null
           strength_days_per_week?: number | null
           stripe_customer_id?: string | null
