@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import tylerPhoto from "@/assets/tyler.jpeg";
+import { SiteFooter } from "@/components/site-footer";
 
 export const Route = createFileRoute("/")({
   component: LandingPage,
