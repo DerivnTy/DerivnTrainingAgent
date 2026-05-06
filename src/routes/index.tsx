@@ -61,6 +61,49 @@ function LandingPage() {
         </section>
 
         <section className="border-t border-rule">
+          <div className="mx-auto max-w-5xl px-6 py-24">
+            <div className="mx-auto max-w-3xl text-center">
+              <h2 className="font-serif text-4xl tracking-tight md:text-5xl">
+                What you get
+              </h2>
+              <p className="mx-auto mt-6 text-base leading-relaxed text-ink-soft md:text-lg">
+                AskDerivn gives you access to the Derivn system in two forms:
+                a 100-page PDF handbook and a private coaching brain built to
+                help you think through training, running, nutrition, recovery,
+                and consistency.
+              </p>
+            </div>
+
+            <div className="mx-auto mt-16 grid max-w-4xl gap-12 md:grid-cols-2 text-center">
+              {[
+                {
+                  t: "100-page PDF handbook",
+                  d: "A complete Derivn guide covering training structure, running, nutrition, recovery, habits, progress tracking, and common mistakes.",
+                },
+                {
+                  t: "AskDerivn coaching brain",
+                  d: "A private assistant built from the Derivn coaching system, thousands of workouts, and real coaching transcripts. Designed to turn unclear fitness questions into clear next actions.",
+                },
+              ].map((item, i) => (
+                <div key={i}>
+                  <div className="font-mono text-xs text-ink-soft">
+                    {String(i + 1).padStart(2, "0")}
+                  </div>
+                  <h3 className="mt-3 font-serif text-xl">{item.t}</h3>
+                  <p className="mt-3 text-sm leading-relaxed text-ink-soft">
+                    {item.d}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            <p className="mx-auto mt-16 max-w-2xl text-center font-serif text-xl text-foreground">
+              The PDF gives you the system. AskDerivn helps you apply it.
+            </p>
+          </div>
+        </section>
+
+        <section className="border-t border-rule">
           <div className="mx-auto max-w-5xl px-6 py-24 text-center">
             <h2 className="font-serif text-4xl tracking-tight md:text-5xl">
               How it works
