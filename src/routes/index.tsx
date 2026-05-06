@@ -175,12 +175,6 @@ function LandingPage() {
               >
                 Get Access
               </Link>
-              <Link
-                to="/login"
-                className="rounded-sm border border-rule px-6 py-3 text-sm font-medium text-foreground hover:bg-accent"
-              >
-                Sign In
-              </Link>
             </div>
           </div>
         </section>
