@@ -92,7 +92,7 @@ export const Route = createFileRoute("/api/chat")({
           const { data: profile } = await supabaseAdmin
             .from("profiles")
             .select(
-              "display_name, goal, training_level, weekly_schedule, strength_days_per_week, cardio_days_per_week, time_per_session, equipment, limitations, pain_notes, nutrition_context, other_notes"
+              "display_name, goal, training_level, weekly_schedule, strength_days_per_week, cardio_days_per_week, average_steps, time_per_session, equipment, main_barriers, pain_or_injury_flag, pain_notes, nutrition_tags, nutrition_context, guidance_preference, limitations, other_notes"
             )
             .eq("id", userId)
             .single();
