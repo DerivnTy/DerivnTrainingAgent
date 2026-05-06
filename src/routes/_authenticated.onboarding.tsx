@@ -223,7 +223,7 @@ function OnboardingPage() {
         training level, and limitations.
       </p>
 
-      <form onSubmit={onSubmit} className="mt-12 space-y-12">
+      <form onSubmit={onSubmit} className="mt-12 divide-y divide-rule">
         <Question
           label="What are you mainly working toward right now?"
           required
@@ -381,12 +381,12 @@ function Question({
   children: React.ReactNode;
 }) {
   return (
-    <div>
-      <div className="text-xs uppercase tracking-wider text-ink-soft">
+    <div className="py-8 first:pt-0">
+      <div className="font-serif text-xl tracking-tight text-foreground">
         {label}
-        {required && <span className="ml-1 text-foreground">*</span>}
+        {required && <span className="ml-1 text-ink-soft">*</span>}
       </div>
-      <div className="mt-3">{children}</div>
+      <div className="mt-4">{children}</div>
     </div>
   );
 }
