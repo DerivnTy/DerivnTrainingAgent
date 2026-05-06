@@ -219,9 +219,12 @@ function ChatPage() {
           )}
 
           {error && (
-            <p className="border-t border-rule pt-6 text-sm text-red-700">
-              {error}
-            </p>
+            <div className="border-t border-rule pt-6">
+              <p className="text-sm text-red-700">{error}</p>
+              {debug && (
+                <p className="mt-2 font-mono text-xs text-ink-soft">debug: {debug}</p>
+              )}
+            </div>
           )}
         </div>
       </div>
