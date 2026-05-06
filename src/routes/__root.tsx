@@ -84,12 +84,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:description", content: "AskDerivn is a private fitness decision-support assistant trained on the Derivn coaching system, thousands of workouts, and real coaching transcripts." },
       { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/0aqedCLxcMNku9P1zDmwEbx5Crn1/social-images/social-1778100043981-Screenshot_2026-03-10_at_5.14.12_PM.webp" },
       { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/0aqedCLxcMNku9P1zDmwEbx5Crn1/social-images/social-1778100043981-Screenshot_2026-03-10_at_5.14.12_PM.webp" },
+      { name: "theme-color", content: "#F6F1E5" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-title", content: "AskDerivn" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "default" },
+      { name: "mobile-web-app-capable", content: "yes" },
     ],
     links: [
       {
         rel: "stylesheet",
         href: appCss,
       },
+      { rel: "manifest", href: "/manifest.webmanifest" },
     ],
   }),
   shellComponent: RootShell,
