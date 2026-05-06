@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -12,8 +12,14 @@ type Form = {
   goal: string;
   training_level: string;
   weekly_schedule: string;
+  strength_days_per_week: string;
+  cardio_days_per_week: string;
+  time_per_session: string;
   equipment: string;
   limitations: string;
+  pain_notes: string;
+  nutrition_context: string;
+  other_notes: string;
 };
 
 const empty: Form = {
@@ -21,11 +27,18 @@ const empty: Form = {
   goal: "",
   training_level: "",
   weekly_schedule: "",
+  strength_days_per_week: "",
+  cardio_days_per_week: "",
+  time_per_session: "",
   equipment: "",
   limitations: "",
+  pain_notes: "",
+  nutrition_context: "",
+  other_notes: "",
 };
 
 function OnboardingPage() {
+  const navigate = useNavigate();
   const [form, setForm] = useState<Form>(empty);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -39,7 +52,7 @@ function OnboardingPage() {
       const { data } = await supabase
         .from("profiles")
         .select(
-          "display_name, goal, training_level, weekly_schedule, equipment, limitations"
+          "display_name, goal, training_level, weekly_schedule, strength_days_per_week, cardio_days_per_week, time_per_session, equipment, limitations, pain_notes, nutrition_context, other_notes"
         )
         .eq("id", s.session.user.id)
         .single();
@@ -49,16 +62,30 @@ function OnboardingPage() {
           goal: data.goal ?? "",
           training_level: data.training_level ?? "",
           weekly_schedule: data.weekly_schedule ?? "",
+          strength_days_per_week:
+            data.strength_days_per_week != null
+              ? String(data.strength_days_per_week)
+              : "",
+          cardio_days_per_week:
+            data.cardio_days_per_week != null
+              ? String(data.cardio_days_per_week)
+              : "",
+          time_per_session: data.time_per_session ?? "",
           equipment: data.equipment ?? "",
           limitations: data.limitations ?? "",
+          pain_notes: data.pain_notes ?? "",
+          nutrition_context: data.nutrition_context ?? "",
+          other_notes: data.other_notes ?? "",
         });
       }
       setLoading(false);
     })();
   }, []);
 
-  const set = (k: keyof Form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-    setForm((f) => ({ ...f, [k]: e.target.value }));
+  const set =
+    (k: keyof Form) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+      setForm((f) => ({ ...f, [k]: e.target.value }));
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -67,13 +94,37 @@ function OnboardingPage() {
     setSaved(false);
     const { data: s } = await supabase.auth.getSession();
     if (!s.session) return;
+
+    const update = {
+      display_name: form.display_name || null,
+      goal: form.goal || null,
+      training_level: form.training_level || null,
+      weekly_schedule: form.weekly_schedule || null,
+      strength_days_per_week: form.strength_days_per_week
+        ? Number(form.strength_days_per_week)
+        : null,
+      cardio_days_per_week: form.cardio_days_per_week
+        ? Number(form.cardio_days_per_week)
+        : null,
+      time_per_session: form.time_per_session || null,
+      equipment: form.equipment || null,
+      limitations: form.limitations || null,
+      pain_notes: form.pain_notes || null,
+      nutrition_context: form.nutrition_context || null,
+      other_notes: form.other_notes || null,
+      profile_completed_at: new Date().toISOString(),
+    };
+
     const { error } = await supabase
       .from("profiles")
-      .update(form)
+      .update(update)
       .eq("id", s.session.user.id);
     setSaving(false);
     if (error) setError(error.message);
-    else setSaved(true);
+    else {
+      setSaved(true);
+      navigate({ to: "/chat" });
+    }
   };
 
   if (loading) {
@@ -93,51 +144,76 @@ function OnboardingPage() {
 
       <form onSubmit={onSubmit} className="mt-10 space-y-6">
         <Row label="Name">
-          <input
-            value={form.display_name}
-            onChange={set("display_name")}
-            className="w-full border-b border-rule bg-transparent py-2 text-sm outline-none focus:border-foreground"
-          />
+          <Input value={form.display_name} onChange={set("display_name")} />
         </Row>
-        <Row label="Primary goal">
-          <input
+        <Row label="Main goal">
+          <Input
             placeholder="e.g. Run a sub-1:30 half marathon"
             value={form.goal}
             onChange={set("goal")}
-            className="w-full border-b border-rule bg-transparent py-2 text-sm outline-none focus:border-foreground"
           />
         </Row>
         <Row label="Training level">
-          <input
+          <Input
             placeholder="Beginner / Intermediate / Advanced"
             value={form.training_level}
             onChange={set("training_level")}
-            className="w-full border-b border-rule bg-transparent py-2 text-sm outline-none focus:border-foreground"
           />
         </Row>
-        <Row label="Weekly schedule">
-          <input
-            placeholder="e.g. 4 sessions, 60 min each, weekday mornings"
+        <Row label="Strength days per week">
+          <Input
+            type="number"
+            min={0}
+            max={7}
+            value={form.strength_days_per_week}
+            onChange={set("strength_days_per_week")}
+          />
+        </Row>
+        <Row label="Running / cardio days per week">
+          <Input
+            type="number"
+            min={0}
+            max={7}
+            value={form.cardio_days_per_week}
+            onChange={set("cardio_days_per_week")}
+          />
+        </Row>
+        <Row label="Time available per session">
+          <Input
+            placeholder="e.g. 45–60 min"
+            value={form.time_per_session}
+            onChange={set("time_per_session")}
+          />
+        </Row>
+        <Row label="Weekly schedule notes">
+          <Input
+            placeholder="e.g. Weekday mornings, long run Saturdays"
             value={form.weekly_schedule}
             onChange={set("weekly_schedule")}
-            className="w-full border-b border-rule bg-transparent py-2 text-sm outline-none focus:border-foreground"
           />
         </Row>
         <Row label="Equipment">
-          <input
+          <Input
             placeholder="e.g. Full gym, dumbbells only, bodyweight"
             value={form.equipment}
             onChange={set("equipment")}
-            className="w-full border-b border-rule bg-transparent py-2 text-sm outline-none focus:border-foreground"
           />
         </Row>
-        <Row label="Limitations or injuries">
-          <textarea
-            rows={3}
-            value={form.limitations}
-            onChange={set("limitations")}
-            className="w-full border-b border-rule bg-transparent py-2 text-sm outline-none focus:border-foreground"
+        <Row label="Limitations">
+          <Textarea value={form.limitations} onChange={set("limitations")} />
+        </Row>
+        <Row label="Pain or injury notes">
+          <Textarea value={form.pain_notes} onChange={set("pain_notes")} />
+        </Row>
+        <Row label="Nutrition context">
+          <Textarea
+            value={form.nutrition_context}
+            onChange={set("nutrition_context")}
+            placeholder="Eating patterns, dietary preferences, supplements"
           />
+        </Row>
+        <Row label="Anything else AskDerivn should know">
+          <Textarea value={form.other_notes} onChange={set("other_notes")} />
         </Row>
 
         {error && <p className="text-sm text-red-700">{error}</p>}
@@ -148,7 +224,7 @@ function OnboardingPage() {
           disabled={saving}
           className="rounded-sm bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
         >
-          {saving ? "Saving…" : "Save"}
+          {saving ? "Saving…" : "Save and continue"}
         </button>
       </form>
     </main>
@@ -163,5 +239,24 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
       </span>
       <div className="mt-1">{children}</div>
     </label>
+  );
+}
+
+function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
+  return (
+    <input
+      {...props}
+      className="w-full border-b border-rule bg-transparent py-2 text-sm outline-none focus:border-foreground"
+    />
+  );
+}
+
+function Textarea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
+  return (
+    <textarea
+      rows={3}
+      {...props}
+      className="w-full border-b border-rule bg-transparent py-2 text-sm outline-none focus:border-foreground"
+    />
   );
 }
