@@ -72,13 +72,23 @@ type ProfileLike = {
   weekly_schedule?: string | null;
   strength_days_per_week?: number | null;
   cardio_days_per_week?: number | null;
+  average_steps?: number | null;
   time_per_session?: string | null;
   equipment?: string | null;
-  limitations?: string | null;
+  main_barriers?: string[] | null;
+  pain_or_injury_flag?: boolean | null;
   pain_notes?: string | null;
+  nutrition_tags?: string[] | null;
   nutrition_context?: string | null;
+  guidance_preference?: string[] | null;
+  limitations?: string | null;
   other_notes?: string | null;
 };
+
+function joinList(v: string[] | null | undefined): string | null {
+  if (!v || v.length === 0) return null;
+  return v.join(", ");
+}
 
 export function buildProfileBlock(p: ProfileLike | null | undefined): string {
   if (!p) return "USER PROFILE\n(No profile saved yet.)";
@@ -89,11 +99,23 @@ export function buildProfileBlock(p: ProfileLike | null | undefined): string {
     ["Weekly schedule", p.weekly_schedule],
     ["Strength days/week", p.strength_days_per_week],
     ["Cardio days/week", p.cardio_days_per_week],
+    ["Average daily steps", p.average_steps],
     ["Time per session", p.time_per_session],
     ["Equipment", p.equipment],
-    ["Limitations", p.limitations],
+    ["Main barriers", joinList(p.main_barriers)],
+    [
+      "Pain or injury flag",
+      p.pain_or_injury_flag === true
+        ? "Yes"
+        : p.pain_or_injury_flag === false
+          ? "No"
+          : null,
+    ],
     ["Pain notes", p.pain_notes],
+    ["Nutrition tags", joinList(p.nutrition_tags)],
     ["Nutrition context", p.nutrition_context],
+    ["Guidance preference", joinList(p.guidance_preference)],
+    ["Limitations", p.limitations],
     ["Other notes", p.other_notes],
   ];
   const lines = fields
@@ -102,3 +124,4 @@ export function buildProfileBlock(p: ProfileLike | null | undefined): string {
   if (lines.length === 0) return "USER PROFILE\n(No profile fields set.)";
   return "USER PROFILE\n" + lines.join("\n");
 }
+
