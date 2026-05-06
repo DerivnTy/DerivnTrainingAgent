@@ -78,10 +78,13 @@ function ChatPage() {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
   }, [messages, sending]);
 
+  const [debug, setDebug] = useState<string | null>(null);
+
   async function send(text: string) {
     const trimmed = text.trim();
     if (!trimmed || sending) return;
     setError(null);
+    setDebug(null);
     setInput("");
 
     const tempUser: Message = {
@@ -101,32 +104,44 @@ function ChatPage() {
         }),
       });
 
-      if (res.status === 402) {
-        window.location.href = "/subscribe";
-        return;
-      }
-
-      const data = await res.json().catch(() => ({}));
+      const data = (await res.json().catch(() => ({}))) as {
+        conversation_id?: string;
+        message?: Message;
+        error?: string;
+        debug?: string;
+        reason?: string;
+      };
 
       if (!res.ok) {
-        const msg =
-          (data && (data as { error?: string }).error) ||
-          "Something went wrong.";
-        setError(msg);
+        if (res.status === 401 || data.reason === "unauthenticated") {
+          window.location.href = "/login";
+          return;
+        }
+        if (res.status === 402) {
+          window.location.href = "/subscribe";
+          return;
+        }
+        if (res.status === 428 || data.reason === "profile_incomplete") {
+          window.location.href = "/onboarding";
+          return;
+        }
+        setError(data.error || "AskDerivn could not respond. Please try again.");
+        if (data.debug) setDebug(data.debug);
         setSending(false);
         return;
       }
 
-      const { conversation_id, message } = data as {
-        conversation_id: string;
-        message: Message;
-      };
+      if (!data.message || !data.conversation_id) {
+        setError("AskDerivn could not respond. Please try again.");
+        setSending(false);
+        return;
+      }
 
-      setMessages((m) => [...m, message]);
+      setMessages((m) => [...m, data.message!]);
       refreshConversations();
 
       if (!conversationId) {
-        navigate({ to: "/chat", search: { c: conversation_id } });
+        navigate({ to: "/chat", search: { c: data.conversation_id } });
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Network error");
@@ -204,9 +219,12 @@ function ChatPage() {
           )}
 
           {error && (
-            <p className="border-t border-rule pt-6 text-sm text-red-700">
-              {error}
-            </p>
+            <div className="border-t border-rule pt-6">
+              <p className="text-sm text-red-700">{error}</p>
+              {debug && (
+                <p className="mt-2 font-mono text-xs text-ink-soft">debug: {debug}</p>
+              )}
+            </div>
           )}
         </div>
       </div>
