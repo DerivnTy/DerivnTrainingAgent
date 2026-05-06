@@ -5,6 +5,7 @@ import { fallback, zodValidator } from "@tanstack/zod-adapter";
 import ReactMarkdown from "react-markdown";
 import { authedFetch } from "@/lib/auth-helpers";
 import { useChatContext } from "@/lib/chat-context";
+import { AddToHomeScreenBanner } from "@/components/add-to-home-screen-banner";
 
 const chatSearchSchema = z.object({
   c: fallback(z.string().optional(), undefined),
@@ -241,6 +242,8 @@ function ChatPage() {
           </button>
         </form>
       </div>
+
+      <AddToHomeScreenBanner />
     </main>
   );
 }
