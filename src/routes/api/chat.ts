@@ -34,10 +34,10 @@ export const Route = createFileRoute("/api/chat")({
           // 1. Auth
           const authed = await authenticate(request);
           if (authed instanceof Response) return authed;
-          const { userId } = authed;
+          const { userId, email } = authed;
 
           // 2. Subscription
-          const sub = await requireActiveSubscription(userId);
+          const sub = await requireActiveSubscription(userId, email, request);
           if (sub instanceof Response) return sub;
 
           // 3. Profile complete
