@@ -14,13 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          email: string | null
+          equipment: string | null
+          goal: string | null
+          id: string
+          limitations: string | null
+          stripe_customer_id: string | null
+          subscription_current_period_end: string | null
+          subscription_status: string
+          training_level: string | null
+          updated_at: string
+          weekly_schedule: string | null
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          equipment?: string | null
+          goal?: string | null
+          id: string
+          limitations?: string | null
+          stripe_customer_id?: string | null
+          subscription_current_period_end?: string | null
+          subscription_status?: string
+          training_level?: string | null
+          updated_at?: string
+          weekly_schedule?: string | null
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          equipment?: string | null
+          goal?: string | null
+          id?: string
+          limitations?: string | null
+          stripe_customer_id?: string | null
+          subscription_current_period_end?: string | null
+          subscription_status?: string
+          training_level?: string | null
+          updated_at?: string
+          weekly_schedule?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_active_subscription: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
