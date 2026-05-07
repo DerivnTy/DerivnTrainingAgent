@@ -140,16 +140,16 @@ function SignupPage() {
           Sign in
         </Link>
       </p>
-      <section className="mt-12 border-t border-rule pt-8 text-center">
+      <section className="mt-12 border-t border-rule pt-8">
         <h2 className="font-serif text-2xl tracking-tight">
           What you get with AskDerivn
         </h2>
-        <ul className="mt-5 space-y-2 text-sm text-ink-soft">
-          <li>A private chat built around your goals, training level, and context.</li>
-          <li>Direct guidance for training, running, nutrition, recovery, and consistency.</li>
-          <li>Saved conversations so you can pick up where you left off.</li>
-          <li>Access to the Built for Motion PDF.</li>
-          <li>$50/month. Cancel anytime from your account.</li>
+        <ul className="mt-5 space-y-2 pl-5 text-sm text-ink-soft list-disc marker:text-ink-soft/60">
+          <li>Private chat built around your goals.</li>
+          <li>Direct answers for training, nutrition, running, and recovery.</li>
+          <li>Saved conversations and remembered context.</li>
+          <li>Built for Motion PDF included.</li>
+          <li>$50/month. Cancel anytime.</li>
         </ul>
       </section>
     </AuthShell>
