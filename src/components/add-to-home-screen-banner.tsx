@@ -62,14 +62,14 @@ export function AddToHomeScreenBanner() {
           <button
             type="button"
             onClick={() => dismiss(false)}
-            className="rounded-sm border border-rule px-3 py-1.5 text-xs hover:border-foreground"
+            className="btn-secondary h-8 px-4 text-xs"
           >
             Got it
           </button>
           <button
             type="button"
             onClick={() => dismiss(true)}
-            className="text-xs text-ink-soft underline-offset-2 hover:underline"
+            className="text-xs text-ink-soft text-link underline-offset-2 hover:underline"
           >
             Don't show again
           </button>
