@@ -145,10 +145,11 @@ function SignupPage() {
           What you get with AskDerivn
         </h2>
         <ul className="mt-5 space-y-2 text-sm text-ink-soft">
-          <li>Private, judgment-free chat tuned to your goals.</li>
-          <li>Honest and direct guidance.</li>
-          <li>Unlimited conversations for $50/month.</li>
-          <li>Cancel anytime, right from your account.</li>
+          <li>A private chat built around your goals, training level, and context.</li>
+          <li>Direct guidance for training, running, nutrition, recovery, and consistency.</li>
+          <li>Saved conversations so you can pick up where you left off.</li>
+          <li>Access to the Built for Motion PDF.</li>
+          <li>$50/month. Cancel anytime from your account.</li>
         </ul>
       </section>
     </AuthShell>
