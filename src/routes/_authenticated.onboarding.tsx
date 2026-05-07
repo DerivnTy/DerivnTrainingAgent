@@ -493,7 +493,7 @@ function NumberField({
         max={max}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="mt-1 w-full border-b border-rule bg-transparent py-2 text-sm outline-none focus:border-foreground"
+        className="mt-1 w-full border-b border-rule bg-transparent py-2 text-sm input-soft"
       />
     </label>
   );
