@@ -15,6 +15,7 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
   const navigate = useNavigate();
   const { conversationsVersion, refreshConversations } = useChatContext();
   const [conversations, setConversations] = useState<ConversationSummary[]>([]);
+  const [pdfOpen, setPdfOpen] = useState(false);
 
   const routerState = useRouterState();
   const pathname = routerState.location.pathname;
