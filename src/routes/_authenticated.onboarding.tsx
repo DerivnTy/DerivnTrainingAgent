@@ -328,7 +328,7 @@ function OnboardingPage() {
                 placeholder="Briefly describe what matters for training."
                 value={form.pain_notes}
                 onChange={(e) => setField("pain_notes", e.target.value)}
-                className="w-full border-b border-rule bg-transparent py-2 text-sm outline-none focus:border-foreground"
+                className="w-full border-b border-rule bg-transparent py-2 text-sm input-soft"
               />
             </div>
           )}
