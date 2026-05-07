@@ -144,40 +144,16 @@ function ChatPage() {
   const showStarters = !conversationId && messages.length === 0 && !sending;
 
   return (
-    <main className="mx-auto flex h-full w-full max-w-3xl flex-col px-6">
+    <main className="mx-auto flex h-full w-full max-w-3xl flex-col px-4">
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto pb-6 pt-12"
+        className="flex-1 overflow-y-auto pb-4 pt-6"
       >
-        {!conversationId && messages.length === 0 && (
-          <>
-            <h1 className="font-serif text-3xl tracking-tight">AskDerivn</h1>
-            <p className="mt-2 text-sm text-ink-soft">
-              Ask a question about training, running, nutrition, recovery,
-              consistency, or what to do next.
-            </p>
-          </>
-        )}
-
-        {showStarters && (
-          <div className="mt-10 grid grid-cols-1 gap-2 sm:grid-cols-2">
-            {STARTERS.map((s) => (
-              <button
-                key={s}
-                onClick={() => send(s)}
-                className="border border-rule px-4 py-3 text-left text-sm text-foreground hover:bg-accent"
-              >
-                {s}
-              </button>
-            ))}
-          </div>
-        )}
-
         {loadingConv && (
           <p className="text-sm text-ink-soft">Loading conversation…</p>
         )}
 
-        <div className={messages.length > 0 ? "mt-2 space-y-8" : "space-y-8"}>
+        <div className={messages.length > 0 ? "space-y-8" : "space-y-8"}>
           {messages.map((m, i) => (
             <article
               key={m.id}
@@ -220,34 +196,46 @@ function ChatPage() {
         </div>
       </div>
 
-      {/* Input */}
-      <div className="border-t border-rule py-4">
+      {/* Bottom area: starters + input */}
+      <div className="pb-4">
+        {showStarters && (
+          <div className="mb-3 grid grid-cols-2 gap-2">
+            {STARTERS.map((s) => (
+              <button
+                key={s.title}
+                onClick={() => send(s.title)}
+                className="rounded-2xl bg-accent/60 px-3 py-3 text-left hover:bg-accent"
+              >
+                <div className="text-sm font-semibold text-foreground">
+                  {s.title}
+                </div>
+                <div className="mt-0.5 text-xs text-ink-soft">{s.sub}</div>
+              </button>
+            ))}
+          </div>
+        )}
+
         <form
           onSubmit={(e) => {
             e.preventDefault();
             void send(input);
           }}
-          className="flex items-end gap-3"
+          className="flex items-center gap-2 rounded-full bg-accent/60 px-4 py-2"
         >
-          <textarea
+          <input
+            type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => {
-              if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
-                e.preventDefault();
-                void send(input);
-              }
-            }}
-            placeholder="Ask anything about training, running, nutrition, recovery…"
-            rows={2}
-            className="flex-1 resize-none bg-transparent py-2 text-sm outline-none placeholder:text-ink-soft"
+            placeholder="Ask AskDerivn"
+            className="flex-1 bg-transparent py-1 text-sm outline-none placeholder:text-ink-soft"
           />
           <button
             type="submit"
             disabled={sending || !input.trim()}
-            className="font-mono text-xs uppercase tracking-wider text-foreground hover:opacity-70 disabled:opacity-30"
+            aria-label="Send"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-foreground text-background disabled:opacity-30"
           >
-            Send
+            <ArrowUp className="h-4 w-4" />
           </button>
         </form>
       </div>
