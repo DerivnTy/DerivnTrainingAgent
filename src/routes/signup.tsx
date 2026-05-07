@@ -145,22 +145,10 @@ function SignupPage() {
           What you get with AskDerivn
         </h2>
         <ul className="mt-5 space-y-2 text-sm text-ink-soft">
-          <li className="flex gap-3">
-            <span aria-hidden className="mt-2 h-px w-4 shrink-0 bg-rule" />
-            <span>Private, judgment-free chat tuned to your goals.</span>
-          </li>
-          <li className="flex gap-3">
-            <span aria-hidden className="mt-2 h-px w-4 shrink-0 bg-rule" />
-            <span>Honest and direct guidance.</span>
-          </li>
-          <li className="flex gap-3">
-            <span aria-hidden className="mt-2 h-px w-4 shrink-0 bg-rule" />
-            <span>Unlimited conversations for $50/month.</span>
-          </li>
-          <li className="flex gap-3">
-            <span aria-hidden className="mt-2 h-px w-4 shrink-0 bg-rule" />
-            <span>Cancel anytime, right from your account.</span>
-          </li>
+          <li>Private, judgment-free chat tuned to your goals.</li>
+          <li>Honest and direct guidance.</li>
+          <li>Unlimited conversations for $50/month.</li>
+          <li>Cancel anytime, right from your account.</li>
         </ul>
       </section>
     </AuthShell>
