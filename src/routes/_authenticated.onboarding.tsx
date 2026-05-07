@@ -370,7 +370,7 @@ function OnboardingPage() {
           <button
             type="submit"
             disabled={saving || !canSubmit}
-            className="rounded-sm bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
+            className="btn-primary btn-pill-lg"
           >
             {saving ? "Saving…" : "Save and continue"}
           </button>
