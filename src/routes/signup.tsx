@@ -154,7 +154,7 @@ function SignupPage() {
           </li>
           <li className="flex gap-3">
             <span aria-hidden className="mt-2 h-px w-4 shrink-0 bg-rule" />
-            <span>Honest, direct guidance — no fluff, no upsells.</span>
+            <span>Honest and direct guidance.</span>
           </li>
           <li className="flex gap-3">
             <span aria-hidden className="mt-2 h-px w-4 shrink-0 bg-rule" />
