@@ -138,14 +138,6 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
             PDF
           </button>
           <Link
-            to="/onboarding"
-            onClick={onNavigate}
-            className="text-link hover:text-foreground"
-            activeProps={{ className: "text-foreground" }}
-          >
-            Profile
-          </Link>
-          <Link
             to="/account"
             onClick={onNavigate}
             className="text-link hover:text-foreground"
