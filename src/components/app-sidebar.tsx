@@ -161,6 +161,7 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
           </button>
         </nav>
       </div>
+      <PdfViewerDialog open={pdfOpen} onOpenChange={setPdfOpen} />
     </div>
   );
 }
