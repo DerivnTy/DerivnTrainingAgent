@@ -147,9 +147,57 @@
     color: var(--color-foreground);
   }
 
-  /* Subtle paper grain — no gradients, just a faint texture feel via noise-free flat tone */
   ::selection {
     background: var(--ink);
     color: var(--paper);
   }
 }
+
+@keyframes apple-fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes apple-message-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@layer components {
+  .btn-pill {
+    @apply inline-flex items-center justify-center gap-2 rounded-full
+           h-10 px-5 text-sm font-medium select-none whitespace-nowrap
+           transition-all duration-200
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40
+           active:scale-[0.98] disabled:opacity-40 disabled:pointer-events-none;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .btn-primary {
+    @apply btn-pill bg-foreground text-background hover:opacity-90;
+  }
+  .btn-secondary {
+    @apply btn-pill bg-paper text-foreground border border-rule hover:bg-accent;
+  }
+  .btn-ghost {
+    @apply btn-pill text-foreground hover:bg-accent;
+  }
+  .btn-pill-lg {
+    @apply h-12 px-7 text-sm;
+  }
+  .text-link {
+    @apply transition-opacity duration-200 hover:opacity-70;
+  }
+  .nav-row {
+    @apply transition-colors duration-200 hover:bg-accent/60 active:bg-accent;
+  }
+  .input-soft {
+    @apply transition-colors duration-200 outline-none focus:border-foreground/70;
+  }
+  .animate-apple-in {
+    animation: apple-fade-in 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .animate-message-in {
+    animation: apple-message-in 240ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+

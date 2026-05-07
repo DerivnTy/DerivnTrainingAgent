@@ -46,10 +46,7 @@ function LoginPage() {
 
   return (
     <AuthShell title="Sign in" subtitle="Welcome back to AskDerivn." rightLink={{ to: "/signup", label: "Get access" }}>
-      <button
-        onClick={onGoogle}
-        className="w-full rounded-sm border border-rule px-4 py-3 text-sm font-medium text-foreground hover:bg-accent"
-      >
+      <button onClick={onGoogle} className="btn-secondary w-full">
         Continue with Google
       </button>
       <Divider />
@@ -60,7 +57,7 @@ function LoginPage() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full border-b border-rule bg-transparent py-2 text-sm outline-none focus:border-foreground"
+            className="w-full border-b border-rule bg-transparent py-2 text-sm input-soft"
           />
         </Field>
         <Field label="Password">
@@ -69,21 +66,17 @@ function LoginPage() {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full border-b border-rule bg-transparent py-2 text-sm outline-none focus:border-foreground"
+            className="w-full border-b border-rule bg-transparent py-2 text-sm input-soft"
           />
         </Field>
         {error && <p className="text-sm text-red-700">{error}</p>}
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full rounded-sm bg-primary px-4 py-3 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
-        >
+        <button type="submit" disabled={loading} className="btn-primary w-full">
           {loading ? "Signing in…" : "Sign in"}
         </button>
       </form>
       <p className="mt-8 text-center text-sm text-ink-soft">
         New here?{" "}
-        <Link to="/signup" className="text-foreground underline">
+        <Link to="/signup" className="text-foreground text-link underline">
           Get access
         </Link>
       </p>
@@ -110,7 +103,7 @@ export function AuthShell({
             AskDerivn
           </Link>
           {rightLink && (
-            <Link to={rightLink.to} className="text-sm text-ink-soft hover:text-foreground">
+            <Link to={rightLink.to} className="text-sm text-ink-soft text-link hover:text-foreground">
               {rightLink.label}
             </Link>
           )}

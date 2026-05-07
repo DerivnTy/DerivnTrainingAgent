@@ -158,7 +158,7 @@ function ChatPage() {
           {messages.map((m, i) => {
             if (m.role === "user") {
               return (
-                <div key={m.id} className="flex justify-end">
+                <div key={m.id} className="flex justify-end animate-message-in">
                   <div className="max-w-[80%] rounded-2xl bg-primary px-4 py-2 text-sm leading-relaxed text-primary-foreground whitespace-pre-wrap">
                     {m.content}
                   </div>
@@ -170,7 +170,7 @@ function ChatPage() {
             return (
               <article
                 key={m.id}
-                className={showDivider ? "border-t border-rule pt-6" : ""}
+                className={`animate-message-in ${showDivider ? "border-t border-rule pt-6" : ""}`}
               >
                 <div className="font-mono text-xs uppercase tracking-wider text-ink-soft">
                   AskDerivn
@@ -186,12 +186,12 @@ function ChatPage() {
 
           {sending && (
             <article
-              className={messages.length > 0 ? "border-t border-rule pt-8" : ""}
+              className={`animate-message-in ${messages.length > 0 ? "border-t border-rule pt-8" : ""}`}
             >
               <div className="font-mono text-xs uppercase tracking-wider text-ink-soft">
                 AskDerivn
               </div>
-              <p className="mt-3 text-sm text-ink-soft">Thinking…</p>
+              <p className="mt-3 text-sm text-ink-soft animate-pulse">Thinking…</p>
             </article>
           )}
 
@@ -214,7 +214,7 @@ function ChatPage() {
               <button
                 key={s.title}
                 onClick={() => send(s.title)}
-                className="rounded-2xl bg-accent/60 px-3 py-3 text-left hover:bg-accent"
+                className="rounded-2xl bg-accent/60 px-3 py-3 text-left transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-accent active:scale-[0.98]"
               >
                 <div className="text-sm font-semibold text-foreground">
                   {s.title}
@@ -230,7 +230,7 @@ function ChatPage() {
             e.preventDefault();
             void send(input);
           }}
-          className="flex items-center gap-2 rounded-full bg-accent/60 px-4 py-2"
+          className="flex items-center gap-2 rounded-full bg-accent/60 px-4 py-2 transition-colors duration-200 focus-within:bg-accent"
         >
           <input
             type="text"
@@ -243,7 +243,7 @@ function ChatPage() {
             type="submit"
             disabled={sending || !input.trim()}
             aria-label="Send"
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-foreground text-background disabled:opacity-30"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-foreground text-background transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:opacity-90 active:scale-[0.95] disabled:opacity-30"
           >
             <ArrowUp className="h-4 w-4" />
           </button>
