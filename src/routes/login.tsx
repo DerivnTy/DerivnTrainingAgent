@@ -45,7 +45,7 @@ function LoginPage() {
   };
 
   return (
-    <AuthShell title="Sign in" subtitle="Welcome back to AskDerivn." rightLink={{ to: "/signup", label: "Get access" }}>
+    <AuthShell title="Welcome back" subtitle="Pick up right where you left off." rightLink={{ to: "/signup", label: "Get access" }}>
       <button onClick={onGoogle} className="btn-secondary w-full">
         Continue with Google
       </button>
@@ -80,6 +80,28 @@ function LoginPage() {
           Get access
         </Link>
       </p>
+      <section className="mt-12 border-t border-rule pt-8">
+        <span className="block font-mono text-xs uppercase tracking-wider text-ink-soft">
+          Waiting for you
+        </span>
+        <h2 className="mt-2 font-serif text-2xl tracking-tight">
+          Your conversation, right where you left it
+        </h2>
+        <ul className="mt-5 space-y-3 text-sm text-ink-soft">
+          <li className="flex gap-3">
+            <span aria-hidden className="mt-2 h-px w-4 shrink-0 bg-rule" />
+            <span>All your past chats, saved and searchable.</span>
+          </li>
+          <li className="flex gap-3">
+            <span aria-hidden className="mt-2 h-px w-4 shrink-0 bg-rule" />
+            <span>Your goals and context already remembered — no re-onboarding.</span>
+          </li>
+          <li className="flex gap-3">
+            <span aria-hidden className="mt-2 h-px w-4 shrink-0 bg-rule" />
+            <span>Same private, honest guidance, on tap.</span>
+          </li>
+        </ul>
+      </section>
     </AuthShell>
   );
 }
