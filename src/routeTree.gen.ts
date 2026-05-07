@@ -18,7 +18,6 @@ import { Route as ApiPortalRouteImport } from './routes/api/portal'
 import { Route as ApiConversationsRouteImport } from './routes/api/conversations'
 import { Route as ApiCheckoutRouteImport } from './routes/api/checkout'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
-import { Route as AuthenticatedSubscribeRouteImport } from './routes/_authenticated.subscribe'
 import { Route as AuthenticatedResourceRouteImport } from './routes/_authenticated.resource'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated.onboarding'
 import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated.chat'
@@ -70,11 +69,6 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedSubscribeRoute = AuthenticatedSubscribeRouteImport.update({
-  id: '/subscribe',
-  path: '/subscribe',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
 const AuthenticatedResourceRoute = AuthenticatedResourceRouteImport.update({
   id: '/resource',
   path: '/resource',
@@ -115,7 +109,6 @@ export interface FileRoutesByFullPath {
   '/chat': typeof AuthenticatedChatRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/resource': typeof AuthenticatedResourceRoute
-  '/subscribe': typeof AuthenticatedSubscribeRoute
   '/api/chat': typeof ApiChatRoute
   '/api/checkout': typeof ApiCheckoutRoute
   '/api/conversations': typeof ApiConversationsRouteWithChildren
@@ -132,7 +125,6 @@ export interface FileRoutesByTo {
   '/chat': typeof AuthenticatedChatRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/resource': typeof AuthenticatedResourceRoute
-  '/subscribe': typeof AuthenticatedSubscribeRoute
   '/api/chat': typeof ApiChatRoute
   '/api/checkout': typeof ApiCheckoutRoute
   '/api/conversations': typeof ApiConversationsRouteWithChildren
@@ -151,7 +143,6 @@ export interface FileRoutesById {
   '/_authenticated/chat': typeof AuthenticatedChatRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/resource': typeof AuthenticatedResourceRoute
-  '/_authenticated/subscribe': typeof AuthenticatedSubscribeRoute
   '/api/chat': typeof ApiChatRoute
   '/api/checkout': typeof ApiCheckoutRoute
   '/api/conversations': typeof ApiConversationsRouteWithChildren
@@ -170,7 +161,6 @@ export interface FileRouteTypes {
     | '/chat'
     | '/onboarding'
     | '/resource'
-    | '/subscribe'
     | '/api/chat'
     | '/api/checkout'
     | '/api/conversations'
@@ -187,7 +177,6 @@ export interface FileRouteTypes {
     | '/chat'
     | '/onboarding'
     | '/resource'
-    | '/subscribe'
     | '/api/chat'
     | '/api/checkout'
     | '/api/conversations'
@@ -205,7 +194,6 @@ export interface FileRouteTypes {
     | '/_authenticated/chat'
     | '/_authenticated/onboarding'
     | '/_authenticated/resource'
-    | '/_authenticated/subscribe'
     | '/api/chat'
     | '/api/checkout'
     | '/api/conversations'
@@ -292,13 +280,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/subscribe': {
-      id: '/_authenticated/subscribe'
-      path: '/subscribe'
-      fullPath: '/subscribe'
-      preLoaderRoute: typeof AuthenticatedSubscribeRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
     '/_authenticated/resource': {
       id: '/_authenticated/resource'
       path: '/resource'
@@ -349,7 +330,6 @@ interface AuthenticatedRouteChildren {
   AuthenticatedChatRoute: typeof AuthenticatedChatRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedResourceRoute: typeof AuthenticatedResourceRoute
-  AuthenticatedSubscribeRoute: typeof AuthenticatedSubscribeRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -357,7 +337,6 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedChatRoute: AuthenticatedChatRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedResourceRoute: AuthenticatedResourceRoute,
-  AuthenticatedSubscribeRoute: AuthenticatedSubscribeRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(

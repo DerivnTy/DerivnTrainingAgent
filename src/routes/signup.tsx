@@ -43,7 +43,7 @@ function SignupPage() {
     }
     // If session is established immediately (auto-confirm), go to pay portal.
     if (data.session) {
-      navigate({ to: "/subscribe" });
+      navigate({ to: "/onboarding" });
       return;
     }
     setSent(true);
