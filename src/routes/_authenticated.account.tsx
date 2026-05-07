@@ -70,14 +70,11 @@ function AccountPage() {
         <button
           onClick={openPortal}
           disabled={loading}
-          className="w-full rounded-sm border border-rule px-6 py-3 text-sm font-medium text-foreground hover:bg-accent disabled:opacity-50"
+          className="btn-secondary w-full"
         >
           {loading ? "Opening…" : "Manage billing"}
         </button>
-        <button
-          onClick={signOut}
-          className="w-full rounded-sm border border-rule px-6 py-3 text-sm font-medium text-foreground hover:bg-accent"
-        >
+        <button onClick={signOut} className="btn-secondary w-full">
           Sign out
         </button>
       </div>
