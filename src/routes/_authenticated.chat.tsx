@@ -109,7 +109,8 @@ function ChatPage() {
           return;
         }
         if (res.status === 402) {
-          window.location.href = "/subscribe";
+          setError("Subscription required.");
+          setSending(false);
           return;
         }
         if (res.status === 428 || data.reason === "profile_incomplete") {
