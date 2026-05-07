@@ -129,7 +129,7 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
           <Link
             to="/resource"
             onClick={onNavigate}
-            className="hover:text-foreground"
+            className="text-link hover:text-foreground"
             activeProps={{ className: "text-foreground" }}
           >
             PDF
@@ -137,7 +137,7 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
           <Link
             to="/onboarding"
             onClick={onNavigate}
-            className="hover:text-foreground"
+            className="text-link hover:text-foreground"
             activeProps={{ className: "text-foreground" }}
           >
             Profile
@@ -145,14 +145,14 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
           <Link
             to="/account"
             onClick={onNavigate}
-            className="hover:text-foreground"
+            className="text-link hover:text-foreground"
             activeProps={{ className: "text-foreground" }}
           >
             Account
           </Link>
           <button
             onClick={signOut}
-            className="text-left hover:text-foreground"
+            className="text-left text-link hover:text-foreground"
           >
             Sign out
           </button>
