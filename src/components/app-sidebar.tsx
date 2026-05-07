@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { authedFetch } from "@/lib/auth-helpers";
 import { useChatContext } from "@/lib/chat-context";
+import { PdfViewerDialog } from "@/components/pdf-viewer-dialog";
 
 type ConversationSummary = {
   id: string;
