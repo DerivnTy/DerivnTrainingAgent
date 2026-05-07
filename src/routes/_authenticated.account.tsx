@@ -540,7 +540,7 @@ function AccountPage() {
         </Link>
       </p>
 
-      <div className="mt-10">
+      <div className="mt-10 flex justify-end">
         <Link
           to="/chat"
           className="font-mono text-xs uppercase tracking-wider text-ink-soft text-link hover:text-foreground"
