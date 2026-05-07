@@ -360,7 +360,7 @@ function OnboardingPage() {
             placeholder="Example: work schedule, sleep issues, food preferences, upcoming events, travel, confidence level, or anything that affects consistency."
             value={form.other_notes}
             onChange={(e) => setField("other_notes", e.target.value)}
-            className="w-full border-b border-rule bg-transparent py-2 text-sm outline-none focus:border-foreground"
+            className="w-full border-b border-rule bg-transparent py-2 text-sm input-soft"
           />
         </Question>
 
