@@ -85,7 +85,7 @@ function SignupPage() {
       rightLink={{ to: "/login", label: "Sign in" }}
     >
       <button onClick={onGoogle} className="btn-secondary w-full">
-        Continue with Google
+        Sign up with Google
       </button>
       {!showEmailForm ? (
         <button
