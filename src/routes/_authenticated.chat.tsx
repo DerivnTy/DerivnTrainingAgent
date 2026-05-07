@@ -21,15 +21,9 @@ type Message = {
   created_at?: string;
 };
 
-const STARTERS = [
-  "Plan my week",
-  "Fix my fat loss",
-  "Should I run today?",
-  "Build this meal",
-  "I missed workouts",
-  "Am I doing too much?",
-  "What should I eat before training?",
-  "How do I combine lifting and running?",
+const STARTERS: Array<{ title: string; sub: string }> = [
+  { title: "Plan my week", sub: "so I train, run, and recover right" },
+  { title: "Fix my fat loss", sub: "without killing my running" },
 ];
 
 function ChatPage() {
