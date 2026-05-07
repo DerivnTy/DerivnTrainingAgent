@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
+import { ArrowUp } from "lucide-react";
 import { authedFetch } from "@/lib/auth-helpers";
 import { useChatContext } from "@/lib/chat-context";
 import { AddToHomeScreenBanner } from "@/components/add-to-home-screen-banner";

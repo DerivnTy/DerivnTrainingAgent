@@ -1,50 +1,34 @@
 ## Goal
 
-After "Create an account" or "Continue with Google" on `/signup`, the user must end up at the paid checkout (Stripe portal) before reaching the app.
+Make `/chat` feel quiet and empty like the reference screenshot. Right now the empty state stacks a big serif "AskDerivn" headline, an instructional paragraph, and an 8-tile starter grid — that's the "noise" the user is reacting to.
 
-## Current state
+The top bar already shows "AskDerivn" centered on mobile, so the in-page headline is redundant.
 
-- `/signup` → "Continue with Google" already triggers OAuth → `/post-auth` → `resolvePostAuthDestination` → `/subscribe` (which calls `/api/checkout` and redirects to Stripe). The pay portal is already wired for Google.
-- `/signup` → "Create an account" reveals an inline email + password form. On submit it calls `supabase.auth.signUp` and shows "Check your email" until the user confirms. After confirmation, `/post-auth` routes to `/subscribe` (pay portal).
+## Changes (only `src/routes/_authenticated.chat.tsx`)
 
-So the pay portal already exists at `/subscribe` for both flows. What's missing is the explicit confirm-password step and a clearer post-signup hand-off to payment.
+1. **Remove the empty-state header block**
+   - Delete the `<h1>AskDerivn</h1>` and the "Ask a question about training…" paragraph that render when there's no conversation and no messages.
 
-## Changes
+2. **Trim and restyle the starters**
+   - Cut `STARTERS` from 8 prompts down to 2, matching the reference:
+     - "Plan my week" / *"so I train, run, and recover right"*
+     - "Fix my fat loss" / *"without killing my running"*
+   - Render each as a soft rounded card (title in bold, subtitle in muted text) in a 2-column grid pinned just above the input, instead of a full-width 8-button grid up top.
+   - Keep them clickable → still call `send(title)`.
 
-### 1. `src/routes/signup.tsx` — email signup form
+3. **Quiet the input row**
+   - Drop the top border on the input container; use a subtle pill-style wrapper (rounded, light surface bg) so it sits like the reference.
+   - Replace the textarea with a single-line `input` (Enter submits, Shift+Enter not needed for this UI). Placeholder: "Ask AskDerivn".
+   - Replace the text "SEND" button with a small circular icon button (arrow-up icon from lucide) on the right; disabled state stays.
 
-- Add a third field: **Confirm password**.
-- Add client-side validation:
-  - both passwords must match (show inline error, no submit)
-  - min 8 chars (already enforced)
-- Change the submit button label from "Create account" to **"Next"**.
-- On successful `signUp`:
-  - If Supabase returns a session immediately (email confirmation disabled), navigate straight to `/subscribe`.
-  - If no session (confirmation required), keep current "Check your email" view but update the copy to: *"Confirm your email to continue to payment."* and link to `/login`.
-- Validation messages still only appear after the user opens the inline form and presses Next (existing behavior preserved).
+4. **Whitespace**
+   - With the headline + grid gone, the scroll area naturally becomes mostly empty whitespace until the user types — matching the reference. No extra layout work needed.
 
-### 2. Google flow
+Out of scope: sidebar, top strip, message bubbles when a conversation exists, colors/tokens beyond using existing `bg-accent` / `text-ink-soft` / `border-rule`. No logic, auth, or API changes.
 
-No code change needed — it already lands on `/subscribe` via `/post-auth`. Confirm by walking the path in `resolvePostAuthDestination`.
+## Technical notes
 
-### 3. Subscribe page (pay portal)
-
-No structural change. It already:
-- shows membership summary
-- calls `/api/checkout` (Stripe Checkout Session)
-- redirects to Stripe-hosted payment
-
-Optional small polish: tighten the heading copy to "Complete your membership" so it reads as the next step after signup. (Confirm with user before changing.)
-
-## Out of scope
-
-- Changing email-confirmation requirement (that's an auth-settings decision; ask if the user wants signup to skip the confirmation email so "Next" goes directly to Stripe).
-- Replacing Stripe Checkout with an embedded payment form.
-
-## Open question
-
-Right now Supabase requires email confirmation before a session exists. If the user wants pressing **Next** to go *immediately* to Stripe (no email confirmation step in between), we need to disable "Confirm email" in auth settings. Otherwise the flow is: Next → check email → click link → Stripe.
-
-Which behavior do you want?
-- **A.** Keep email confirmation (most secure). Next → "check your email" → after click → Stripe.
-- **B.** Disable email confirmation. Next → straight to Stripe.
+- File touched: `src/routes/_authenticated.chat.tsx` only.
+- `STARTERS` becomes `Array<{ title: string; sub: string }>`; `send()` is unchanged and receives only the title.
+- Use `lucide-react`'s `ArrowUp` for the send button (already a dependency via other components).
+- Keep `AddToHomeScreenBanner` mounted as-is.
