@@ -537,6 +537,15 @@ function AccountPage() {
           Redo onboarding
         </Link>
       </p>
+
+      <div className="mt-10">
+        <Link
+          to="/chat"
+          className="font-mono text-xs uppercase tracking-wider text-ink-soft text-link hover:text-foreground"
+        >
+          ← Back to chat
+        </Link>
+      </div>
     </main>
   );
 }
