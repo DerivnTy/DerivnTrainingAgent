@@ -164,7 +164,7 @@
 }
 
 @layer components {
-  .btn-pill {
+  .btn-pill, .btn-primary, .btn-secondary, .btn-ghost {
     @apply inline-flex items-center justify-center gap-2 rounded-full
            h-10 px-5 text-sm font-medium select-none whitespace-nowrap
            transition-all duration-200
@@ -173,13 +173,13 @@
     transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
   }
   .btn-primary {
-    @apply btn-pill bg-foreground text-background hover:opacity-90;
+    @apply bg-foreground text-background hover:opacity-90;
   }
   .btn-secondary {
-    @apply btn-pill bg-paper text-foreground border border-rule hover:bg-accent;
+    @apply bg-paper text-foreground border border-rule hover:bg-accent;
   }
   .btn-ghost {
-    @apply btn-pill text-foreground hover:bg-accent;
+    @apply text-foreground hover:bg-accent;
   }
   .btn-pill-lg {
     @apply h-12 px-7 text-sm;
