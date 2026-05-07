@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { authedFetch } from "@/lib/auth-helpers";
 import { useChatContext } from "@/lib/chat-context";
+import { PdfViewerDialog } from "@/components/pdf-viewer-dialog";
 
 type ConversationSummary = {
   id: string;
@@ -14,6 +15,7 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
   const navigate = useNavigate();
   const { conversationsVersion, refreshConversations } = useChatContext();
   const [conversations, setConversations] = useState<ConversationSummary[]>([]);
+  const [pdfOpen, setPdfOpen] = useState(false);
 
   const routerState = useRouterState();
   const pathname = routerState.location.pathname;
@@ -126,14 +128,15 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
       {/* Utility links */}
       <div className="border-t border-rule px-5 py-4">
         <nav className="flex flex-col gap-2 font-mono text-xs uppercase tracking-wider text-ink-soft">
-          <Link
-            to="/resource"
-            onClick={onNavigate}
-            className="text-link hover:text-foreground"
-            activeProps={{ className: "text-foreground" }}
+          <button
+            onClick={() => {
+              setPdfOpen(true);
+              onNavigate?.();
+            }}
+            className="text-left text-link hover:text-foreground"
           >
             PDF
-          </Link>
+          </button>
           <Link
             to="/onboarding"
             onClick={onNavigate}
@@ -158,6 +161,7 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
           </button>
         </nav>
       </div>
+      <PdfViewerDialog open={pdfOpen} onOpenChange={setPdfOpen} />
     </div>
   );
 }
