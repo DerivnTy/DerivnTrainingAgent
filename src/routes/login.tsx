@@ -103,7 +103,7 @@ export function AuthShell({
             AskDerivn
           </Link>
           {rightLink && (
-            <Link to={rightLink.to} className="text-sm text-ink-soft hover:text-foreground">
+            <Link to={rightLink.to} className="text-sm text-ink-soft text-link hover:text-foreground">
               {rightLink.label}
             </Link>
           )}
