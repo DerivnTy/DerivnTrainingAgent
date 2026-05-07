@@ -80,10 +80,8 @@ function LoginPage() {
           Get access
         </Link>
       </p>
-      <section className="mt-12 border-t border-rule pt-8">
-        <span className="block font-mono text-xs uppercase tracking-wider text-ink-soft">
-          No starting over
-        </span>
+      <section className="mt-12 border-t border-rule pt-8 text-center">
+        <h2 className="font-serif text-2xl tracking-tight">No starting over</h2>
         <p className="mt-3 text-sm text-ink-soft">
           Your chats, goals, and training context stay connected so every
           answer builds from what AskDerivn already knows.
