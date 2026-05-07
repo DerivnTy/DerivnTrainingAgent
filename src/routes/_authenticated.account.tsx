@@ -296,12 +296,14 @@ function AccountPage() {
 
   return (
     <main className="mx-auto h-full max-w-2xl overflow-y-auto px-6 pt-16 pb-24">
-      <Link
-        to="/chat"
-        className="font-mono text-xs uppercase tracking-wider text-ink-soft text-link hover:text-foreground"
-      >
-        ← Back to chat
-      </Link>
+      <div className="flex justify-end">
+        <Link
+          to="/chat"
+          className="font-mono text-xs uppercase tracking-wider text-ink-soft text-link hover:text-foreground"
+        >
+          ← Back to chat
+        </Link>
+      </div>
       <h1 className="mt-6 font-serif text-4xl tracking-tight">Account</h1>
       <p className="mt-3 text-sm text-ink-soft">
         Manage your sign-in and the context AskDerivn uses to give better
