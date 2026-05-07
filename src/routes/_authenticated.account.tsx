@@ -519,7 +519,7 @@ function AccountPage() {
           <button
             type="submit"
             disabled={saving || !canSave}
-            className="btn-primary btn-pill-lg"
+            className="btn-secondary btn-pill-lg"
           >
             {saving ? "Saving…" : "Save changes"}
           </button>
