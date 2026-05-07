@@ -424,10 +424,10 @@ function Chips({
             type="button"
             onClick={() => onChange(opt)}
             className={
-              "rounded-sm border px-3 py-1.5 text-sm transition-colors " +
+              "rounded-full border px-4 py-1.5 text-sm transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.98] " +
               (active
                 ? "border-foreground bg-foreground text-background"
-                : "border-rule text-foreground hover:border-foreground")
+                : "border-rule text-foreground hover:bg-accent")
             }
           >
             {opt}
@@ -457,10 +457,10 @@ function MultiChips({
             type="button"
             onClick={() => onToggle(opt)}
             className={
-              "rounded-sm border px-3 py-1.5 text-sm transition-colors " +
+              "rounded-full border px-4 py-1.5 text-sm transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.98] " +
               (active
                 ? "border-foreground bg-foreground text-background"
-                : "border-rule text-foreground hover:border-foreground")
+                : "border-rule text-foreground hover:bg-accent")
             }
           >
             {opt}
