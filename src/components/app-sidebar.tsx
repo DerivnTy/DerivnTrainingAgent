@@ -128,14 +128,15 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
       {/* Utility links */}
       <div className="border-t border-rule px-5 py-4">
         <nav className="flex flex-col gap-2 font-mono text-xs uppercase tracking-wider text-ink-soft">
-          <Link
-            to="/resource"
-            onClick={onNavigate}
-            className="text-link hover:text-foreground"
-            activeProps={{ className: "text-foreground" }}
+          <button
+            onClick={() => {
+              setPdfOpen(true);
+              onNavigate?.();
+            }}
+            className="text-left text-link hover:text-foreground"
           >
             PDF
-          </Link>
+          </button>
           <Link
             to="/onboarding"
             onClick={onNavigate}
