@@ -63,10 +63,9 @@ function AuthGuard() {
                 <AppSidebar onNavigate={() => setMobileOpen(false)} />
               </SheetContent>
             </Sheet>
-            <span className="font-serif text-base tracking-tight">
+            <span className="font-serif text-base tracking-tight pr-1">
               {location.pathname.startsWith("/chat") ? "AskDerivn" : ""}
             </span>
-            <span className="w-5" />
           </div>
 
           <div className="min-h-0 flex-1 overflow-hidden">
