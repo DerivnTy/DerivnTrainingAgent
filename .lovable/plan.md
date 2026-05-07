@@ -1,46 +1,37 @@
-## Diagnosis
+## Add value section to Get access (signup) and welcome-back to Sign in
 
-This is **not** a chat-page styling problem. The entire app is rendering as raw HTML — the landing page is equally unstyled. Browser console shows:
+Both auth pages currently show only a form on a mostly empty page. Add a small content block under the form area to make them feel substantive, on-brand, and warm — without changing the design language or auth flow.
 
-```
-Refused to apply style from '.../src/styles.css' because its MIME type ('') is not a supported stylesheet MIME type
-```
+### Signup page (`/signup`) — "what you're getting"
 
-`curl -I /src/styles.css` returns a `302` redirect to `lovable.dev/auth-bridge`. The sandbox auth gate is intercepting requests to `/src/*` paths, so the stylesheet `<link>` produced by `import appCss from "../styles.css?url"` never resolves to actual CSS.
+Below the form (inside `AuthShell`'s main column, after the bottom "Already have an account?" link), add a quiet bordered section titled "What you get with AskDerivn" with a short list of 3–4 membership benefits. Examples:
+- Private, judgment-free chat trained for your goals
+- Honest, direct guidance — no fluff
+- Unlimited conversations, $50/month
+- Cancel anytime
 
-The chat page just looks worse because it has more interactive elements (links, inputs, buttons), so the lack of CSS is more visible.
+Style: cream/ink palette, `border-rule` divider on top, mono uppercase eyebrow label, serif sub-heading, small ink-soft body text. No icons or marketing graphics — keep it editorial.
 
-## Fix
+### Login page (`/login`) — "welcome back"
 
-Switch from the SSR `<link>` injection to a side-effect import so Vite bundles the CSS into the JS graph. This is served from the regular bundle path, which the sandbox does not gate.
+Replace the current plain "Welcome back to AskDerivn." subtitle with a slightly warmer headline treatment, and add a small block below the form:
+- A short personal welcome line ("Pick up where you left off.")
+- 2–3 bullets reminding them what's waiting (their saved conversations, their goal context, no re-onboarding)
 
-### `src/routes/__root.tsx`
+Same visual treatment as the signup block for consistency.
 
-Replace:
+### Files to change
 
-```ts
-import appCss from "../styles.css?url";
-```
+- `src/routes/signup.tsx` — add a `<MembershipPerks />` section below the existing footer link inside the page body.
+- `src/routes/login.tsx` — soften the subtitle, add a `<WelcomeBackNote />` section below the existing footer link.
+- Optionally extract both blocks into a tiny shared component in the same file or a new `src/components/auth-aside.tsx` if reused.
 
-with a side-effect import:
+### Out of scope
 
-```ts
-import "../styles.css";
-```
+- No changes to auth flow, OAuth, or routing.
+- No new images, illustrations, or icons.
+- No copy beyond the small benefit/welcome blocks.
 
-And remove the `{ rel: "stylesheet", href: appCss }` entry from the `links` array in `Route` `head()`. Keep the manifest link.
+### Open question
 
-That is the only change needed. With the CSS bundled into the JS chunk, Tailwind utilities, design tokens, `btn-pill`, `nav-row`, `font-serif`, `bg-background`, etc. all apply again and `/chat` (plus every other page) renders correctly.
-
-## Out of scope
-
-- No changes to `src/routes/_authenticated.chat.tsx`, `src/components/app-sidebar.tsx`, or any other component — they already use the correct design-system classes. Once CSS loads, they render as designed.
-- No design changes, no new tokens, no layout edits.
-- No functional changes.
-
-## Verification
-
-After the change:
-- `/` renders the cream-paper landing page with serif headings (not blue raw links).
-- `/chat` shows the sidebar + chat layout with pill buttons, styled input, and rounded starter cards.
-- No `Refused to apply style` console error.
+Do you want the benefits block placed **below the form on the same column** (mobile-friendly, scroll down to see it), or as a **side panel to the right** on desktop (two-column layout on wide screens, stacked on mobile)?
