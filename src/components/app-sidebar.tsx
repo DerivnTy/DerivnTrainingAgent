@@ -65,14 +65,14 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
         <Link
           to="/"
           onClick={onNavigate}
-          className="block font-serif text-lg tracking-tight text-foreground"
+          className="block font-serif text-lg tracking-tight text-foreground text-link"
         >
           AskDerivn
         </Link>
         <Link
           to="/chat"
           onClick={onNavigate}
-          className="mt-5 block font-mono text-xs uppercase tracking-wider text-ink-soft hover:text-foreground"
+          className="mt-5 block font-mono text-xs uppercase tracking-wider text-ink-soft text-link hover:text-foreground"
         >
           + New chat
         </Link>
