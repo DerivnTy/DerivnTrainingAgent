@@ -89,29 +89,29 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
               return (
                 <li
                   key={c.id}
-                  className="group flex items-center justify-between gap-1 rounded-sm px-2 py-1 hover:bg-accent"
+                  className="group flex items-center justify-between gap-1 rounded-full px-3 py-1.5 nav-row"
                 >
                   <Link
                     to="/chat"
                     search={{ c: c.id }}
                     onClick={onNavigate}
-                    className={`flex-1 truncate text-left text-sm ${
+                    className={`flex-1 truncate text-left text-sm transition-colors duration-200 ${
                       isActive ? "text-foreground" : "text-ink-soft hover:text-foreground"
                     }`}
                     title={c.title ?? "Untitled"}
                   >
                     {c.title || "Untitled"}
                   </Link>
-                  <div className="flex shrink-0 gap-2 opacity-0 transition-opacity group-hover:opacity-100">
+                  <div className="flex shrink-0 gap-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                     <button
                       onClick={() => rename(c.id)}
-                      className="text-[10px] uppercase tracking-wider text-ink-soft hover:text-foreground"
+                      className="text-[10px] uppercase tracking-wider text-ink-soft text-link hover:text-foreground"
                     >
                       Rename
                     </button>
                     <button
                       onClick={() => remove(c.id)}
-                      className="text-[10px] uppercase tracking-wider text-ink-soft hover:text-foreground"
+                      className="text-[10px] uppercase tracking-wider text-ink-soft text-link hover:text-foreground"
                     >
                       Delete
                     </button>
