@@ -22,18 +22,14 @@ function ResourcePage() {
       </p>
 
       <div className="mt-10 space-y-3">
-        <a
-          href={PDF_URL}
-          download
-          className="block w-full rounded-sm bg-primary px-6 py-3 text-center text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
-        >
+        <a href={PDF_URL} download className="btn-primary w-full">
           Download PDF
         </a>
         <a
           href={PDF_URL}
           target="_blank"
           rel="noreferrer"
-          className="block w-full rounded-sm border border-rule px-6 py-3 text-center text-sm font-medium text-foreground hover:bg-accent"
+          className="btn-secondary w-full"
         >
           Open in browser
         </a>
