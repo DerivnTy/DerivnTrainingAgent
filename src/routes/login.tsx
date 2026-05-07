@@ -82,25 +82,12 @@ function LoginPage() {
       </p>
       <section className="mt-12 border-t border-rule pt-8">
         <span className="block font-mono text-xs uppercase tracking-wider text-ink-soft">
-          Waiting for you
+          No starting over
         </span>
-        <h2 className="mt-2 font-serif text-2xl tracking-tight">
-          Your conversation, right where you left it
-        </h2>
-        <ul className="mt-5 space-y-3 text-sm text-ink-soft">
-          <li className="flex gap-3">
-            <span aria-hidden className="mt-2 h-px w-4 shrink-0 bg-rule" />
-            <span>All your past chats, saved and searchable.</span>
-          </li>
-          <li className="flex gap-3">
-            <span aria-hidden className="mt-2 h-px w-4 shrink-0 bg-rule" />
-            <span>Your goals and context already remembered — no re-onboarding.</span>
-          </li>
-          <li className="flex gap-3">
-            <span aria-hidden className="mt-2 h-px w-4 shrink-0 bg-rule" />
-            <span>Same private, honest guidance, on tap.</span>
-          </li>
-        </ul>
+        <p className="mt-3 text-sm text-ink-soft">
+          Your chats, goals, and training context stay connected so every
+          answer builds from what AskDerivn already knows.
+        </p>
       </section>
     </AuthShell>
   );
