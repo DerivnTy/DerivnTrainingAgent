@@ -140,14 +140,11 @@ function SignupPage() {
           Sign in
         </Link>
       </p>
-      <section className="mt-12 border-t border-rule pt-8">
-        <span className="block font-mono text-xs uppercase tracking-wider text-ink-soft">
-          Membership
-        </span>
-        <h2 className="mt-2 font-serif text-2xl tracking-tight">
+      <section className="mt-12 border-t border-rule pt-8 text-center">
+        <h2 className="font-serif text-2xl tracking-tight">
           What you get with AskDerivn
         </h2>
-        <ul className="mt-5 space-y-3 text-sm text-ink-soft">
+        <ul className="mt-5 space-y-2 text-sm text-ink-soft">
           <li className="flex gap-3">
             <span aria-hidden className="mt-2 h-px w-4 shrink-0 bg-rule" />
             <span>Private, judgment-free chat tuned to your goals.</span>
