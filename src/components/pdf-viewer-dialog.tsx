@@ -13,22 +13,17 @@ export function PdfViewerDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-w-4xl w-[95vw] h-[90vh] p-0 gap-0 overflow-hidden border border-rule bg-background sm:rounded-lg [&>button]:hidden"
+        className="flex h-[90vh] w-[95vw] max-w-4xl flex-col gap-0 overflow-hidden border border-rule bg-background p-0 sm:rounded-lg [&>button]:hidden"
       >
-        <div className="flex items-center justify-between border-b border-rule px-4 py-3">
-          <div>
-            <div className="font-serif text-base tracking-tight text-foreground">
-              Built for Motion
-            </div>
-            <div className="font-mono text-[10px] uppercase tracking-wider text-ink-soft">
-              The Derivn Handbook
-            </div>
+        <header className="flex shrink-0 items-center justify-between border-b border-rule px-5 py-3">
+          <div className="font-serif text-base tracking-tight text-foreground">
+            Built for Motion
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <a
               href={PDF_URL}
               download
-              className="inline-flex items-center gap-2 rounded-full border border-rule px-3 py-1.5 text-xs text-ink-soft transition-colors hover:bg-accent hover:text-foreground"
+              className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs text-ink-soft transition-colors hover:bg-accent hover:text-foreground"
               title="Download PDF"
             >
               <Download className="h-3.5 w-3.5" />
@@ -42,12 +37,22 @@ export function PdfViewerDialog({
               <X className="h-4 w-4" />
             </button>
           </div>
-        </div>
-        <iframe
-          src={`${PDF_URL}#view=FitH&toolbar=0`}
-          title="Built for Motion PDF"
-          className="h-full w-full flex-1 bg-paper"
-        />
+        </header>
+        <object
+          data={`${PDF_URL}#view=FitH&toolbar=0&navpanes=0`}
+          type="application/pdf"
+          className="min-h-0 flex-1 bg-paper"
+          aria-label="Built for Motion PDF"
+        >
+          <div className="flex h-full flex-col items-center justify-center gap-3 p-6 text-center">
+            <p className="text-sm text-ink-soft">
+              Your browser can&rsquo;t preview the PDF inline.
+            </p>
+            <a href={PDF_URL} download className="btn-primary">
+              Download PDF
+            </a>
+          </div>
+        </object>
       </DialogContent>
     </Dialog>
   );
