@@ -70,7 +70,7 @@ function SignupPage() {
       >
         <p className="text-sm text-ink-soft">
           Already confirmed?{" "}
-          <Link to="/login" className="text-foreground underline">
+          <Link to="/login" className="text-foreground text-link underline">
             Sign in
           </Link>
         </p>
