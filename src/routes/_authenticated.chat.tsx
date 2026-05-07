@@ -153,26 +153,35 @@ function ChatPage() {
           <p className="text-sm text-ink-soft">Loading conversation…</p>
         )}
 
-        <div className={messages.length > 0 ? "space-y-8" : "space-y-8"}>
-          {messages.map((m, i) => (
-            <article
-              key={m.id}
-              className={i > 0 ? "border-t border-rule pt-8" : ""}
-            >
-              <div className="font-mono text-xs uppercase tracking-wider text-ink-soft">
-                {m.role === "user" ? "You" : "AskDerivn"}
-              </div>
-              <div className="mt-3 text-sm leading-relaxed">
-                {m.role === "assistant" ? (
+        <div className="space-y-6">
+          {messages.map((m, i) => {
+            if (m.role === "user") {
+              return (
+                <div key={m.id} className="flex justify-end">
+                  <div className="max-w-[80%] rounded-2xl bg-primary px-4 py-2 text-sm leading-relaxed text-primary-foreground whitespace-pre-wrap">
+                    {m.content}
+                  </div>
+                </div>
+              );
+            }
+            const prev = messages[i - 1];
+            const showDivider = i > 0 && prev?.role === "assistant";
+            return (
+              <article
+                key={m.id}
+                className={showDivider ? "border-t border-rule pt-6" : ""}
+              >
+                <div className="font-mono text-xs uppercase tracking-wider text-ink-soft">
+                  AskDerivn
+                </div>
+                <div className="mt-3 text-sm leading-relaxed">
                   <div className="prose prose-sm prose-neutral max-w-none [&_p]:my-3 [&_ul]:my-3 [&_ol]:my-3 [&_li]:my-1">
                     <ReactMarkdown>{m.content}</ReactMarkdown>
                   </div>
-                ) : (
-                  <p className="whitespace-pre-wrap">{m.content}</p>
-                )}
-              </div>
-            </article>
-          ))}
+                </div>
+              </article>
+            );
+          })}
 
           {sending && (
             <article
