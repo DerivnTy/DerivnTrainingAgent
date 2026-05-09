@@ -23,6 +23,7 @@ import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authentic
 import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated.chat'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated.account'
 import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe-webhook'
+import { Route as ApiPublicDemoChatRouteImport } from './routes/api/public/demo-chat'
 import { Route as ApiConversationsIdRouteImport } from './routes/api/conversations.$id'
 
 const SignupRoute = SignupRouteImport.update({
@@ -94,6 +95,11 @@ const ApiPublicStripeWebhookRoute = ApiPublicStripeWebhookRouteImport.update({
   path: '/api/public/stripe-webhook',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicDemoChatRoute = ApiPublicDemoChatRouteImport.update({
+  id: '/api/public/demo-chat',
+  path: '/api/public/demo-chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiConversationsIdRoute = ApiConversationsIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -114,6 +120,7 @@ export interface FileRoutesByFullPath {
   '/api/conversations': typeof ApiConversationsRouteWithChildren
   '/api/portal': typeof ApiPortalRoute
   '/api/conversations/$id': typeof ApiConversationsIdRoute
+  '/api/public/demo-chat': typeof ApiPublicDemoChatRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
 }
 export interface FileRoutesByTo {
@@ -130,6 +137,7 @@ export interface FileRoutesByTo {
   '/api/conversations': typeof ApiConversationsRouteWithChildren
   '/api/portal': typeof ApiPortalRoute
   '/api/conversations/$id': typeof ApiConversationsIdRoute
+  '/api/public/demo-chat': typeof ApiPublicDemoChatRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
 }
 export interface FileRoutesById {
@@ -148,6 +156,7 @@ export interface FileRoutesById {
   '/api/conversations': typeof ApiConversationsRouteWithChildren
   '/api/portal': typeof ApiPortalRoute
   '/api/conversations/$id': typeof ApiConversationsIdRoute
+  '/api/public/demo-chat': typeof ApiPublicDemoChatRoute
   '/api/public/stripe-webhook': typeof ApiPublicStripeWebhookRoute
 }
 export interface FileRouteTypes {
@@ -166,6 +175,7 @@ export interface FileRouteTypes {
     | '/api/conversations'
     | '/api/portal'
     | '/api/conversations/$id'
+    | '/api/public/demo-chat'
     | '/api/public/stripe-webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -182,6 +192,7 @@ export interface FileRouteTypes {
     | '/api/conversations'
     | '/api/portal'
     | '/api/conversations/$id'
+    | '/api/public/demo-chat'
     | '/api/public/stripe-webhook'
   id:
     | '__root__'
@@ -199,6 +210,7 @@ export interface FileRouteTypes {
     | '/api/conversations'
     | '/api/portal'
     | '/api/conversations/$id'
+    | '/api/public/demo-chat'
     | '/api/public/stripe-webhook'
   fileRoutesById: FileRoutesById
 }
@@ -212,6 +224,7 @@ export interface RootRouteChildren {
   ApiCheckoutRoute: typeof ApiCheckoutRoute
   ApiConversationsRoute: typeof ApiConversationsRouteWithChildren
   ApiPortalRoute: typeof ApiPortalRoute
+  ApiPublicDemoChatRoute: typeof ApiPublicDemoChatRoute
   ApiPublicStripeWebhookRoute: typeof ApiPublicStripeWebhookRoute
 }
 
@@ -315,6 +328,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicStripeWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/demo-chat': {
+      id: '/api/public/demo-chat'
+      path: '/api/public/demo-chat'
+      fullPath: '/api/public/demo-chat'
+      preLoaderRoute: typeof ApiPublicDemoChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/conversations/$id': {
       id: '/api/conversations/$id'
       path: '/$id'
@@ -364,6 +384,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiCheckoutRoute: ApiCheckoutRoute,
   ApiConversationsRoute: ApiConversationsRouteWithChildren,
   ApiPortalRoute: ApiPortalRoute,
+  ApiPublicDemoChatRoute: ApiPublicDemoChatRoute,
   ApiPublicStripeWebhookRoute: ApiPublicStripeWebhookRoute,
 }
 export const routeTree = rootRouteImport
