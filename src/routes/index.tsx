@@ -128,6 +128,25 @@ function LandingPage() {
         </section>
 
         <DemoSection />
+
+        <section className="border-t border-rule">
+          <div className="mx-auto max-w-3xl px-6 py-24 text-center">
+            <h2 className="font-serif text-4xl tracking-tight md:text-5xl">
+              Ready when you are
+            </h2>
+            <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-ink-soft">
+              Get the handbook and your private AskDerivn coaching brain.
+            </p>
+            <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+              <Link to="/signup" className="btn-primary btn-pill-lg">
+                Get Access
+              </Link>
+              <Link to="/login" className="btn-secondary btn-pill-lg">
+                Sign In
+              </Link>
+            </div>
+          </div>
+        </section>
       </main>
 
       <SiteFooter />
