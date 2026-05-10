@@ -72,7 +72,7 @@ function SignupPage() {
         title="Check your email"
         subtitle="Confirm your email to continue to payment."
       >
-        <p className="text-sm text-ink-soft">
+        <p className="t-body-sm">
           Already confirmed?{" "}
           <Link to="/login" className="text-foreground text-link underline">
             Sign in
