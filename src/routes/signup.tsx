@@ -88,31 +88,35 @@ function SignupPage() {
       subtitle="Create your AskDerivn account. Membership is $30/month. Cancel anytime."
       rightLink={{ to: "/login", label: "Sign in" }}
     >
-      <button
-        onClick={() => onOAuth("google")}
-        disabled={!!oauthLoading}
-        className="btn-secondary w-full"
-      >
-        {oauthLoading === "google" ? "Redirecting…" : "Continue with Google"}
-      </button>
-      <button
-        onClick={() => onOAuth("apple")}
-        disabled={!!oauthLoading}
-        className="btn-secondary mt-2 w-full"
-      >
-        {oauthLoading === "apple" ? "Redirecting…" : "Continue with Apple"}
-      </button>
+      <div className="space-y-2">
+        <button
+          onClick={() => onOAuth("google")}
+          disabled={!!oauthLoading}
+          className="btn-secondary w-full"
+        >
+          {oauthLoading === "google" ? "Redirecting…" : "Continue with Google"}
+        </button>
+        <button
+          onClick={() => onOAuth("apple")}
+          disabled={!!oauthLoading}
+          className="btn-secondary w-full"
+        >
+          {oauthLoading === "apple" ? "Redirecting…" : "Continue with Apple"}
+        </button>
+      </div>
       {!showEmailForm ? (
         <button
           onClick={() => setShowEmailForm(true)}
-          className="btn-primary mt-2 w-full"
+          className="btn-primary mt-3 w-full"
         >
           Create an account
         </button>
       ) : (
         <>
-          <Divider />
-          <form onSubmit={onSubmit} className="space-y-4">
+          <div className="mt-6">
+            <Divider />
+          </div>
+          <form onSubmit={onSubmit} className="mt-6 space-y-4">
             <Field label="Email">
               <input
                 type="email"
