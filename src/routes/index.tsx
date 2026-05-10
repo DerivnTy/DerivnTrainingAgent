@@ -68,10 +68,8 @@ function LandingPage() {
         <section className="border-t border-rule">
           <div className="mx-auto max-w-5xl px-6 py-20">
             <div className="mx-auto max-w-2xl text-center">
-              <h2 className="font-serif text-4xl tracking-tight md:text-5xl">
-                What you get
-              </h2>
-              <p className="mt-5 text-base leading-relaxed text-ink-soft">
+              <h2 className="t-h2">What you get</h2>
+              <p className="mt-3 t-body-sm">
                 Two things, one membership.
               </p>
             </div>
