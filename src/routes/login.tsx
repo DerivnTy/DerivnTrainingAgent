@@ -73,6 +73,11 @@ function LoginPage() {
         <button type="submit" disabled={loading} className="btn-primary w-full">
           {loading ? "Signing in…" : "Sign in"}
         </button>
+        <p className="text-center text-sm text-ink-soft">
+          <Link to="/forgot-password" className="text-link hover:text-foreground">
+            Forgot password?
+          </Link>
+        </p>
       </form>
       <p className="mt-8 text-center text-sm text-ink-soft">
         New here?{" "}
