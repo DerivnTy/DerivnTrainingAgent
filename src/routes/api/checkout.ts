@@ -60,7 +60,7 @@ export const Route = createFileRoute("/api/checkout")({
             customer: customerId,
             line_items: [{ price: priceId, quantity: 1 }],
             success_url: `${origin}/post-auth`,
-            cancel_url: `${origin}/`,
+            cancel_url: `${origin}/subscribe`,
             allow_promotion_codes: true,
             client_reference_id: userId,
             metadata: { supabase_user_id: userId },
