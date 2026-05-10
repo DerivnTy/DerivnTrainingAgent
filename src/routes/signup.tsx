@@ -85,7 +85,7 @@ function SignupPage() {
   return (
     <AuthShell
       title="Get access"
-      subtitle="Create your AskDerivn account. Membership is $50/month. Cancel anytime."
+      subtitle="Create your AskDerivn account. Membership is $30/month. Cancel anytime."
       rightLink={{ to: "/login", label: "Sign in" }}
     >
       <button
@@ -164,7 +164,7 @@ function SignupPage() {
           <li>Direct answers for training, nutrition, running, and recovery.</li>
           <li>Saved conversations and remembered context.</li>
           <li>Built for Motion PDF included.</li>
-          <li>$50/month. Cancel anytime.</li>
+          <li>$30/month. Cancel anytime.</li>
         </ul>
       </section>
     </AuthShell>

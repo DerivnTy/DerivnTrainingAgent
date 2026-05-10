@@ -15,7 +15,7 @@ const VALUE_ITEMS = [
   "AskDerivn chat access",
   "100-page Built for Motion PDF",
   "Saved conversations",
-  "Personalized context",
+  "Personalized profile context",
   "Derivn-system-guided answers",
 ];
 
@@ -67,7 +67,7 @@ function SubscribePage() {
           AskDerivn Membership
         </h1>
         <div className="mt-6 flex items-baseline gap-2">
-          <span className="font-serif text-5xl tracking-tight">$50</span>
+          <span className="font-serif text-5xl tracking-tight">$30</span>
           <span className="text-sm text-ink-soft">/month</span>
         </div>
         <p className="mt-2 text-sm text-ink-soft">Cancel anytime.</p>

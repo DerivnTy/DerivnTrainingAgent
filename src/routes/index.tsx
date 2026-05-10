@@ -99,6 +99,33 @@ function LandingPage() {
             <p className="mx-auto mt-16 max-w-2xl text-center font-serif text-xl text-foreground">
               The PDF gives you the system. AskDerivn helps you apply it.
             </p>
+
+            <div className="mx-auto mt-20 max-w-md text-center">
+              <div className="font-mono text-xs uppercase tracking-wider text-ink-soft">
+                Membership
+              </div>
+              <div className="mt-3 font-serif text-3xl tracking-tight">
+                $30/month
+              </div>
+              <p className="mt-2 text-sm text-ink-soft">Cancel anytime.</p>
+
+              <ul className="mt-8 space-y-2 text-sm text-ink-soft">
+                <li>AskDerivn chat access</li>
+                <li>100-page Built for Motion PDF</li>
+                <li>Saved conversations</li>
+                <li>Personalized profile context</li>
+                <li>Derivn-system-guided answers</li>
+              </ul>
+
+              <div className="mt-10 flex justify-center">
+                <Link
+                  to="/signup"
+                  className="inline-flex items-center justify-center rounded-full bg-foreground text-background hover:opacity-90 h-12 px-7 text-sm font-medium transition-all duration-200 active:scale-[0.98]"
+                >
+                  Get Access
+                </Link>
+              </div>
+            </div>
           </div>
         </section>
 
