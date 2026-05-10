@@ -60,7 +60,7 @@ function LoginPage() {
       <button
         onClick={() => onOAuth("apple")}
         disabled={!!oauthLoading}
-        className="btn-secondary mt-3 w-full"
+        className="btn-secondary mt-2 w-full"
       >
         {oauthLoading === "apple" ? "Redirecting…" : "Continue with Apple"}
       </button>
