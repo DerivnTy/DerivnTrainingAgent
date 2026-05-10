@@ -2,17 +2,6 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
-async function assertAdmin(userId: string) {
-  const { data, error } = await supabaseAdmin.rpc("is_admin", {
-    _user_id: userId,
-  });
-  if (error) {
-    console.error("[admin] is_admin rpc failed", error);
-    throw new Response("Forbidden", { status: 403 });
-  }
-  if (!data) throw new Response("Forbidden", { status: 403 });
-}
-
 export const checkIsAdmin = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
@@ -26,7 +15,13 @@ export const checkIsAdmin = createServerFn({ method: "GET" })
 export const getAdminSummary = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await assertAdmin(context.userId);
+    const { data: adminCheck, error: adminErr } = await supabaseAdmin.rpc(
+      "is_admin",
+      { _user_id: context.userId }
+    );
+    if (adminErr || !adminCheck) {
+      throw new Response("Forbidden", { status: 403 });
+    }
 
     const nowIso = new Date().toISOString();
 
@@ -69,7 +64,13 @@ export const getAdminSummary = createServerFn({ method: "GET" })
 export const getAdminUsers = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await assertAdmin(context.userId);
+    const { data: adminCheck, error: adminErr } = await supabaseAdmin.rpc(
+      "is_admin",
+      { _user_id: context.userId }
+    );
+    if (adminErr || !adminCheck) {
+      throw new Response("Forbidden", { status: 403 });
+    }
 
     const { data, error } = await supabaseAdmin
       .from("profiles")
