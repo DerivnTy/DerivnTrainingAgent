@@ -69,10 +69,10 @@ export function DemoSection() {
     <section className="border-t border-rule">
       <div className="mx-auto max-w-3xl px-6 py-24">
         <div className="text-center">
-          <h2 className="font-serif text-4xl tracking-tight md:text-5xl">
+          <h2 className="t-h2">
             Give it a try
           </h2>
-          <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-ink-soft">
+          <p className="mx-auto mt-3 max-w-xl t-body text-ink-soft">
             Ask a training, nutrition, running, recovery, or consistency
             question and see how AskDerivn thinks.
           </p>
