@@ -213,6 +213,7 @@ function ChatPage() {
             {STARTERS.map((s) => (
               <button
                 key={s.title}
+                type="button"
                 onClick={() => send(s.title)}
                 className="rounded-2xl bg-accent/60 px-3 py-3 text-left transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-accent active:scale-[0.98]"
               >

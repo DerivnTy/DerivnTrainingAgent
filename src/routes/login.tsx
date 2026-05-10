@@ -52,6 +52,7 @@ function LoginPage() {
     <AuthShell title="Welcome back" subtitle="Pick up right where you left off." rightLink={{ to: "/signup", label: "Get access" }}>
       <div className="space-y-2">
         <button
+          type="button"
           onClick={() => onOAuth("google")}
           disabled={!!oauthLoading}
           className="btn-secondary w-full"
@@ -59,6 +60,7 @@ function LoginPage() {
           {oauthLoading === "google" ? "Redirecting…" : "Continue with Google"}
         </button>
         <button
+          type="button"
           onClick={() => onOAuth("apple")}
           disabled={!!oauthLoading}
           className="btn-secondary w-full"

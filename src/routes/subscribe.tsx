@@ -54,6 +54,7 @@ function SubscribePage() {
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
           <Link to="/" className="t-wordmark">AskDerivn</Link>
           <button
+            type="button"
             onClick={onSignOut}
             className="t-body-sm text-link hover:text-foreground"
           >
@@ -86,6 +87,7 @@ function SubscribePage() {
 
         <div className="mt-10 space-y-3">
           <button
+            type="button"
             onClick={onStart}
             disabled={loading}
             className="btn-primary w-full"
@@ -94,6 +96,7 @@ function SubscribePage() {
           </button>
           {error && <p className="text-sm text-red-700">{error}</p>}
           <button
+            type="button"
             onClick={onSignOut}
             className="btn-secondary w-full"
             disabled={loading}

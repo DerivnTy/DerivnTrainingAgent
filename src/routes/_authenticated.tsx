@@ -53,6 +53,7 @@ function AuthGuard() {
             <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
               <SheetTrigger asChild>
                 <button
+                  type="button"
                   aria-label="Open menu"
                   className="flex h-9 w-9 items-center justify-center rounded-full text-ink-soft transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-accent hover:text-foreground active:scale-[0.95]"
                 >

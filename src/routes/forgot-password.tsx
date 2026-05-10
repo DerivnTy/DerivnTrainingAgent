@@ -41,6 +41,7 @@ function ForgotPasswordPage() {
         <p className="t-body-sm">
           Didn't get it? Check your spam folder, or{" "}
           <button
+            type="button"
             onClick={() => setSent(false)}
             className="text-foreground text-link underline"
           >

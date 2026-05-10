@@ -348,7 +348,7 @@ function AccountPage() {
             </form>
 
             <div className="mt-8 space-y-2">
-              <button onClick={onResetPassword} className="btn-secondary">
+              <button type="button" onClick={onResetPassword} className="btn-secondary">
                 Send password reset email
               </button>
               {resetMsg && <p className="text-xs text-ink-soft">{resetMsg}</p>}
@@ -359,6 +359,7 @@ function AccountPage() {
 
         <div className="mt-8 space-y-3">
           <button
+            type="button"
             onClick={openPortal}
             disabled={portalLoading}
             className="btn-secondary w-full"
@@ -366,7 +367,7 @@ function AccountPage() {
             {portalLoading ? "Opening…" : "Manage billing"}
           </button>
           {portalErr && <p className="text-xs text-red-700">{portalErr}</p>}
-          <button onClick={signOut} className="btn-secondary w-full">
+          <button type="button" onClick={signOut} className="btn-secondary w-full">
             Sign out
           </button>
         </div>

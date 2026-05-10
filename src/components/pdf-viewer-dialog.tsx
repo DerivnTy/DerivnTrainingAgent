@@ -30,6 +30,7 @@ export function PdfViewerDialog({
               Download
             </a>
             <button
+              type="button"
               onClick={() => onOpenChange(false)}
               className="inline-flex h-8 w-8 items-center justify-center rounded-full text-ink-soft transition-colors hover:bg-accent hover:text-foreground"
               aria-label="Close"
