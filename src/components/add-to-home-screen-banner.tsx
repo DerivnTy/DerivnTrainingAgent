@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Button } from "./ui/button";
 
 const KEY = "askderivn:a2hs-dismissed";
 
@@ -24,66 +23,64 @@ export function AddToHomeScreenBanner() {
     } catch {
       return;
     }
-    // Small delay so it doesn't pop in instantly
+    // Small delay so it doesn't pop in instantly after chat loads
     const t = setTimeout(() => setShow(true), 1200);
     return () => clearTimeout(t);
   }, []);
 
-  const dismiss = () => {
+  const handleDismiss = () => {
     try {
       if (dontShowAgain) {
         localStorage.setItem(KEY, "1");
-      } else {
-        localStorage.setItem(KEY, String(Date.now()));
       }
-    } catch {
-      // ignore
-    }
+    } catch {}
     setShow(false);
   };
 
   if (!show) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="max-w-md w-full bg-background border border-rule rounded-3xl shadow-xl p-6 space-y-6">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+      <div className="w-full max-w-md bg-paper border border-rule rounded-3xl p-8 shadow-2xl">
         <div>
-          <div className="font-serif text-xl tracking-tight">
-            Add AskDerivn to your home screen
+          <h2 className="font-serif text-2xl leading-tight text-center">Add AskDerivn to your home screen</h2>
+          <p className="mt-4 text-ink-soft text-center">Save AskDerivn to your phone so you can open it quickly like an app.</p>
+
+          <div className="mt-8 space-y-5 text-sm">
+            <div className="flex gap-4">
+              <div className="font-mono uppercase text-xs tracking-widest text-ink-soft pt-0.5">iPhone</div>
+              <div>
+                <p className="text-ink-soft">Tap the Share button, then choose “Add to Home Screen.”</p>
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <div className="font-mono uppercase text-xs tracking-widest text-ink-soft pt-0.5">Android</div>
+              <div>
+                <p className="text-ink-soft">Tap the browser menu, then choose “Add to Home screen” or “Install app.”</p>
+              </div>
+            </div>
           </div>
-          <p className="mt-3 text-ink-soft">
-            Save AskDerivn to your phone so you can open it quickly like an app.
-          </p>
+
+          <div className="mt-8 flex items-center gap-3">
+            <input
+              type="checkbox"
+              id="dont-show-again"
+              checked={dontShowAgain}
+              onChange={(e) => setDontShowAgain(e.target.checked)}
+              className="w-4 h-4 accent-foreground"
+            />
+            <label htmlFor="dont-show-again" className="text-sm text-ink-soft cursor-pointer select-none">
+              Don’t tell me again
+            </label>
+          </div>
+
+          <button
+            onClick={handleDismiss}
+            className="mt-8 w-full h-12 bg-foreground text-paper text-base font-medium rounded-3xl transition-all active:scale-[0.98]"
+          >
+            Got it
+          </button>
         </div>
-
-        <div className="space-y-4 text-sm">
-          <div>
-            <div className="font-mono uppercase tracking-wider text-xs text-ink-soft">iPhone</div>
-            <p className="text-ink-soft">Tap the Share button, then choose “Add to Home Screen.”</p>
-          </div>
-          <div>
-            <div className="font-mono uppercase tracking-wider text-xs text-ink-soft">Android</div>
-            <p className="text-ink-soft">Tap the browser menu, then choose “Add to Home screen” or “Install app.”</p>
-          </div>
-        </div>
-
-        <label className="flex items-center gap-2 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={dontShowAgain}
-            onChange={(e) => setDontShowAgain(e.target.checked)}
-            className="w-4 h-4 accent-foreground"
-          />
-          <span className="text-sm text-ink-soft">Don’t tell me again</span>
-        </label>
-
-        <Button onClick={dismiss} className="w-full">
-          Got it
-        </Button>
-
-        <p className="text-xs text-center text-ink-soft">
-          AskDerivn works best when saved to your home screen.
-        </p>
       </div>
     </div>
   );
