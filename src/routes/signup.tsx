@@ -153,17 +153,17 @@ function SignupPage() {
           </form>
         </>
       )}
-      <p className="mt-8 text-center text-sm text-ink-soft">
+      <p className="mt-8 text-center t-body-sm">
         Already have an account?{" "}
         <Link to="/login" className="text-foreground text-link underline">
           Sign in
         </Link>
       </p>
       <section className="mt-12 border-t border-rule pt-8">
-        <h2 className="font-serif text-2xl tracking-tight">
+        <h3 className="t-h3">
           What you get with AskDerivn
-        </h2>
-        <ul className="mt-5 space-y-2 pl-5 text-sm text-ink-soft list-disc marker:text-ink-soft/60">
+        </h3>
+        <ul className="mt-5 space-y-2 pl-5 t-body-sm list-disc marker:text-ink-soft/60">
           <li>Private chat built around your goals.</li>
           <li>Direct answers for training, nutrition, running, and recovery.</li>
           <li>Saved conversations and remembered context.</li>
