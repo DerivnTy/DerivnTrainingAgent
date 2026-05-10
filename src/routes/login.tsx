@@ -50,22 +50,26 @@ function LoginPage() {
 
   return (
     <AuthShell title="Welcome back" subtitle="Pick up right where you left off." rightLink={{ to: "/signup", label: "Get access" }}>
-      <button
-        onClick={() => onOAuth("google")}
-        disabled={!!oauthLoading}
-        className="btn-secondary w-full"
-      >
-        {oauthLoading === "google" ? "Redirecting…" : "Continue with Google"}
-      </button>
-      <button
-        onClick={() => onOAuth("apple")}
-        disabled={!!oauthLoading}
-        className="btn-secondary mt-2 w-full"
-      >
-        {oauthLoading === "apple" ? "Redirecting…" : "Continue with Apple"}
-      </button>
-      <Divider />
-      <form onSubmit={onSubmit} className="space-y-4">
+      <div className="space-y-2">
+        <button
+          onClick={() => onOAuth("google")}
+          disabled={!!oauthLoading}
+          className="btn-secondary w-full"
+        >
+          {oauthLoading === "google" ? "Redirecting…" : "Continue with Google"}
+        </button>
+        <button
+          onClick={() => onOAuth("apple")}
+          disabled={!!oauthLoading}
+          className="btn-secondary w-full"
+        >
+          {oauthLoading === "apple" ? "Redirecting…" : "Continue with Apple"}
+        </button>
+      </div>
+      <div className="mt-6">
+        <Divider />
+      </div>
+      <form onSubmit={onSubmit} className="mt-6 space-y-4">
         <Field label="Email">
           <input
             type="email"
