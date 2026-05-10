@@ -64,13 +64,13 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
     <div className="flex h-full flex-col bg-background">
       {/* Top */}
       <div className="border-b border-rule px-5 pb-4 pt-6">
-        <span className="block font-serif text-lg tracking-tight text-foreground">
+        <span className="block t-wordmark">
           AskDerivn
         </span>
         <Link
           to="/chat"
           onClick={onNavigate}
-          className="mt-5 block font-mono text-xs uppercase tracking-wider text-ink-soft text-link hover:text-foreground"
+          className="mt-5 block t-eyebrow text-link hover:text-foreground"
         >
           + New chat
         </Link>
