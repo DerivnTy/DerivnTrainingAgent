@@ -26,7 +26,7 @@ export async function resolvePostAuthDestination(
   userId: string,
   _email?: string | null
 ): Promise<PostAuthDestination> {
-  if (await isCurrentUserAdmin()) return "/admin";
+  if (await isCurrentUserAdmin(userId)) return "/admin";
 
   const { data: profile, error } = await supabase
     .from("profiles")
