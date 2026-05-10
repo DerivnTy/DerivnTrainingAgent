@@ -295,7 +295,7 @@ function AccountPage() {
   }
 
   return (
-    <main className="mx-auto h-full max-w-2xl overflow-y-auto px-6 pt-16 pb-24">
+    <main className="mx-auto h-full max-w-2xl overflow-y-auto px-6 pt-4 pb-24">
       <div className="flex items-center justify-between gap-4">
         <h1 className="font-serif text-4xl tracking-tight">Account</h1>
         <Link
