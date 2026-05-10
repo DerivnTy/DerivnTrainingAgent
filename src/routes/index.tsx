@@ -42,10 +42,10 @@ function LandingPage() {
 
       <main>
         <section className="mx-auto max-w-5xl px-6 pt-32 pb-24 text-center">
-          <h1 className="font-serif text-6xl leading-[1.02] tracking-tight md:text-8xl">
+          <h1 className="t-display">
             AskDerivn
           </h1>
-          <p className="mx-auto mt-8 max-w-2xl text-lg leading-relaxed text-foreground md:text-xl">
+          <p className="mx-auto mt-8 max-w-2xl t-body text-lg">
             Built to give clear answers and clarity toward fitness goals.
           </p>
 
