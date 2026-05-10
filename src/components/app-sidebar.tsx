@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { authedFetch } from "@/lib/auth-helpers";
 import { useChatContext } from "@/lib/chat-context";
 import { PdfViewerDialog } from "@/components/pdf-viewer-dialog";
-import { checkIsAdmin } from "@/lib/admin.functions";
+
 
 type ConversationSummary = {
   id: string;
@@ -41,11 +41,17 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
 
   useEffect(() => {
     let cancelled = false;
-    checkIsAdmin()
-      .then((r) => {
-        if (!cancelled) setIsAdmin(r.isAdmin);
-      })
-      .catch(() => {});
+    (async () => {
+      const { data: sess } = await supabase.auth.getSession();
+      const uid = sess.session?.user.id;
+      if (!uid) return;
+      const { data } = await supabase
+        .from("admin_users")
+        .select("user_id")
+        .eq("user_id", uid)
+        .maybeSingle();
+      if (!cancelled) setIsAdmin(Boolean(data));
+    })();
     return () => {
       cancelled = true;
     };

@@ -1,46 +1,42 @@
-# Fix Add‑to‑Home‑Screen Modal
+## Heads up on the email
 
-## Problem
+You wrote `hello@derivan.com`, but the admin row in the database is `hello@derivn.com` (no "a"). The auth account also exists under `hello@derivn.com`. Sign in with **hello@derivn.com** — that's the approved admin.
 
-`src/components/add-to-home-screen-banner.tsx` uses non‑existent tokens (`bg-paper`, `text-paper`) and one‑off Tailwind classes that drift from the global type/spacing system. Result:
+## Why it's not redirecting today
 
-- The "Got it" button is a dark pill with **invisible text** (`text-paper` isn't a defined utility).
-- Headings/body use ad‑hoc `font-serif text-2xl`, `text-sm`, `text-xs` instead of `.t-h3 / .t-body / .t-body-sm / .t-eyebrow / .t-meta` used site‑wide.
-- The card uses `rounded-3xl shadow-2xl` and `bg-ink/30 backdrop-blur-sm` overlay — feels generic, doesn't match the cream + thin‑rule, no‑shadow AskDerivn look.
-- iPhone/Android pills are pill‑shaped grey blobs (`rounded-2xl bg-rule/50`); should be small mono eyebrows.
+The post-sign-in router calls a server function (`checkIsAdmin`) that's protected by the Supabase auth middleware. That middleware requires an `Authorization: Bearer <token>` header on the request. In this app, server functions are called directly from the browser with no global fetch interceptor that attaches the user's access token, so `checkIsAdmin` is returning **401 Unauthorized**, the helper swallows the error and returns `isAdmin: false`, and the router falls through to the normal subscribe / chat flow.
+
+The actual `admin_users` row is correct — the lookup just never reaches it.
 
 ## Fix
 
-Rewrite the modal with the site's design system. No new tokens needed.
+Move the admin check to the browser Supabase client (which already carries the user's session) and let RLS gate it.
 
-**Overlay**: `bg-ink/40` (no blur — site doesn't use blur elsewhere).
+1. **Migration: allow a user to read their own `admin_users` row.**
+   - Enable RLS on `public.admin_users`.
+   - Add SELECT policy: `auth.uid() = user_id`.
+   - No INSERT/UPDATE/DELETE policies — only the service role (server) can write, which is what we want.
 
-**Card**:
-- `bg-background` (cream), `border border-rule`, `rounded-2xl`
-- `max-w-md w-full p-8`
-- Drop the heavy `shadow-2xl`; use a soft `shadow-sm` (subtle, AskDerivn‑style) or no shadow.
+2. **`src/lib/post-auth-route.ts` — replace `isCurrentUserAdmin()`** so it queries directly:
+   ```ts
+   const { data } = await supabase
+     .from("admin_users")
+     .select("user_id")
+     .eq("user_id", userId)
+     .maybeSingle();
+   return Boolean(data);
+   ```
+   Pass `userId` in (we already have it in `resolvePostAuthDestination` and `authenticatedBeforeLoad`).
 
-**Content rhythm**:
-- Title: `.t-h3` (serif, sized to fit phones — current `text-2xl` was clipping at 390px).
-- Subtitle: `.t-body-sm` with `mt-3 text-ink-soft`.
-- Instructions block: `mt-8 space-y-4`.
-  - Each row: `flex items-start gap-4`
-  - Label: `.t-eyebrow` (no background pill, just mono uppercase 11px) with fixed width `w-16` so the two rows align.
-  - Body copy: `.t-body-sm`.
+3. **`src/components/app-sidebar.tsx`** — replace the `checkIsAdmin()` server-fn call with the same direct query, scoped to the current session user, so the "Admin" sidebar link appears for the admin without depending on the server fn.
 
-**Footer row** (`mt-8 flex items-center justify-between gap-4`):
-- Checkbox label: `.t-body-sm text-ink-soft`, accent ink.
-- Primary button: `bg-foreground text-background` (this is the fix for the invisible label), `rounded-full px-6 py-2.5 t-eyebrow` (mono uppercase), label "Got it". Subtle hover: `hover:bg-ink-soft` or `hover:opacity-90`.
-
-**Footnote**: `.t-meta text-center mt-6`.
-
-**Smart‑quotes**: keep curly quotes already in copy.
-
-No behavior change (timing, localStorage key, dismissal logic). No new dependencies. Only `src/components/add-to-home-screen-banner.tsx` is touched.
+4. **Leave the server functions alone.** `getAdminSummary` and `getAdminUsers` still run server-side with `requireSupabaseAuth` + `is_admin()` RPC, so the actual admin data stays protected. Only the *routing decision* moves to the client (which is fine — the `/admin` page itself is still server-protected).
 
 ## Acceptance
 
-- "Got it" button shows readable cream text on the dark pill.
-- Title, body, mono labels, and footer all match the typography used on /, /login, /admin.
-- Card looks like the rest of the site (cream, thin rule, restrained shadow), not a generic rounded modal.
-- Renders cleanly at 390px width without clipping.
+- Sign in with `hello@derivn.com` → land on `/admin`.
+- Other accounts → unchanged flow (subscribe / onboarding / chat).
+- Typing `/admin` as a non-admin still redirects away.
+- Admin sidebar link appears only for the admin.
+
+No changes to signup, subscription, onboarding, or chat behavior.
