@@ -8,16 +8,7 @@ export async function resolvePostAuthDestination(
   userId: string,
   _email?: string | null
 ): Promise<PostAuthDestination> {
-  // First check if admin
-  const { data: admin } = await supabase
-    .from("admin_users")
-    .select("id")
-    .eq("user_id", userId)
-    .single();
-
-  if (admin) {
-    return "/admin";
-  }
+  // Admin check disabled — admin_users table does not exist in this project.
 
   const { data: profile, error } = await supabase
     .from("profiles")
