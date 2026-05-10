@@ -17,7 +17,19 @@ export function AddToHomeScreenBanner() {
     return () => clearTimeout(timer);
   }, []);
 
-  const handleGotIt = () => {
+  // Lock body scroll while open.
+  useEffect(() => {
+    if (!show || typeof document === "undefined") return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [show]);
+
+  const handleGotIt = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (dontShowAgain) {
       try {
         localStorage.setItem(KEY, "1");
@@ -29,9 +41,23 @@ export function AddToHomeScreenBanner() {
   if (!show) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4">
-      <div className="w-full max-w-md rounded-2xl border border-rule bg-background p-8 shadow-sm">
-        <h2 className="t-h3 text-center">Add AskDerivn to your home screen</h2>
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="a2hs-title"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4"
+      onClick={(e) => {
+        // Backdrop click is intentionally a no-op — user must tap "Got it".
+        e.stopPropagation();
+      }}
+    >
+      <div
+        className="w-full max-w-md rounded-2xl border border-rule bg-background p-8 shadow-sm"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h2 id="a2hs-title" className="t-h3 text-center">
+          Add AskDerivn to your home screen
+        </h2>
         <p className="mt-3 text-center t-body-sm text-ink-soft">
           Save AskDerivn to your phone so you can open it quickly like an app.
         </p>
@@ -62,6 +88,7 @@ export function AddToHomeScreenBanner() {
             <span className="t-body-sm text-ink-soft">Don’t tell me again</span>
           </label>
           <button
+            type="button"
             onClick={handleGotIt}
             className="rounded-full bg-foreground px-6 py-2.5 t-eyebrow text-background transition-opacity hover:opacity-90 active:scale-[0.97]"
           >
