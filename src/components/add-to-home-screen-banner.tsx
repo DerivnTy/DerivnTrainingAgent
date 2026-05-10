@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Button } from "./ui/button";
 
 const KEY = "askderivn:a2hs-dismissed";
 
@@ -24,60 +25,65 @@ export function AddToHomeScreenBanner() {
       return;
     }
     // Small delay so it doesn't pop in instantly
-    const t = setTimeout(() => setShow(true), 1500);
+    const t = setTimeout(() => setShow(true), 1200);
     return () => clearTimeout(t);
   }, []);
 
-  const handleGotIt = () => {
+  const dismiss = () => {
     try {
       if (dontShowAgain) {
         localStorage.setItem(KEY, "1");
+      } else {
+        localStorage.setItem(KEY, String(Date.now()));
       }
-    } catch {}
+    } catch {
+      // ignore
+    }
     setShow(false);
   };
 
   if (!show) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-      <div className="mx-4 max-w-md w-full bg-paper rounded-3xl border border-rule p-8 shadow-2xl">
-        <div className="text-center">
-          <div className="font-serif text-2xl tracking-tight mb-1">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+      <div className="max-w-md w-full bg-background border border-rule rounded-3xl shadow-xl p-6 space-y-6">
+        <div>
+          <div className="font-serif text-xl tracking-tight">
             Add AskDerivn to your home screen
           </div>
-          <p className="text-ink-soft mb-6">
+          <p className="mt-3 text-ink-soft">
             Save AskDerivn to your phone so you can open it quickly like an app.
           </p>
-          <div className="text-left space-y-5 text-sm">
-            <div>
-              <span className="font-mono uppercase tracking-wider text-xs text-ink-soft">iPhone</span>
-              <p className="mt-1.5">Tap the Share button, then choose “Add to Home Screen.”</p>
-            </div>
-            <div>
-              <span className="font-mono uppercase tracking-wider text-xs text-ink-soft">Android</span>
-              <p className="mt-1.5">Tap the browser menu, then choose “Add to Home screen” or “Install app.”</p>
-            </div>
-          </div>
+        </div>
 
-          <div className="mt-10 flex items-center justify-between">
-            <label className="flex items-center gap-3 cursor-pointer">
-              <input 
-                type="checkbox"
-                checked={dontShowAgain}
-                onChange={(e) => setDontShowAgain(e.target.checked)}
-                className="w-4 h-4 accent-foreground rounded"
-              />
-              <span className="text-sm text-ink-soft">Don’t tell me again</span>
-            </label>
-            <button
-              onClick={handleGotIt}
-              className="btn-primary px-8 py-3 rounded-3xl text-sm font-medium active:scale-95 transition-all"
-            >
-              Got it
-            </button>
+        <div className="space-y-4 text-sm">
+          <div>
+            <div className="font-mono uppercase tracking-wider text-xs text-ink-soft">iPhone</div>
+            <p className="text-ink-soft">Tap the Share button, then choose “Add to Home Screen.”</p>
+          </div>
+          <div>
+            <div className="font-mono uppercase tracking-wider text-xs text-ink-soft">Android</div>
+            <p className="text-ink-soft">Tap the browser menu, then choose “Add to Home screen” or “Install app.”</p>
           </div>
         </div>
+
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={dontShowAgain}
+            onChange={(e) => setDontShowAgain(e.target.checked)}
+            className="w-4 h-4 accent-foreground"
+          />
+          <span className="text-sm text-ink-soft">Don’t tell me again</span>
+        </label>
+
+        <Button onClick={dismiss} className="w-full">
+          Got it
+        </Button>
+
+        <p className="text-xs text-center text-ink-soft">
+          AskDerivn works best when saved to your home screen.
+        </p>
       </div>
     </div>
   );
