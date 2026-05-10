@@ -37,7 +37,10 @@ function PostAuthPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background text-foreground">
-      <p className="text-sm text-ink-soft">{msg}</p>
+      <div className="flex items-center gap-3 text-sm text-ink-soft">
+        <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-ink-soft" />
+        <span>{msg}</span>
+      </div>
     </div>
   );
 }
