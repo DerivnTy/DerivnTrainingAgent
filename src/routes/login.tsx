@@ -141,7 +141,7 @@ export function AuthShell({
         {subtitle && (
           <p className="mt-3 text-sm text-ink-soft">{subtitle}</p>
         )}
-        <div className="mt-10 space-y-6">{children}</div>
+        <div className="mt-10">{children}</div>
       </main>
       <SiteFooter />
     </div>
