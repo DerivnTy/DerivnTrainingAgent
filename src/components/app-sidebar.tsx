@@ -4,6 +4,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { authedFetch } from "@/lib/auth-helpers";
 import { useChatContext } from "@/lib/chat-context";
 import { PdfViewerDialog } from "@/components/pdf-viewer-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 
 type ConversationSummary = {
@@ -18,6 +26,15 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
   const [conversations, setConversations] = useState<ConversationSummary[]>([]);
   const [pdfOpen, setPdfOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+
+  // Rename modal state
+  const [renameId, setRenameId] = useState<string | null>(null);
+  const [renameValue, setRenameValue] = useState("");
+  const [renameSaving, setRenameSaving] = useState(false);
+
+  // Delete modal state
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const routerState = useRouterState();
   const pathname = routerState.location.pathname;
@@ -57,21 +74,33 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
     };
   }, []);
 
-  async function rename(id: string) {
+  function openRename(id: string) {
     const current = conversations.find((c) => c.id === id);
-    const title = window.prompt("Rename conversation", current?.title ?? "");
+    setRenameValue(current?.title ?? "");
+    setRenameId(id);
+  }
+
+  async function confirmRename() {
+    if (!renameId) return;
+    const title = renameValue.trim();
     if (!title) return;
-    await authedFetch(`/api/conversations/${id}`, {
+    setRenameSaving(true);
+    await authedFetch(`/api/conversations/${renameId}`, {
       method: "PATCH",
       body: JSON.stringify({ title }),
     });
+    setRenameSaving(false);
+    setRenameId(null);
     refreshConversations();
   }
 
-  async function remove(id: string) {
-    if (!window.confirm("Delete this conversation?")) return;
-    await authedFetch(`/api/conversations/${id}`, { method: "DELETE" });
-    if (activeId === id) navigate({ to: "/chat" });
+  async function confirmDelete() {
+    if (!deleteId) return;
+    setDeleting(true);
+    await authedFetch(`/api/conversations/${deleteId}`, { method: "DELETE" });
+    setDeleting(false);
+    if (activeId === deleteId) navigate({ to: "/chat" });
+    setDeleteId(null);
     refreshConversations();
   }
 
@@ -122,13 +151,15 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
                   </Link>
                   <div className="flex shrink-0 gap-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                     <button
-                      onClick={() => rename(c.id)}
+                      type="button"
+                      onClick={() => openRename(c.id)}
                       className="t-eyebrow text-link hover:text-foreground"
                     >
                       Rename
                     </button>
                     <button
-                      onClick={() => remove(c.id)}
+                      type="button"
+                      onClick={() => setDeleteId(c.id)}
                       className="t-eyebrow text-link hover:text-foreground"
                     >
                       Delete
@@ -145,6 +176,7 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
       <div className="border-t border-rule px-5 py-4">
         <nav className="flex flex-col gap-2 t-eyebrow">
           <button
+            type="button"
             onClick={() => {
               setPdfOpen(true);
               onNavigate?.();
@@ -172,6 +204,7 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
             </Link>
           )}
           <button
+            type="button"
             onClick={signOut}
             className="text-left text-link hover:text-foreground"
           >
@@ -180,6 +213,78 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
         </nav>
       </div>
       <PdfViewerDialog open={pdfOpen} onOpenChange={setPdfOpen} />
+
+      {/* Rename dialog */}
+      <Dialog open={renameId !== null} onOpenChange={(o) => !o && setRenameId(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Rename conversation</DialogTitle>
+            <DialogDescription>
+              Give this conversation a new name.
+            </DialogDescription>
+          </DialogHeader>
+          <input
+            type="text"
+            value={renameValue}
+            onChange={(e) => setRenameValue(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                void confirmRename();
+              }
+            }}
+            placeholder="Conversation name"
+            className="w-full border-b border-rule bg-transparent py-2 text-sm input-soft"
+            autoFocus
+          />
+          <DialogFooter className="gap-2 sm:gap-2">
+            <button
+              type="button"
+              onClick={() => setRenameId(null)}
+              className="btn-secondary"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={confirmRename}
+              disabled={renameSaving || !renameValue.trim()}
+              className="btn-primary"
+            >
+              {renameSaving ? "Saving…" : "Save"}
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete dialog */}
+      <Dialog open={deleteId !== null} onOpenChange={(o) => !o && setDeleteId(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Delete conversation?</DialogTitle>
+            <DialogDescription>
+              This will permanently delete this conversation. This can&rsquo;t be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-2">
+            <button
+              type="button"
+              onClick={() => setDeleteId(null)}
+              className="btn-secondary"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={confirmDelete}
+              disabled={deleting}
+              className="btn-primary"
+            >
+              {deleting ? "Deleting…" : "Delete"}
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
