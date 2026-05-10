@@ -13,7 +13,6 @@ function isStandalone() {
 
 export function AddToHomeScreenBanner() {
   const [show, setShow] = useState(false);
-  const [dontShowAgain, setDontShowAgain] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -23,63 +22,59 @@ export function AddToHomeScreenBanner() {
     } catch {
       return;
     }
-    // Small delay so it doesn't pop in instantly after chat loads
+    // Small delay so it doesn't pop in instantly
     const t = setTimeout(() => setShow(true), 1200);
     return () => clearTimeout(t);
   }, []);
 
-  const handleDismiss = () => {
+  const dismiss = (permanent: boolean) => {
     try {
-      if (dontShowAgain) {
-        localStorage.setItem(KEY, "1");
-      }
-    } catch {}
+      if (permanent) localStorage.setItem(KEY, "1");
+      else localStorage.setItem(KEY, String(Date.now()));
+    } catch {
+      // ignore
+    }
     setShow(false);
   };
 
   if (!show) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
-      <div className="w-full max-w-md bg-paper border border-rule rounded-3xl p-8 shadow-2xl">
-        <div>
-          <h2 className="font-serif text-2xl leading-tight text-center">Add AskDerivn to your home screen</h2>
-          <p className="mt-4 text-ink-soft text-center">Save AskDerivn to your phone so you can open it quickly like an app.</p>
-
-          <div className="mt-8 space-y-5 text-sm">
-            <div className="flex gap-4">
-              <div className="font-mono uppercase text-xs tracking-widest text-ink-soft pt-0.5">iPhone</div>
-              <div>
-                <p className="text-ink-soft">Tap the Share button, then choose “Add to Home Screen.”</p>
-              </div>
-            </div>
-            <div className="flex gap-4">
-              <div className="font-mono uppercase text-xs tracking-widest text-ink-soft pt-0.5">Android</div>
-              <div>
-                <p className="text-ink-soft">Tap the browser menu, then choose “Add to Home screen” or “Install app.”</p>
-              </div>
-            </div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+      <div className="mx-4 max-w-xs w-full bg-paper border border-rule rounded-3xl p-6 shadow-xl">
+        <div className="font-serif text-xl tracking-tight text-center">
+          Add AskDerivn to your home screen
+        </div>
+        <p className="mt-3 text-sm text-ink-soft text-center">
+          Save AskDerivn to your phone so you can open it quickly like an app.
+        </p>
+        <div className="mt-6 space-y-3">
+          <div className="text-xs">
+            <span className="font-mono uppercase tracking-wider text-ink-soft">iPhone</span>
+            <p className="text-ink-soft mt-1">Tap the Share button, then choose “Add to Home Screen.”</p>
           </div>
-
-          <div className="mt-8 flex items-center gap-3">
-            <input
-              type="checkbox"
-              id="dont-show-again"
-              checked={dontShowAgain}
-              onChange={(e) => setDontShowAgain(e.target.checked)}
-              className="w-4 h-4 accent-foreground"
-            />
-            <label htmlFor="dont-show-again" className="text-sm text-ink-soft cursor-pointer select-none">
-              Don’t tell me again
-            </label>
+          <div className="text-xs">
+            <span className="font-mono uppercase tracking-wider text-ink-soft">Android</span>
+            <p className="text-ink-soft mt-1">Tap the browser menu, then choose “Add to Home screen” or “Install app.”</p>
           </div>
-
+        </div>
+        <div className="mt-8 flex flex-col gap-3">
           <button
-            onClick={handleDismiss}
-            className="mt-8 w-full h-12 bg-foreground text-paper text-base font-medium rounded-3xl transition-all active:scale-[0.98]"
+            onClick={() => dismiss(false)}
+            className="btn-primary h-11 rounded-full text-sm font-medium active:scale-[0.98] transition-all"
           >
             Got it
           </button>
+          <label className="flex items-center justify-center gap-2 text-sm text-ink-soft cursor-pointer">
+            <input
+              type="checkbox"
+              onChange={(e) => {
+                // handle permanent in dismiss
+              }}
+              className="accent-foreground"
+            />
+            <span>Don’t tell me again</span>
+          </label>
         </div>
       </div>
     </div>
