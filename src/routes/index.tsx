@@ -109,16 +109,14 @@ function LandingPage() {
           <div className="mx-auto max-w-5xl px-6 py-14 md:py-20">
             <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between md:gap-10">
               <div>
-                <div className="font-mono text-xs tracking-wider text-ink-soft">
-                  PRICING
-                </div>
-                <div className="mt-3 font-serif text-3xl tracking-tight md:text-4xl">
+                <div className="t-eyebrow">PRICING</div>
+                <div className="mt-2 font-serif text-3xl tracking-tight md:text-4xl">
                   $30/month
                 </div>
-                <p className="mt-2 text-sm text-ink-soft">Cancel anytime.</p>
+                <p className="mt-2 t-body-sm">Cancel anytime.</p>
               </div>
               <div className="flex flex-col gap-4 md:items-end md:text-right">
-                <p className="max-w-sm text-sm text-ink-soft">
+                <p className="max-w-sm t-body-sm">
                   Includes the 100-page PDF and AskDerivn chat access.
                 </p>
                 <Link
