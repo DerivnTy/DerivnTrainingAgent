@@ -169,4 +169,3 @@ export function buildProfileBlock(p: ProfileLike | null | undefined): string {
   if (lines.length === 0) return "USER PROFILE\n(No profile fields set.)";
   return "USER PROFILE\n" + lines.join("\n");
 }
-`,
