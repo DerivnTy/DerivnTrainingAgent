@@ -132,25 +132,21 @@ export function DemoSection() {
         )}
 
         {error && (
-          <p className="mt-6 text-sm text-destructive">{error}</p>
+          <p className="mt-6 t-body-sm text-destructive">{error}</p>
         )}
 
         {exchanges.length > 0 && (
           <div className="mt-10 space-y-8">
             {exchanges.map((ex, i) => (
               <div key={i}>
-                <div className="font-mono text-xs uppercase tracking-widest text-ink-soft">
-                  You asked
-                </div>
-                <p className="mt-2 text-base text-foreground">{ex.question}</p>
+                <div className="t-eyebrow">You asked</div>
+                <p className="mt-2 t-body">{ex.question}</p>
 
-                <div className="mt-5 font-mono text-xs uppercase tracking-widest text-ink-soft">
-                  AskDerivn
-                </div>
+                <div className="mt-5 t-eyebrow">AskDerivn</div>
                 <div className="prose prose-sm mt-2 max-w-none text-foreground">
                   <ReactMarkdown>{ex.answer}</ReactMarkdown>
                 </div>
-                <p className="mt-4 text-xs leading-relaxed text-ink-soft">
+                <p className="mt-4 t-meta">
                   Full AskDerivn uses your goals, training level, schedule, and
                   limitations to give sharper answers.
                 </p>
@@ -161,7 +157,7 @@ export function DemoSection() {
 
         {limitReached && (
           <div className="mt-10 border-t border-rule pt-8 text-center">
-            <p className="font-serif text-xl text-foreground">
+            <p className="t-h3">
               Create an account to keep asking and unlock the full AskDerivn
               system.
             </p>
