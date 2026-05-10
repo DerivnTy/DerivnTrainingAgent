@@ -85,11 +85,22 @@ function SignupPage() {
   return (
     <AuthShell
       title="Get access"
-      subtitle="Create your AskDerivn account. Membership is $50/month."
+      subtitle="Create your AskDerivn account. Membership is $50/month. Cancel anytime."
       rightLink={{ to: "/login", label: "Sign in" }}
     >
-      <button onClick={onGoogle} className="btn-secondary w-full">
-        Sign up with Google
+      <button
+        onClick={() => onOAuth("google")}
+        disabled={!!oauthLoading}
+        className="btn-secondary w-full"
+      >
+        {oauthLoading === "google" ? "Redirecting…" : "Continue with Google"}
+      </button>
+      <button
+        onClick={() => onOAuth("apple")}
+        disabled={!!oauthLoading}
+        className="btn-secondary mt-3 w-full"
+      >
+        {oauthLoading === "apple" ? "Redirecting…" : "Continue with Apple"}
       </button>
       {!showEmailForm ? (
         <button
