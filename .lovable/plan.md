@@ -1,132 +1,99 @@
-## Goal
+# Admin Area Plan
 
-Audit the entire site, codify a single typography & spacing system, then fix every off-system spot. The look the user is after — Apple / Stripe / Linear / Notion — comes from **scale discipline** (one heading scale, one body scale, one eyebrow style) and **vertical rhythm consistency**, not from new fonts.
+Confirmed: `hello@derivn.com` exists as a real auth user (id `0e2a0395-e6df-46d8-97c1-5a77b57e38e8`). I'll seed this user as the first admin.
 
-The current foundation is already strong: `--font-serif` (Cormorant Garamond) for display, `--font-sans` (system / Inter) for body, `--font-mono` for eyebrows, plus `ink` / `ink-soft` / `rule` color tokens. The drift is in *how* these are used per page.
+## 1. Database (migration)
 
-## Type system to codify (in `src/styles.css`)
+Create `public.admin_users`:
+- `user_id uuid primary key` (the auth user id)
+- `email text not null`
+- `created_at timestamptz not null default now()`
 
-Add a single set of named classes so every page uses the same scale instead of ad-hoc Tailwind sizes.
+RLS: enabled, with **no policies** for normal users. All admin reads happen via the service-role server (admin client), so the table stays inaccessible from the browser.
 
-| Class | Use | Spec |
-|---|---|---|
-| `.t-display` | Hero only (homepage `<h1>`) | serif, 60/72 → md:96, `tracking-tight`, `leading-[1.02]` |
-| `.t-h1` | Page title (`/login`, `/signup`, `/account`, `/onboarding`, `/subscribe`, error pages) | serif, 36 → md:44, `tracking-tight`, `leading-[1.05]` |
-| `.t-h2` | Major section heading | serif, 32 → md:40, `tracking-tight`, `leading-[1.1]` |
-| `.t-h3` | Card/item heading | serif, 20, `tracking-tight`, `leading-snug` |
-| `.t-eyebrow` | Mono label above a heading or section | mono, 11px (was mixed 10/12), uppercase, `tracking-[0.14em]`, `text-ink-soft` |
-| `.t-body` | Default body | sans, 16, `leading-[1.6]`, `text-foreground` |
-| `.t-body-sm` | Secondary body, helper text | sans, 14, `leading-[1.55]`, `text-ink-soft` |
-| `.t-meta` | Small UI meta (timestamps, footer) | sans, 12, `leading-normal`, `text-ink-soft` |
-| `.t-wordmark` | "AskDerivn" wordmark in headers | serif, 18, `tracking-tight` |
+Security-definer helper:
+```sql
+create or replace function public.is_admin(_user_id uuid)
+returns boolean language sql stable security definer set search_path=public as $$
+  select exists (select 1 from public.admin_users where user_id = _user_id)
+$$;
+```
 
-Also add base resets in `@layer base`:
-- `h1, h2, h3, h4 { font-family: var(--font-serif); letter-spacing: -0.01em; }` so any forgotten heading inherits the system.
-- `p { line-height: 1.6; }` body default.
-- Set `font-feature-settings: "ss01", "kern"` on body for tighter sans rendering (Apple-style).
+Seed row: insert `(0e2a0395-…, 'hello@derivn.com')`.
 
-Keep Tailwind utility classes available — these `.t-*` classes are additive, not a replacement, so existing primitive components in `src/components/ui/*` (which use `text-sm`, `text-xs`, etc. semantically for menus/tooltips/etc.) are not touched.
+## 2. Server functions (server-side admin verification)
 
-## Drift to fix (file-by-file)
+New file `src/lib/admin.functions.ts` (thin file, only `createServerFn` declarations) using `requireSupabaseAuth` + `supabaseAdmin`:
 
-### `src/routes/__root.tsx` — error & 404 pages
-- Currently uses `text-7xl font-bold` (sans, bold) for "404" and `text-xl font-semibold tracking-tight` for the error H1. Off-brand.
-- Fix: 404 number → `.t-display` (serif). Subhead "Page not found" → `.t-h2`. Body → `.t-body-sm`. Error page H1 → `.t-h1`.
+- `getAdminSummary` — verifies caller is admin via `is_admin(auth.uid())`; if not, throws 403. Returns:
+  - total signed-up users (count of `profiles`)
+  - total memberships (profiles with any non-null `subscription_status` other than `inactive`, OR all profiles depending on definition — I'll use "users with a Stripe customer id" for memberships and "subscription_status='active' AND not expired" for active)
+  - total active subscribers
+  - total canceled/inactive subscribers
+  - 5 most recent signups (email, created_at)
 
-### `src/routes/subscribe.tsx`
-- Price `$30` is `text-5xl`; the homepage Pricing section is `text-3xl md:text-4xl`. Pick **one** scale — use `text-3xl md:text-4xl` here too so the price feels the same everywhere.
-- H1 "AskDerivn Membership" → `.t-h1`.
-- Wordmark in header → `.t-wordmark`.
-- Bullet list `text-sm` → `.t-body-sm`.
+- `getAdminUsers` — same admin gate. Returns array of profile rows with: `id`, `email`, `display_name`, `subscription_status`, `subscription_current_period_end`, `created_at`, `profile_completed_at`, `stripe_customer_id`. Uses `supabaseAdmin` so RLS is bypassed cleanly server-side. Optional pagination params (limit/offset) — V1 returns up to 200 newest.
 
-### `src/routes/login.tsx` & `src/routes/signup.tsx`
-- AuthShell page title `font-serif text-4xl tracking-tight` → `.t-h1` + add `leading-[1.05]`.
-- Subtitle `mt-3 text-sm text-ink-soft` → bump to `.t-body` muted variant (`text-base text-ink-soft leading-[1.6]`) so the page intro reads at body weight, not helper-text weight (matches Stripe/Linear sign-in pages).
-- Bottom marketing block H2 `text-2xl` → `.t-h3` (it's a card subhead, not a section heading) so it stops competing with the page title.
-- Wordmark → `.t-wordmark`.
-- Field `<span>` eyebrow → `.t-eyebrow`.
-- Helper "Forgot password?" / "New here?" / "Already have an account?" lines → `.t-body-sm`.
-- "What you get with AskDerivn" bullet list copy → `.t-body-sm`.
+Both functions:
+1. `requireSupabaseAuth` ⇒ confirms auth.
+2. Call `is_admin(userId)` via admin client ⇒ confirms admin server-side.
+3. Only then return data.
 
-### `src/routes/index.tsx` (homepage)
-- Hero H1 already `text-6xl md:text-8xl leading-[1.02]` → keep, alias to `.t-display`.
-- Hero subtitle `text-lg md:text-xl` → standardize to `.t-body` at `text-lg leading-[1.55]`.
-- Section H2s already `text-4xl md:text-5xl` → alias to `.t-h2` (drop the md jump to one tier so it's not bigger than the hero feel — `text-3xl md:text-4xl`). This pulls the page into a tighter scale.
-- "What you get" item H3 (`text-xl`) → `.t-h3`.
-- Pricing eyebrow (`text-xs tracking-wider`) → `.t-eyebrow`.
-- "Ready when you are." section H2 → `.t-h2`.
+(No /api/* HTTP routes needed — `createServerFn` is the right TanStack pattern. The spec's "/api/admin/*" intent is satisfied by these protected RPCs.)
 
-### `src/components/demo-section.tsx`
-- H2 → `.t-h2`.
-- The serif callout (`text-xl`) → `.t-h3`.
-- All supporting copy → `.t-body-sm`.
+## 3. Routing
 
-### `src/routes/_authenticated.account.tsx`
-- H1 → `.t-h1`.
-- Section H2 (`text-2xl`) → `.t-h2` for consistency with other section headings (currently feels small for a top-level account section).
-- Eyebrows `text-xs uppercase tracking-wider` → `.t-eyebrow`.
-- `<dt>` labels → `.t-eyebrow`.
+Update `src/lib/post-auth-route.ts`:
+- Add `"/admin"` to `PostAuthDestination`.
+- New `resolvePostAuthDestination` first checks `is_admin` (via a small server fn `checkIsAdmin`) — if admin, returns `/admin`. Otherwise existing logic.
+- `authenticatedBeforeLoad` allows `/admin` only for admins; non-admins hitting `/admin` are redirected to their normal destination (chat/onboarding/subscribe).
 
-### `src/routes/_authenticated.onboarding.tsx`
-- H1 → `.t-h1`.
-- Step heading (`font-serif text-xl tracking-tight`) → `.t-h3`.
-- Body copy → `.t-body-sm`.
+New route `src/routes/_authenticated.admin.tsx`:
+- `beforeLoad` calls `checkIsAdmin`; if false → `redirect({ to: '/chat' })`.
+- Loader calls `getAdminSummary` + `getAdminUsers` in parallel.
+- Component renders the page.
 
-### `src/routes/_authenticated.chat.tsx`
-- Eyebrows → `.t-eyebrow`.
-- Empty-state heading `AskDerivn` (currently `font-serif`) → `.t-h2`.
-- Input placeholder & messages stay on default body sans.
+`post-auth.tsx` already routes via `resolvePostAuthDestination`, so admins land on `/admin` after sign-in automatically.
 
-### `src/routes/_authenticated.resource.tsx`
-- Eyebrow → `.t-eyebrow`.
-- H1 → `.t-h1`.
+## 4. Admin page UI (`/admin`)
 
-### `src/routes/_authenticated.tsx` (top bar)
-- `<span className="font-serif text-base">AskDerivn</span>` → `.t-wordmark`.
+AskDerivn style: cream bg, ink text, thin `border-rule` dividers, mono `.t-eyebrow` labels, `.t-h1` / `.t-h3`, no charts/gradients.
 
-### `src/components/app-sidebar.tsx`
-- Sidebar wordmark → `.t-wordmark`.
-- All `text-xs uppercase tracking-wider` and the one `text-[10px]` (conversation timestamps) → unify to `.t-eyebrow` (single 11px size, ends the 10/12 split).
+Layout:
+- Header: `.t-eyebrow` "Admin" + `.t-h1` "Members".
+- Stats strip (4 stat blocks, divided by thin rules):
+  - Total signups
+  - Total memberships
+  - Active subscribers
+  - Canceled / inactive
+- Section: "Recent signups" — small list (email + relative date), 5 rows.
+- Section: "All members" — simple table:
+  - Name (display_name) | Email | Status | Signed up | Sub started* | Period ends | Profile complete
+  - *Sub start: we don't track it explicitly today; show `—` (note in plan: future field). Period end uses `subscription_current_period_end`.
 
-### `src/components/site-footer.tsx`
-- Footer copy `text-xs text-ink-soft` → `.t-meta`.
+No admin link is shown in the regular sidebar for non-admins. For admins, add a small "Admin" link in `AppSidebar` rendered only when `checkIsAdmin` returns true (cosmetic — actual gating is server-side).
 
-### `src/routes/post-auth.tsx`, `forgot-password.tsx`, `reset-password.tsx`
-- AuthShell-style headings → `.t-h1`. Helper text → `.t-body-sm`. Eyebrows → `.t-eyebrow`.
+## 5. Security checklist
 
-## Vertical-rhythm rules (applied where headings sit above content)
+- Service role key only in `client.server.ts` (already the case); never imported by components.
+- Admin-only data only returned after server-side `is_admin` check.
+- `admin_users` table has RLS enabled with no policies → unreadable from browser.
+- No "become admin" UI; admins added by direct DB insert.
+- Non-admin visiting `/admin` is server-redirected via `beforeLoad` AND server fn 403s as a second layer.
 
-Tighten the spacing between heading and supporting copy so the page feels intentional, not loose:
+## 6. Files touched
 
-| Pair | Gap |
-|---|---|
-| Eyebrow → heading below it | `mt-2` (8px) |
-| Heading → subtitle directly under it | `mt-3` (12px) |
-| Subtitle → first content block | `mt-8` (32px) |
-| Section break (between major sections divided by `border-t border-rule`) | already `py-20` md / `py-14` mobile — keep |
-| List items / vertical lists | `space-y-3` for body, `space-y-2` for tight UI lists |
+- migration (new table + `is_admin` fn + seed insert)
+- `src/lib/admin.functions.ts` (new)
+- `src/lib/post-auth-route.ts` (admin branch)
+- `src/routes/_authenticated.admin.tsx` (new)
+- `src/components/app-sidebar.tsx` (conditional Admin link)
 
-Sweep the touched files and replace any `mt-4`/`mt-5`/`mt-6` between headings & their direct subtitles with `mt-3`. Replace any `mt-10` between subtitle → first block with `mt-8`.
+## Out of scope (V1)
 
-## What is intentionally **not** changing
+- Charts / analytics
+- Editing users from admin UI
+- Pagination beyond 200 rows
+- Sub start date column (not tracked today)
 
-- shadcn primitive components in `src/components/ui/*` (menus, tooltips, dialogs, dropdowns) keep their internal `text-sm` / `text-xs` — those are component-internal, not content typography.
-- Color tokens (`background`, `foreground`, `ink`, `ink-soft`, `rule`) — already correct.
-- Button sizes (`h-10`, `h-12`) — already on-system from the recent auth pass.
-- Fonts loaded — Cormorant Garamond + system sans + system mono. No new fonts.
-- Layout, copy, and section structure.
-
-## Acceptance
-
-- `rg "text-(7xl|8xl|6xl|5xl|4xl|3xl|2xl|xl)" src/routes src/components/{site-footer,demo-section,app-sidebar}.tsx` returns only the homepage hero (`.t-display`) — every other large size is replaced by a `.t-*` class.
-- All page H1s render at the same size across `/login`, `/signup`, `/subscribe`, `/account`, `/onboarding`, `/_authenticated/resource`, and the error pages.
-- All eyebrows render at the same size & tracking site-wide.
-- Mobile preview at 390px shows headings that don't wrap awkwardly and body copy at 16px (no more `text-sm` page intros).
-- Light spot-check on desktop: section rhythm consistent across home, subscribe, account.
-
-## Out of scope
-
-- No new fonts or icon system.
-- No dark-mode rebalancing (tokens already exist; reads correctly).
-- No copy changes.
-- No change to chat message bubbles, PDF viewer, or third-party UI components.
+Ready to implement on approval.

@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { authedFetch } from "@/lib/auth-helpers";
 import { useChatContext } from "@/lib/chat-context";
 import { PdfViewerDialog } from "@/components/pdf-viewer-dialog";
+import { checkIsAdmin } from "@/lib/admin.functions";
 
 type ConversationSummary = {
   id: string;
@@ -16,6 +17,7 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
   const { conversationsVersion, refreshConversations } = useChatContext();
   const [conversations, setConversations] = useState<ConversationSummary[]>([]);
   const [pdfOpen, setPdfOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const routerState = useRouterState();
   const pathname = routerState.location.pathname;
@@ -36,6 +38,18 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
       cancelled = true;
     };
   }, [conversationsVersion]);
+
+  useEffect(() => {
+    let cancelled = false;
+    checkIsAdmin()
+      .then((r) => {
+        if (!cancelled) setIsAdmin(r.isAdmin);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   async function rename(id: string) {
     const current = conversations.find((c) => c.id === id);
@@ -141,6 +155,16 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
           >
             Account
           </Link>
+          {isAdmin && (
+            <Link
+              to="/admin"
+              onClick={onNavigate}
+              className="text-link hover:text-foreground"
+              activeProps={{ className: "text-foreground" }}
+            >
+              Admin
+            </Link>
+          )}
           <button
             onClick={signOut}
             className="text-left text-link hover:text-foreground"

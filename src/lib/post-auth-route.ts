@@ -1,17 +1,30 @@
 // post-auth-route.ts
 import { redirect } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
+import { checkIsAdmin } from "@/lib/admin.functions";
 
 export type PostAuthDestination =
   | "/login"
   | "/subscribe"
   | "/onboarding"
-  | "/chat";
+  | "/chat"
+  | "/admin";
+
+async function isCurrentUserAdmin(): Promise<boolean> {
+  try {
+    const { isAdmin } = await checkIsAdmin();
+    return isAdmin;
+  } catch {
+    return false;
+  }
+}
 
 export async function resolvePostAuthDestination(
   userId: string,
   _email?: string | null
 ): Promise<PostAuthDestination> {
+  if (await isCurrentUserAdmin()) return "/admin";
+
   const { data: profile, error } = await supabase
     .from("profiles")
     .select(
@@ -68,11 +81,24 @@ export async function authenticatedBeforeLoad(pathname: string) {
   // /account is always allowed for signed-in users (billing management).
   if (pathname.startsWith("/account")) return;
 
+  // /admin: only admins; everyone else gets bounced to their normal destination.
+  if (pathname.startsWith("/admin")) {
+    if (await isCurrentUserAdmin()) return;
+    const dest = await resolvePostAuthDestination(
+      session.user.id,
+      session.user.email
+    );
+    throw redirect({ to: dest === "/admin" ? "/chat" : dest });
+  }
+
   const dest = await resolvePostAuthDestination(
     session.user.id,
     session.user.email
   );
 
+  if (dest === "/admin") {
+    throw redirect({ to: "/admin" });
+  }
   if (dest === "/subscribe") {
     throw redirect({ to: "/subscribe" });
   }
