@@ -157,7 +157,7 @@ function AdminPage() {
 
 function Stat({ label, value }: { label: string; value: number }) {
   return (
-    <div className="border-rule px-5 py-6 not-first:border-l">
+    <div className="px-5 py-6 [&:not(:first-child)]:border-l border-rule">
       <span className="t-eyebrow">{label}</span>
       <div className="mt-2 t-h2">{value.toLocaleString()}</div>
     </div>
