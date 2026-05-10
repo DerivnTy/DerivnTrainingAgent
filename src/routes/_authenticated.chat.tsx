@@ -151,7 +151,7 @@ function ChatPage() {
         className="flex-1 overflow-y-auto pb-4 pt-6"
       >
         {loadingConv && (
-          <p className="text-sm text-ink-soft">Loading conversation…</p>
+          <p className="t-body-sm">Loading conversation…</p>
         )}
 
         <div className="space-y-6">
@@ -191,7 +191,7 @@ function ChatPage() {
               <div className="t-eyebrow">
                 AskDerivn
               </div>
-              <p className="mt-3 text-sm text-ink-soft animate-pulse">Thinking…</p>
+              <p className="mt-3 t-body-sm animate-pulse">Thinking…</p>
             </article>
           )}
 

@@ -38,7 +38,7 @@ function ForgotPasswordPage() {
         subtitle="If an account exists for that email, we've sent a password reset link."
         rightLink={{ to: "/login", label: "Sign in" }}
       >
-        <p className="text-sm text-ink-soft">
+        <p className="t-body-sm">
           Didn't get it? Check your spam folder, or{" "}
           <button
             onClick={() => setSent(false)}
@@ -73,7 +73,7 @@ function ForgotPasswordPage() {
           {loading ? "Sending…" : "Send reset link"}
         </button>
       </form>
-      <p className="mt-8 text-center text-sm text-ink-soft">
+      <p className="mt-8 text-center t-body-sm">
         Remembered it?{" "}
         <Link to="/login" className="text-foreground text-link underline">
           Sign in

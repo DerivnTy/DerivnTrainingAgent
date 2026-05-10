@@ -289,7 +289,7 @@ function AccountPage() {
   if (loading) {
     return (
       <main className="mx-auto h-full max-w-2xl overflow-y-auto px-6 pt-20 pb-24">
-        <p className="text-sm text-ink-soft">Loading…</p>
+        <p className="t-body-sm">Loading…</p>
       </main>
     );
   }
@@ -305,7 +305,7 @@ function AccountPage() {
           ← Back to chat
         </Link>
       </div>
-      <p className="mt-3 text-sm text-ink-soft">
+      <p className="mt-3 t-body-sm">
         Manage your sign-in and the context AskDerivn uses to give better
         answers.
       </p>
@@ -516,7 +516,7 @@ function AccountPage() {
         <div className="pt-6">
           {saveErr && <p className="mb-3 text-sm text-red-700">{saveErr}</p>}
           {savedMsg && (
-            <p className="mb-3 text-sm text-ink-soft">{savedMsg}</p>
+            <p className="mb-3 t-body-sm">{savedMsg}</p>
           )}
           <button
             type="submit"

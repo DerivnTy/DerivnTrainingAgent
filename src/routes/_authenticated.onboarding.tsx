@@ -224,7 +224,7 @@ function OnboardingPage() {
   if (loading) {
     return (
       <main className="mx-auto h-full max-w-2xl overflow-y-auto px-6 pt-20 pb-24">
-        <p className="text-sm text-ink-soft">Loading…</p>
+        <p className="t-body-sm">Loading…</p>
       </main>
     );
   }
@@ -232,7 +232,7 @@ function OnboardingPage() {
   return (
     <main className="mx-auto h-full max-w-2xl overflow-y-auto px-6 pt-16 pb-24">
       <h1 className="t-h1">Set your context</h1>
-      <p className="mt-3 text-sm text-ink-soft">
+      <p className="mt-3 t-body-sm">
         AskDerivn uses this to give answers that fit your goal, schedule,
         training level, and limitations.
       </p>
