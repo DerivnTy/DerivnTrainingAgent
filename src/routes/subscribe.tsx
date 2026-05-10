@@ -52,7 +52,7 @@ function SubscribePage() {
     <div className="flex min-h-screen flex-col bg-background text-foreground">
       <header className="border-b border-rule">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
-          <span className="font-serif text-lg tracking-tight">AskDerivn</span>
+          <Link to="/" className="font-serif text-lg tracking-tight text-foreground">AskDerivn</Link>
           <button
             onClick={onSignOut}
             className="text-sm text-ink-soft text-link hover:text-foreground"
