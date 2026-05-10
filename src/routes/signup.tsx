@@ -54,6 +54,9 @@ function SignupPage() {
     if (oauthLoading) return;
     setError(null);
     setOauthLoading(provider);
+    if (typeof window !== "undefined") {
+      window.sessionStorage.setItem("oauth_intent", "signup");
+    }
     const result = await lovable.auth.signInWithOAuth(provider, {
       redirect_uri: window.location.origin + "/post-auth",
     });
