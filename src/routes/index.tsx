@@ -106,26 +106,42 @@ function LandingPage() {
         </section>
 
         <section className="border-t border-rule">
-          <div className="mx-auto max-w-5xl px-6 py-14 md:py-20">
-            <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between md:gap-10">
-              <div>
-                <div className="t-eyebrow">PRICING</div>
-                <div className="mt-2 font-serif text-3xl tracking-tight md:text-4xl">
-                  $30/month
-                </div>
-                <p className="mt-2 t-body-sm">Cancel anytime.</p>
+          <div className="mx-auto max-w-5xl px-6 py-16 md:py-28">
+            <div className="mx-auto max-w-3xl text-center">
+              <div className="t-eyebrow">PRICING</div>
+              <h2 className="mt-4 t-h2">One plan. Everything included.</h2>
+              <p className="mx-auto mt-4 max-w-xl t-body-sm">
+                The 100-page Built for Motion PDF and unlimited AskDerivn chat access.
+              </p>
+            </div>
+
+            <div className="mx-auto mt-12 max-w-md rounded-2xl border border-rule bg-card p-8 md:mt-14 md:p-10">
+              <div className="flex items-baseline justify-center gap-2">
+                <span className="font-serif text-5xl tracking-tight md:text-6xl">$30</span>
+                <span className="t-body-sm">/month</span>
               </div>
-              <div className="flex flex-col gap-4 md:items-end md:text-right">
-                <p className="max-w-sm t-body-sm">
-                  Includes the 100-page PDF and AskDerivn chat access.
-                </p>
-                <Link
-                  to="/signup"
-                  className="inline-flex w-full items-center justify-center rounded-full bg-foreground text-background hover:opacity-90 h-12 px-7 text-sm font-medium transition-all duration-200 active:scale-[0.98] sm:w-auto"
-                >
-                  Get Access
-                </Link>
-              </div>
+              <p className="mt-2 text-center t-body-sm">Cancel anytime.</p>
+
+              <ul className="mt-8 space-y-3 t-body-sm">
+                {[
+                  "AskDerivn chat access",
+                  "100-page Built for Motion PDF",
+                  "Saved conversations",
+                  "Personalized profile context",
+                ].map((item) => (
+                  <li key={item} className="flex items-start gap-3">
+                    <span aria-hidden className="mt-2 inline-block h-1 w-1 rounded-full bg-foreground" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <Link
+                to="/signup"
+                className="mt-10 inline-flex w-full items-center justify-center rounded-full bg-foreground text-background hover:opacity-90 h-12 px-7 text-sm font-medium transition-all duration-200 active:scale-[0.98]"
+              >
+                Get Access
+              </Link>
             </div>
           </div>
         </section>
