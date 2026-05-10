@@ -13,6 +13,7 @@ function isStandalone() {
 
 export function AddToHomeScreenBanner() {
   const [show, setShow] = useState(false);
+  const [dontShowAgain, setDontShowAgain] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -23,55 +24,62 @@ export function AddToHomeScreenBanner() {
       return;
     }
     // Small delay so it doesn't pop in instantly
-    const t = setTimeout(() => setShow(true), 600);
+    const t = setTimeout(() => setShow(true), 1200);
     return () => clearTimeout(t);
   }, []);
 
-  const dismiss = (permanent: boolean) => {
+  const handleDismiss = () => {
     try {
-      if (permanent) localStorage.setItem(KEY, "1");
-      else localStorage.setItem(KEY, String(Date.now()));
-    } catch {
-      // ignore
-    }
+      if (dontShowAgain) {
+        localStorage.setItem(KEY, "1");
+      } else {
+        localStorage.setItem(KEY, String(Date.now()));
+      }
+    } catch {}
     setShow(false);
   };
 
   if (!show) return null;
 
   return (
-    <div className="border-t border-rule bg-background">
-      <div className="mx-auto flex max-w-3xl flex-col gap-3 px-4 py-4 sm:flex-row sm:items-start sm:justify-between">
-        <div className="min-w-0">
-          <div className="font-serif text-base tracking-tight">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+      <div className="mx-4 max-w-md w-full rounded-3xl bg-paper border border-rule shadow-xl overflow-hidden">
+        <div className="px-6 pt-6 pb-2">
+          <div className="font-serif text-2xl tracking-tight text-ink">
             Add AskDerivn to your home screen
           </div>
-          <p className="mt-1 text-sm text-ink-soft">
-            For faster access, save AskDerivn like an app on your phone.
+          <p className="mt-3 text-ink-soft">
+            Save AskDerivn to your phone so you can open it quickly like an app.
           </p>
-          <p className="mt-2 text-xs text-ink-soft">
-            <span className="font-mono uppercase tracking-wider">iPhone</span>{" "}
-            — Tap Share, then “Add to Home Screen.”
-          </p>
-          <p className="mt-1 text-xs text-ink-soft">
-            <span className="font-mono uppercase tracking-wider">Android</span>{" "}
-            — Tap the browser menu, then “Add to Home screen” or “Install app.”
-          </p>
+
+          <div className="mt-6 space-y-4 text-sm">
+            <div>
+              <span className="font-mono uppercase tracking-wider text-xs text-ink-soft">iPhone</span>
+              <p className="mt-1">Tap the Share button, then choose “Add to Home Screen.”</p>
+            </div>
+            <div>
+              <span className="font-mono uppercase tracking-wider text-xs text-ink-soft">Android</span>
+              <p className="mt-1">Tap the browser menu, then choose “Add to Home screen” or “Install app.”</p>
+            </div>
+          </div>
         </div>
-        <div className="flex shrink-0 items-center gap-3 sm:flex-col sm:items-end">
+
+        <div className="border-t border-rule px-6 py-4 flex items-center gap-3 bg-paper">
+          <label className="flex items-center gap-2 flex-1 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={dontShowAgain}
+              onChange={(e) => setDontShowAgain(e.target.checked)}
+              className="accent-foreground"
+            />
+            <span className="text-sm text-ink-soft">Don’t tell me again</span>
+          </label>
+
           <button
-            type="button"
-            onClick={() => dismiss(false)}
-            className="btn-secondary h-8 px-4 text-xs"
+            onClick={handleDismiss}
+            className="btn-primary px-8 h-10 text-sm font-medium rounded-3xl"
           >
             Got it
-          </button>
-          <button
-            type="button"
-            onClick={() => dismiss(true)}
-            className="text-xs text-ink-soft text-link underline-offset-2 hover:underline"
-          >
-            Don't show again
           </button>
         </div>
       </div>
