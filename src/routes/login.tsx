@@ -19,6 +19,16 @@ function LoginPage() {
   const [oauthLoading, setOauthLoading] = useState<"google" | "apple" | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // Surface any error left by post-auth (e.g. "no account for that Google login")
+  if (typeof window !== "undefined" && error === null) {
+    const stored = window.sessionStorage.getItem("auth_error");
+    if (stored) {
+      window.sessionStorage.removeItem("auth_error");
+      // defer to next tick so we don't setState during render
+      queueMicrotask(() => setError(stored));
+    }
+  }
+
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -36,6 +46,9 @@ function LoginPage() {
     if (oauthLoading) return;
     setError(null);
     setOauthLoading(provider);
+    if (typeof window !== "undefined") {
+      window.sessionStorage.setItem("oauth_intent", "login");
+    }
     const result = await lovable.auth.signInWithOAuth(provider, {
       redirect_uri: window.location.origin + "/post-auth",
     });
