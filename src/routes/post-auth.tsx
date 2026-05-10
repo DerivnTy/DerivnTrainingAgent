@@ -5,6 +5,7 @@ import {
   waitForSession,
 } from "@/lib/post-auth-route";
 import { authedFetch } from "@/lib/auth-helpers";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/post-auth")({
   component: PostAuthPage,
@@ -23,6 +24,34 @@ function PostAuthPage() {
       if (!session) {
         navigate({ to: "/login" });
         return;
+      }
+
+      // OAuth intent guard: if the user came from /login via Google/Apple but
+      // no account existed before, Supabase will have auto-created one. Detect
+      // that and bounce them back with a friendly message.
+      const intent =
+        typeof window !== "undefined"
+          ? window.sessionStorage.getItem("oauth_intent")
+          : null;
+      if (typeof window !== "undefined") {
+        window.sessionStorage.removeItem("oauth_intent");
+      }
+      if (intent === "login") {
+        const createdAt = session.user.created_at
+          ? new Date(session.user.created_at).getTime()
+          : 0;
+        const isBrandNew = createdAt > 0 && Date.now() - createdAt < 60_000;
+        if (isBrandNew) {
+          await supabase.auth.signOut();
+          if (typeof window !== "undefined") {
+            window.sessionStorage.setItem(
+              "auth_error",
+              "I don't see an account for that login. Try signing up first."
+            );
+          }
+          navigate({ to: "/login" });
+          return;
+        }
       }
       const dest = await resolvePostAuthDestination(
         session.user.id,
