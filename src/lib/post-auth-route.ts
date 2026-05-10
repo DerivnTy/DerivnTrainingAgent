@@ -86,7 +86,7 @@ export async function authenticatedBeforeLoad(pathname: string) {
 
   // /admin: only admins; everyone else gets bounced to their normal destination.
   if (pathname.startsWith("/admin")) {
-    if (await isCurrentUserAdmin()) return;
+    if (await isCurrentUserAdmin(session.user.id)) return;
     const dest = await resolvePostAuthDestination(
       session.user.id,
       session.user.email
