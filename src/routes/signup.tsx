@@ -90,6 +90,7 @@ function SignupPage() {
     >
       <div className="space-y-2">
         <button
+          type="button"
           onClick={() => onOAuth("google")}
           disabled={!!oauthLoading}
           className="btn-secondary w-full"
@@ -97,6 +98,7 @@ function SignupPage() {
           {oauthLoading === "google" ? "Redirecting…" : "Continue with Google"}
         </button>
         <button
+          type="button"
           onClick={() => onOAuth("apple")}
           disabled={!!oauthLoading}
           className="btn-secondary w-full"
@@ -106,6 +108,7 @@ function SignupPage() {
       </div>
       {!showEmailForm ? (
         <button
+          type="button"
           onClick={() => setShowEmailForm(true)}
           className="btn-primary mt-3 w-full"
         >

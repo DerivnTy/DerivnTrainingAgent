@@ -31,6 +31,7 @@ export function DevAccessBadge() {
     <div className="pointer-events-auto fixed bottom-3 right-3 z-50 flex items-center gap-2 rounded-full border border-rule bg-muted px-3 py-1 text-xs text-ink-soft shadow-sm">
       <span className="font-medium tracking-wide">DEV ACCESS</span>
       <button
+        type="button"
         aria-label="Dismiss"
         className="text-ink-soft hover:text-foreground"
         onClick={() => {
