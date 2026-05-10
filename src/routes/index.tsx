@@ -23,14 +23,17 @@ function LandingPage() {
     <div className="min-h-screen bg-background text-foreground">
       <header className="border-b border-rule">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
-          <Link to="/" className="font-serif text-lg tracking-tight">
+          <Link to="/" className="font-serif text-lg tracking-tight text-foreground">
             AskDerivn
           </Link>
           <nav className="flex items-center gap-6 text-sm">
-            <Link to="/login" className="text-ink-soft text-link hover:text-foreground">
+            <Link to="/login" className="text-ink-soft hover:text-foreground transition-colors">
               Sign In
             </Link>
-            <Link to="/signup" className="btn-primary">
+            <Link 
+              to="/signup" 
+              className="inline-flex items-center justify-center rounded-full bg-foreground text-background hover:opacity-90 h-10 px-5 text-sm font-medium transition-all duration-200 active:scale-[0.98]"
+            >
               Get Access
             </Link>
           </nav>
@@ -47,10 +50,16 @@ function LandingPage() {
           </p>
 
           <div className="mt-12 flex flex-wrap items-center justify-center gap-3">
-            <Link to="/signup" className="btn-primary btn-pill-lg">
+            <Link 
+              to="/signup" 
+              className="inline-flex items-center justify-center rounded-full bg-foreground text-background hover:opacity-90 h-12 px-7 text-sm font-medium transition-all duration-200 active:scale-[0.98]"
+            >
               Get Access
             </Link>
-            <Link to="/login" className="btn-secondary btn-pill-lg">
+            <Link 
+              to="/login" 
+              className="inline-flex items-center justify-center rounded-full border border-rule bg-transparent text-foreground hover:bg-accent h-12 px-7 text-sm font-medium transition-all duration-200 active:scale-[0.98]"
+            >
               Sign In
             </Link>
           </div>
@@ -93,40 +102,6 @@ function LandingPage() {
           </div>
         </section>
 
-        <section className="border-t border-rule">
-          <div className="mx-auto max-w-5xl px-6 py-24 text-center">
-            <h2 className="font-serif text-4xl tracking-tight md:text-5xl">
-              How it works
-            </h2>
-            <div className="mx-auto mt-14 grid max-w-4xl gap-12 md:grid-cols-3 text-center">
-              {[
-                {
-                  t: "Create your profile",
-                  d: "Set your goal, training level, schedule, equipment, and limitations.",
-                },
-                {
-                  t: "Ask your question",
-                  d: "Training, running, nutrition, recovery, consistency, or what to do next.",
-                },
-                {
-                  t: "Get a clear answer",
-                  d: "AskDerivn filters the question through the Derivn system and gives one practical next action.",
-                },
-              ].map((step, i) => (
-                <div key={i}>
-                  <div className="font-mono text-xs text-ink-soft">
-                    {String(i + 1).padStart(2, "0")}
-                  </div>
-                  <h3 className="mt-3 font-serif text-xl">{step.t}</h3>
-                  <p className="mt-3 text-sm leading-relaxed text-ink-soft">
-                    {step.d}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
         <DemoSection />
 
         <section className="border-t border-rule">
@@ -138,10 +113,16 @@ function LandingPage() {
               Get the handbook and your private AskDerivn coaching brain.
             </p>
             <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-              <Link to="/signup" className="btn-primary btn-pill-lg">
+              <Link 
+                to="/signup" 
+                className="inline-flex items-center justify-center rounded-full bg-foreground text-background hover:opacity-90 h-12 px-7 text-sm font-medium transition-all duration-200 active:scale-[0.98]"
+              >
                 Get Access
               </Link>
-              <Link to="/login" className="btn-secondary btn-pill-lg">
+              <Link 
+                to="/login" 
+                className="inline-flex items-center justify-center rounded-full border border-rule bg-transparent text-foreground hover:bg-accent h-12 px-7 text-sm font-medium transition-all duration-200 active:scale-[0.98]"
+              >
                 Sign In
               </Link>
             </div>
