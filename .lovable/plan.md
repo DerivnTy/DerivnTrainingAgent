@@ -1,99 +1,46 @@
-# Admin Area Plan
+# Fix Add‑to‑Home‑Screen Modal
 
-Confirmed: `hello@derivn.com` exists as a real auth user (id `0e2a0395-e6df-46d8-97c1-5a77b57e38e8`). I'll seed this user as the first admin.
+## Problem
 
-## 1. Database (migration)
+`src/components/add-to-home-screen-banner.tsx` uses non‑existent tokens (`bg-paper`, `text-paper`) and one‑off Tailwind classes that drift from the global type/spacing system. Result:
 
-Create `public.admin_users`:
-- `user_id uuid primary key` (the auth user id)
-- `email text not null`
-- `created_at timestamptz not null default now()`
+- The "Got it" button is a dark pill with **invisible text** (`text-paper` isn't a defined utility).
+- Headings/body use ad‑hoc `font-serif text-2xl`, `text-sm`, `text-xs` instead of `.t-h3 / .t-body / .t-body-sm / .t-eyebrow / .t-meta` used site‑wide.
+- The card uses `rounded-3xl shadow-2xl` and `bg-ink/30 backdrop-blur-sm` overlay — feels generic, doesn't match the cream + thin‑rule, no‑shadow AskDerivn look.
+- iPhone/Android pills are pill‑shaped grey blobs (`rounded-2xl bg-rule/50`); should be small mono eyebrows.
 
-RLS: enabled, with **no policies** for normal users. All admin reads happen via the service-role server (admin client), so the table stays inaccessible from the browser.
+## Fix
 
-Security-definer helper:
-```sql
-create or replace function public.is_admin(_user_id uuid)
-returns boolean language sql stable security definer set search_path=public as $$
-  select exists (select 1 from public.admin_users where user_id = _user_id)
-$$;
-```
+Rewrite the modal with the site's design system. No new tokens needed.
 
-Seed row: insert `(0e2a0395-…, 'hello@derivn.com')`.
+**Overlay**: `bg-ink/40` (no blur — site doesn't use blur elsewhere).
 
-## 2. Server functions (server-side admin verification)
+**Card**:
+- `bg-background` (cream), `border border-rule`, `rounded-2xl`
+- `max-w-md w-full p-8`
+- Drop the heavy `shadow-2xl`; use a soft `shadow-sm` (subtle, AskDerivn‑style) or no shadow.
 
-New file `src/lib/admin.functions.ts` (thin file, only `createServerFn` declarations) using `requireSupabaseAuth` + `supabaseAdmin`:
+**Content rhythm**:
+- Title: `.t-h3` (serif, sized to fit phones — current `text-2xl` was clipping at 390px).
+- Subtitle: `.t-body-sm` with `mt-3 text-ink-soft`.
+- Instructions block: `mt-8 space-y-4`.
+  - Each row: `flex items-start gap-4`
+  - Label: `.t-eyebrow` (no background pill, just mono uppercase 11px) with fixed width `w-16` so the two rows align.
+  - Body copy: `.t-body-sm`.
 
-- `getAdminSummary` — verifies caller is admin via `is_admin(auth.uid())`; if not, throws 403. Returns:
-  - total signed-up users (count of `profiles`)
-  - total memberships (profiles with any non-null `subscription_status` other than `inactive`, OR all profiles depending on definition — I'll use "users with a Stripe customer id" for memberships and "subscription_status='active' AND not expired" for active)
-  - total active subscribers
-  - total canceled/inactive subscribers
-  - 5 most recent signups (email, created_at)
+**Footer row** (`mt-8 flex items-center justify-between gap-4`):
+- Checkbox label: `.t-body-sm text-ink-soft`, accent ink.
+- Primary button: `bg-foreground text-background` (this is the fix for the invisible label), `rounded-full px-6 py-2.5 t-eyebrow` (mono uppercase), label "Got it". Subtle hover: `hover:bg-ink-soft` or `hover:opacity-90`.
 
-- `getAdminUsers` — same admin gate. Returns array of profile rows with: `id`, `email`, `display_name`, `subscription_status`, `subscription_current_period_end`, `created_at`, `profile_completed_at`, `stripe_customer_id`. Uses `supabaseAdmin` so RLS is bypassed cleanly server-side. Optional pagination params (limit/offset) — V1 returns up to 200 newest.
+**Footnote**: `.t-meta text-center mt-6`.
 
-Both functions:
-1. `requireSupabaseAuth` ⇒ confirms auth.
-2. Call `is_admin(userId)` via admin client ⇒ confirms admin server-side.
-3. Only then return data.
+**Smart‑quotes**: keep curly quotes already in copy.
 
-(No /api/* HTTP routes needed — `createServerFn` is the right TanStack pattern. The spec's "/api/admin/*" intent is satisfied by these protected RPCs.)
+No behavior change (timing, localStorage key, dismissal logic). No new dependencies. Only `src/components/add-to-home-screen-banner.tsx` is touched.
 
-## 3. Routing
+## Acceptance
 
-Update `src/lib/post-auth-route.ts`:
-- Add `"/admin"` to `PostAuthDestination`.
-- New `resolvePostAuthDestination` first checks `is_admin` (via a small server fn `checkIsAdmin`) — if admin, returns `/admin`. Otherwise existing logic.
-- `authenticatedBeforeLoad` allows `/admin` only for admins; non-admins hitting `/admin` are redirected to their normal destination (chat/onboarding/subscribe).
-
-New route `src/routes/_authenticated.admin.tsx`:
-- `beforeLoad` calls `checkIsAdmin`; if false → `redirect({ to: '/chat' })`.
-- Loader calls `getAdminSummary` + `getAdminUsers` in parallel.
-- Component renders the page.
-
-`post-auth.tsx` already routes via `resolvePostAuthDestination`, so admins land on `/admin` after sign-in automatically.
-
-## 4. Admin page UI (`/admin`)
-
-AskDerivn style: cream bg, ink text, thin `border-rule` dividers, mono `.t-eyebrow` labels, `.t-h1` / `.t-h3`, no charts/gradients.
-
-Layout:
-- Header: `.t-eyebrow` "Admin" + `.t-h1` "Members".
-- Stats strip (4 stat blocks, divided by thin rules):
-  - Total signups
-  - Total memberships
-  - Active subscribers
-  - Canceled / inactive
-- Section: "Recent signups" — small list (email + relative date), 5 rows.
-- Section: "All members" — simple table:
-  - Name (display_name) | Email | Status | Signed up | Sub started* | Period ends | Profile complete
-  - *Sub start: we don't track it explicitly today; show `—` (note in plan: future field). Period end uses `subscription_current_period_end`.
-
-No admin link is shown in the regular sidebar for non-admins. For admins, add a small "Admin" link in `AppSidebar` rendered only when `checkIsAdmin` returns true (cosmetic — actual gating is server-side).
-
-## 5. Security checklist
-
-- Service role key only in `client.server.ts` (already the case); never imported by components.
-- Admin-only data only returned after server-side `is_admin` check.
-- `admin_users` table has RLS enabled with no policies → unreadable from browser.
-- No "become admin" UI; admins added by direct DB insert.
-- Non-admin visiting `/admin` is server-redirected via `beforeLoad` AND server fn 403s as a second layer.
-
-## 6. Files touched
-
-- migration (new table + `is_admin` fn + seed insert)
-- `src/lib/admin.functions.ts` (new)
-- `src/lib/post-auth-route.ts` (admin branch)
-- `src/routes/_authenticated.admin.tsx` (new)
-- `src/components/app-sidebar.tsx` (conditional Admin link)
-
-## Out of scope (V1)
-
-- Charts / analytics
-- Editing users from admin UI
-- Pagination beyond 200 rows
-- Sub start date column (not tracked today)
-
-Ready to implement on approval.
+- "Got it" button shows readable cream text on the dark pill.
+- Title, body, mono labels, and footer all match the typography used on /, /login, /admin.
+- Card looks like the rest of the site (cream, thin rule, restrained shadow), not a generic rounded modal.
+- Renders cleanly at 390px width without clipping.
