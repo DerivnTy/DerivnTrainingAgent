@@ -13,6 +13,7 @@ function isStandalone() {
 
 export function AddToHomeScreenBanner() {
   const [show, setShow] = useState(false);
+  const [dontShowAgain, setDontShowAgain] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -27,54 +28,58 @@ export function AddToHomeScreenBanner() {
     return () => clearTimeout(t);
   }, []);
 
-  const dismiss = (permanent: boolean) => {
+  const handleDismiss = () => {
     try {
-      if (permanent) localStorage.setItem(KEY, "1");
-      else localStorage.setItem(KEY, String(Date.now()));
-    } catch {
-      // ignore
-    }
+      if (dontShowAgain) {
+        localStorage.setItem(KEY, "1");
+      } else {
+        localStorage.setItem(KEY, String(Date.now()));
+      }
+    } catch {}
     setShow(false);
   };
 
   if (!show) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-      <div className="mx-4 max-w-xs w-full bg-paper border border-rule rounded-3xl p-6 shadow-xl">
-        <div className="font-serif text-xl tracking-tight text-center">
-          Add AskDerivn to your home screen
-        </div>
-        <p className="mt-3 text-sm text-ink-soft text-center">
-          Save AskDerivn to your phone so you can open it quickly like an app.
-        </p>
-        <div className="mt-6 space-y-3">
-          <div className="text-xs">
-            <span className="font-mono uppercase tracking-wider text-ink-soft">iPhone</span>
-            <p className="text-ink-soft mt-1">Tap the Share button, then choose “Add to Home Screen.”</p>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+      <div className="bg-[#F5F4F0] max-w-md w-full mx-4 rounded-3xl shadow-xl border border-[#E5E4DF] overflow-hidden">
+        <div className="p-8">
+          <h2 className="text-2xl font-semibold text-[#0A0A0A] tracking-tight mb-2">
+            Add AskDerivn to your home screen
+          </h2>
+          <p className="text-[#3A3A3A] text-[17px] leading-relaxed">
+            Save AskDerivn to your phone so you can open it quickly like an app.
+          </p>
+          <div className="mt-8 space-y-5 text-[#3A3A3A] text-sm">
+            <div>
+              <p className="font-medium mb-1">For iPhone:</p>
+              <p>Tap the Share button, then choose “Add to Home Screen.”</p>
+            </div>
+            <div>
+              <p className="font-medium mb-1">For Android:</p>
+              <p>Tap the browser menu, then choose “Add to Home screen” or “Install app.”</p>
+            </div>
           </div>
-          <div className="text-xs">
-            <span className="font-mono uppercase tracking-wider text-ink-soft">Android</span>
-            <p className="text-ink-soft mt-1">Tap the browser menu, then choose “Add to Home screen” or “Install app.”</p>
-          </div>
         </div>
-        <div className="mt-8 flex flex-col gap-3">
+
+        <div className="border-t border-[#E5E4DF] p-5 flex items-center gap-4">
+          <label className="flex items-center gap-2 flex-1 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={dontShowAgain}
+              onChange={(e) => setDontShowAgain(e.target.checked)}
+              className="accent-[#0A0A0A]"
+            />
+            <span className="text-sm text-[#3A3A3A]">Don’t tell me again</span>
+          </label>
+          
           <button
-            onClick={() => dismiss(false)}
-            className="btn-primary h-11 rounded-full text-sm font-medium active:scale-[0.98] transition-all"
+            onClick={handleDismiss}
+            className="rounded-3xl bg-[#0A0A0A] px-8 py-3.5 text-sm font-medium text-white active:scale-95 transition-all duration-200"
           >
             Got it
           </button>
-          <label className="flex items-center justify-center gap-2 text-sm text-ink-soft cursor-pointer">
-            <input
-              type="checkbox"
-              onChange={(e) => {
-                // handle permanent in dismiss
-              }}
-              className="accent-foreground"
-            />
-            <span>Don’t tell me again</span>
-          </label>
         </div>
       </div>
     </div>
