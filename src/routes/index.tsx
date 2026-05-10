@@ -86,11 +86,11 @@ function LandingPage() {
                 },
               ].map((item, i) => (
                 <div key={i}>
-                  <div className="font-mono text-xs text-ink-soft">
+                  <div className="t-eyebrow">
                     {String(i + 1).padStart(2, "0")}
                   </div>
-                  <h3 className="mt-3 font-serif text-xl">{item.t}</h3>
-                  <p className="mt-3 text-sm leading-relaxed text-ink-soft">
+                  <h3 className="mt-2 t-h3">{item.t}</h3>
+                  <p className="mt-3 t-body-sm">
                     {item.d}
                   </p>
                 </div>
