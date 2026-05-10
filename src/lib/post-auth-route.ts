@@ -1,12 +1,24 @@
+// post-auth-route.ts
 import { redirect } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 
-export type PostAuthDestination = "/login" | "/onboarding" | "/chat";
+export type PostAuthDestination = "/login" | "/onboarding" | "/chat" | "/admin";
 
 export async function resolvePostAuthDestination(
   userId: string,
   _email?: string | null
 ): Promise<PostAuthDestination> {
+  // First check if admin
+  const { data: admin } = await supabase
+    .from("admin_users")
+    .select("id")
+    .eq("user_id", userId)
+    .single();
+
+  if (admin) {
+    return "/admin";
+  }
+
   const { data: profile, error } = await supabase
     .from("profiles")
     .select("profile_completed_at, goal")
@@ -59,5 +71,8 @@ export async function authenticatedBeforeLoad(pathname: string) {
   }
   if (dest === "/chat" && pathname === "/onboarding") {
     throw redirect({ to: "/chat" });
+  }
+  if (dest === "/admin" && pathname !== "/admin") {
+    throw redirect({ to: "/admin" });
   }
 }
