@@ -23,17 +23,15 @@ export function AddToHomeScreenBanner() {
     } catch {
       return;
     }
-    // Small delay so it doesn't pop in instantly on first chat load
-    const t = setTimeout(() => setShow(true), 1200);
+    // Small delay so it doesn't pop in instantly
+    const t = setTimeout(() => setShow(true), 1500);
     return () => clearTimeout(t);
   }, []);
 
-  const dismiss = () => {
+  const handleGotIt = () => {
     try {
       if (dontShowAgain) {
         localStorage.setItem(KEY, "1");
-      } else {
-        localStorage.setItem(KEY, String(Date.now()));
       }
     } catch {}
     setShow(false);
@@ -42,44 +40,43 @@ export function AddToHomeScreenBanner() {
   if (!show) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-      <div className="max-w-md w-full bg-paper border border-rule rounded-3xl shadow-xl overflow-hidden">
-        <div className="px-6 pt-6 pb-4">
-          <h2 className="font-serif text-2xl tracking-tight text-foreground">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+      <div className="mx-4 max-w-md w-full bg-paper rounded-3xl border border-rule p-8 shadow-2xl">
+        <div className="text-center">
+          <div className="font-serif text-2xl tracking-tight mb-1">
             Add AskDerivn to your home screen
-          </h2>
-          <p className="mt-3 text-ink-soft">
+          </div>
+          <p className="text-ink-soft mb-6">
             Save AskDerivn to your phone so you can open it quickly like an app.
           </p>
-          <div className="mt-6 space-y-4 text-sm">
+          <div className="text-left space-y-5 text-sm">
             <div>
-              <span className="font-mono uppercase text-xs tracking-wider text-ink-soft">iPhone</span>
-              <p className="text-ink">Tap the Share button, then choose “Add to Home Screen.”</p>
+              <span className="font-mono uppercase tracking-wider text-xs text-ink-soft">iPhone</span>
+              <p className="mt-1.5">Tap the Share button, then choose “Add to Home Screen.”</p>
             </div>
             <div>
-              <span className="font-mono uppercase text-xs tracking-wider text-ink-soft">Android</span>
-              <p className="text-ink">Tap the browser menu, then choose “Add to Home screen” or “Install app.”</p>
+              <span className="font-mono uppercase tracking-wider text-xs text-ink-soft">Android</span>
+              <p className="mt-1.5">Tap the browser menu, then choose “Add to Home screen” or “Install app.”</p>
             </div>
           </div>
-        </div>
 
-        <div className="bg-background border-t border-rule px-6 py-4 flex items-center justify-between">
-          <label className="flex items-center gap-2 text-sm text-ink-soft cursor-pointer">
-            <input
-              type="checkbox"
-              checked={dontShowAgain}
-              onChange={(e) => setDontShowAgain(e.target.checked)}
-              className="accent-foreground"
-            />
-            <span>Don’t tell me again</span>
-          </label>
-
-          <button
-            onClick={dismiss}
-            className="btn-primary px-8 py-2 text-sm rounded-3xl"
-          >
-            Got it
-          </button>
+          <div className="mt-10 flex items-center justify-between">
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input 
+                type="checkbox"
+                checked={dontShowAgain}
+                onChange={(e) => setDontShowAgain(e.target.checked)}
+                className="w-4 h-4 accent-foreground rounded"
+              />
+              <span className="text-sm text-ink-soft">Don’t tell me again</span>
+            </label>
+            <button
+              onClick={handleGotIt}
+              className="btn-primary px-8 py-3 rounded-3xl text-sm font-medium active:scale-95 transition-all"
+            >
+              Got it
+            </button>
+          </div>
         </div>
       </div>
     </div>
