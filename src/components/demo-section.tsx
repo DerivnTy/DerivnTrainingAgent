@@ -111,7 +111,7 @@ export function DemoSection() {
 
         {!limitReached && exchanges.length === 0 && (
           <div className="mt-8">
-            <div className="font-mono text-xs uppercase tracking-widest text-ink-soft">
+            <div className="t-eyebrow">
               Try one of these
             </div>
             <ul className="mt-3 flex flex-wrap gap-2">
@@ -121,7 +121,7 @@ export function DemoSection() {
                     type="button"
                     onClick={() => setInput(s)}
                     disabled={loading}
-                    className="rounded-full border border-rule px-4 py-2 text-sm text-ink-soft transition-colors hover:bg-accent hover:text-foreground"
+                    className="rounded-full border border-rule px-4 py-2 t-body-sm transition-colors hover:bg-accent hover:text-foreground"
                   >
                     {s}
                   </button>
