@@ -1,7 +1,6 @@
 // post-auth-route.ts
 import { redirect } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
-import { checkIsAdmin } from "@/lib/admin.functions";
 
 export type PostAuthDestination =
   | "/login"
@@ -10,10 +9,14 @@ export type PostAuthDestination =
   | "/chat"
   | "/admin";
 
-async function isCurrentUserAdmin(): Promise<boolean> {
+async function isCurrentUserAdmin(userId: string): Promise<boolean> {
   try {
-    const { isAdmin } = await checkIsAdmin();
-    return isAdmin;
+    const { data } = await supabase
+      .from("admin_users")
+      .select("user_id")
+      .eq("user_id", userId)
+      .maybeSingle();
+    return Boolean(data);
   } catch {
     return false;
   }
