@@ -94,7 +94,7 @@ export function DemoSection() {
             className="w-full resize-none rounded-3xl border border-rule bg-background px-5 py-4 text-base leading-relaxed text-foreground placeholder:text-ink-soft focus:outline-none focus:ring-2 focus:ring-foreground/20 disabled:opacity-60"
           />
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-            <span className="font-mono text-xs text-ink-soft">
+            <span className="t-eyebrow">
               {limitReached
                 ? "Demo limit reached"
                 : `${DEMO_LIMIT - count} demo question${DEMO_LIMIT - count === 1 ? "" : "s"} left`}
