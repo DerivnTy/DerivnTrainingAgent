@@ -108,26 +108,28 @@ function LandingPage() {
         </section>
 
         <section className="border-t border-rule">
-          <div className="mx-auto max-w-5xl px-6 py-20">
-            <div className="mx-auto max-w-2xl text-center">
-              <h2 className="font-serif text-4xl tracking-tight md:text-5xl">
-                Pricing
-              </h2>
-              <div className="mt-8 font-serif tracking-tight text-2xl">
-                $30/month
+          <div className="mx-auto max-w-5xl px-6 py-14 md:py-20">
+            <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between md:gap-10">
+              <div>
+                <div className="font-mono text-xs tracking-wider text-ink-soft">
+                  PRICING
+                </div>
+                <div className="mt-3 font-serif text-3xl tracking-tight md:text-4xl">
+                  $30/month
+                </div>
+                <p className="mt-2 text-sm text-ink-soft">Cancel anytime.</p>
               </div>
-              <p className="mt-3 text-sm text-ink-soft">Cancel anytime.</p>
-              <div className="mt-8 flex justify-center">
+              <div className="flex flex-col gap-4 md:items-end md:text-right">
+                <p className="max-w-sm text-sm text-ink-soft">
+                  Includes the 100-page PDF and AskDerivn chat access.
+                </p>
                 <Link
                   to="/signup"
-                  className="inline-flex items-center justify-center rounded-full bg-foreground text-background hover:opacity-90 h-12 px-7 text-sm font-medium transition-all duration-200 active:scale-[0.98]"
+                  className="inline-flex w-full items-center justify-center rounded-full bg-foreground text-background hover:opacity-90 h-12 px-7 text-sm font-medium transition-all duration-200 active:scale-[0.98] sm:w-auto"
                 >
                   Get Access
                 </Link>
               </div>
-              <p className="mt-6 text-sm text-ink-soft">
-                Includes the 100-page PDF and AskDerivn chat access.
-              </p>
             </div>
           </div>
         </section>
