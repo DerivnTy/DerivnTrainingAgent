@@ -98,14 +98,14 @@ function SignupPage() {
       <button
         onClick={() => onOAuth("apple")}
         disabled={!!oauthLoading}
-        className="btn-secondary mt-3 w-full"
+        className="btn-secondary mt-2 w-full"
       >
         {oauthLoading === "apple" ? "Redirecting…" : "Continue with Apple"}
       </button>
       {!showEmailForm ? (
         <button
           onClick={() => setShowEmailForm(true)}
-          className="btn-primary mt-3 w-full"
+          className="btn-primary mt-2 w-full"
         >
           Create an account
         </button>
