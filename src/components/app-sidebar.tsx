@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { authedFetch } from "@/lib/auth-helpers";
 import { useChatContext } from "@/lib/chat-context";
 import { PdfViewerDialog } from "@/components/pdf-viewer-dialog";
+import { checkIsAdmin } from "@/lib/admin.functions";
 
 type ConversationSummary = {
   id: string;
@@ -16,6 +17,7 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
   const { conversationsVersion, refreshConversations } = useChatContext();
   const [conversations, setConversations] = useState<ConversationSummary[]>([]);
   const [pdfOpen, setPdfOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const routerState = useRouterState();
   const pathname = routerState.location.pathname;
