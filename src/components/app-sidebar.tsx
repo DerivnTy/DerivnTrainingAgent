@@ -155,6 +155,16 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
           >
             Account
           </Link>
+          {isAdmin && (
+            <Link
+              to="/admin"
+              onClick={onNavigate}
+              className="text-link hover:text-foreground"
+              activeProps={{ className: "text-foreground" }}
+            >
+              Admin
+            </Link>
+          )}
           <button
             onClick={signOut}
             className="text-left text-link hover:text-foreground"
