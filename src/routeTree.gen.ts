@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as PostAuthRouteImport } from './routes/post-auth'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
@@ -30,6 +31,11 @@ import { Route as ApiConversationsIdRouteImport } from './routes/api/conversatio
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PostAuthRoute = PostAuthRouteImport.update({
@@ -117,6 +123,7 @@ export interface FileRoutesByFullPath {
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/post-auth': typeof PostAuthRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/account': typeof AuthenticatedAccountRoute
   '/chat': typeof AuthenticatedChatRoute
@@ -135,6 +142,7 @@ export interface FileRoutesByTo {
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/post-auth': typeof PostAuthRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/account': typeof AuthenticatedAccountRoute
   '/chat': typeof AuthenticatedChatRoute
@@ -155,6 +163,7 @@ export interface FileRoutesById {
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/post-auth': typeof PostAuthRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/_authenticated/account': typeof AuthenticatedAccountRoute
   '/_authenticated/chat': typeof AuthenticatedChatRoute
@@ -175,6 +184,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/login'
     | '/post-auth'
+    | '/reset-password'
     | '/signup'
     | '/account'
     | '/chat'
@@ -193,6 +203,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/login'
     | '/post-auth'
+    | '/reset-password'
     | '/signup'
     | '/account'
     | '/chat'
@@ -212,6 +223,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/login'
     | '/post-auth'
+    | '/reset-password'
     | '/signup'
     | '/_authenticated/account'
     | '/_authenticated/chat'
@@ -232,6 +244,7 @@ export interface RootRouteChildren {
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
   PostAuthRoute: typeof PostAuthRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   SignupRoute: typeof SignupRoute
   ApiChatRoute: typeof ApiChatRoute
   ApiCheckoutRoute: typeof ApiCheckoutRoute
@@ -248,6 +261,13 @@ declare module '@tanstack/react-router' {
       path: '/signup'
       fullPath: '/signup'
       preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/post-auth': {
@@ -400,6 +420,7 @@ const rootRouteChildren: RootRouteChildren = {
   ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
   PostAuthRoute: PostAuthRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   SignupRoute: SignupRoute,
   ApiChatRoute: ApiChatRoute,
   ApiCheckoutRoute: ApiCheckoutRoute,
