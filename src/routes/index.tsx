@@ -134,7 +134,7 @@ function LandingPage() {
 
         <section className="border-t border-rule">
           <div className="mx-auto max-w-3xl px-6 py-24 text-center">
-            <h2 className="font-serif text-4xl tracking-tight md:text-5xl">
+            <h2 className="t-h2">
               Ready when you are.
             </h2>
             <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
