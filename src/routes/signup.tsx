@@ -17,6 +17,7 @@ function SignupPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [oauthLoading, setOauthLoading] = useState<"google" | "apple" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [sent, setSent] = useState(false);
   const [showEmailForm, setShowEmailForm] = useState(false);
@@ -41,21 +42,24 @@ function SignupPage() {
       setError(error.message);
       return;
     }
-    // If session is established immediately (auto-confirm), go to pay portal.
+    // Always route through /post-auth so the subscription gate applies.
     if (data.session) {
-      navigate({ to: "/onboarding" });
+      navigate({ to: "/post-auth" });
       return;
     }
     setSent(true);
   };
 
-  const onGoogle = async () => {
+  const onOAuth = async (provider: "google" | "apple") => {
+    if (oauthLoading) return;
     setError(null);
-    const result = await lovable.auth.signInWithOAuth("google", {
+    setOauthLoading(provider);
+    const result = await lovable.auth.signInWithOAuth(provider, {
       redirect_uri: window.location.origin + "/post-auth",
     });
     if (result.error) {
-      setError(result.error.message ?? "Google sign-in failed");
+      setOauthLoading(null);
+      setError(result.error.message ?? `${provider === "google" ? "Google" : "Apple"} sign-in failed`);
       return;
     }
     if (result.redirected) return;
@@ -81,11 +85,22 @@ function SignupPage() {
   return (
     <AuthShell
       title="Get access"
-      subtitle="Create your AskDerivn account. Membership is $50/month."
+      subtitle="Create your AskDerivn account. Membership is $50/month. Cancel anytime."
       rightLink={{ to: "/login", label: "Sign in" }}
     >
-      <button onClick={onGoogle} className="btn-secondary w-full">
-        Sign up with Google
+      <button
+        onClick={() => onOAuth("google")}
+        disabled={!!oauthLoading}
+        className="btn-secondary w-full"
+      >
+        {oauthLoading === "google" ? "Redirecting…" : "Continue with Google"}
+      </button>
+      <button
+        onClick={() => onOAuth("apple")}
+        disabled={!!oauthLoading}
+        className="btn-secondary mt-3 w-full"
+      >
+        {oauthLoading === "apple" ? "Redirecting…" : "Continue with Apple"}
       </button>
       {!showEmailForm ? (
         <button

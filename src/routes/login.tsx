@@ -16,6 +16,7 @@ function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [oauthLoading, setOauthLoading] = useState<"google" | "apple" | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const onSubmit = async (e: FormEvent) => {
@@ -31,13 +32,16 @@ function LoginPage() {
     navigate({ to: "/post-auth" });
   };
 
-  const onGoogle = async () => {
+  const onOAuth = async (provider: "google" | "apple") => {
+    if (oauthLoading) return;
     setError(null);
-    const result = await lovable.auth.signInWithOAuth("google", {
+    setOauthLoading(provider);
+    const result = await lovable.auth.signInWithOAuth(provider, {
       redirect_uri: window.location.origin + "/post-auth",
     });
     if (result.error) {
-      setError(result.error.message ?? "Google sign-in failed");
+      setOauthLoading(null);
+      setError(result.error.message ?? `${provider === "google" ? "Google" : "Apple"} sign-in failed`);
       return;
     }
     if (result.redirected) return;
@@ -46,8 +50,19 @@ function LoginPage() {
 
   return (
     <AuthShell title="Welcome back" subtitle="Pick up right where you left off." rightLink={{ to: "/signup", label: "Get access" }}>
-      <button onClick={onGoogle} className="btn-secondary w-full">
-        Continue with Google
+      <button
+        onClick={() => onOAuth("google")}
+        disabled={!!oauthLoading}
+        className="btn-secondary w-full"
+      >
+        {oauthLoading === "google" ? "Redirecting…" : "Continue with Google"}
+      </button>
+      <button
+        onClick={() => onOAuth("apple")}
+        disabled={!!oauthLoading}
+        className="btn-secondary mt-3 w-full"
+      >
+        {oauthLoading === "apple" ? "Redirecting…" : "Continue with Apple"}
       </button>
       <Divider />
       <form onSubmit={onSubmit} className="space-y-4">

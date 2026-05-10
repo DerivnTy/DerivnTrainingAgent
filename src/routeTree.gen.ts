@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SubscribeRouteImport } from './routes/subscribe'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as PostAuthRouteImport } from './routes/post-auth'
@@ -28,6 +29,11 @@ import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/
 import { Route as ApiPublicDemoChatRouteImport } from './routes/api/public/demo-chat'
 import { Route as ApiConversationsIdRouteImport } from './routes/api/conversations.$id'
 
+const SubscribeRoute = SubscribeRouteImport.update({
+  id: '/subscribe',
+  path: '/subscribe',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
@@ -125,6 +131,7 @@ export interface FileRoutesByFullPath {
   '/post-auth': typeof PostAuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
+  '/subscribe': typeof SubscribeRoute
   '/account': typeof AuthenticatedAccountRoute
   '/chat': typeof AuthenticatedChatRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
@@ -144,6 +151,7 @@ export interface FileRoutesByTo {
   '/post-auth': typeof PostAuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
+  '/subscribe': typeof SubscribeRoute
   '/account': typeof AuthenticatedAccountRoute
   '/chat': typeof AuthenticatedChatRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
@@ -165,6 +173,7 @@ export interface FileRoutesById {
   '/post-auth': typeof PostAuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
+  '/subscribe': typeof SubscribeRoute
   '/_authenticated/account': typeof AuthenticatedAccountRoute
   '/_authenticated/chat': typeof AuthenticatedChatRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
@@ -186,6 +195,7 @@ export interface FileRouteTypes {
     | '/post-auth'
     | '/reset-password'
     | '/signup'
+    | '/subscribe'
     | '/account'
     | '/chat'
     | '/onboarding'
@@ -205,6 +215,7 @@ export interface FileRouteTypes {
     | '/post-auth'
     | '/reset-password'
     | '/signup'
+    | '/subscribe'
     | '/account'
     | '/chat'
     | '/onboarding'
@@ -225,6 +236,7 @@ export interface FileRouteTypes {
     | '/post-auth'
     | '/reset-password'
     | '/signup'
+    | '/subscribe'
     | '/_authenticated/account'
     | '/_authenticated/chat'
     | '/_authenticated/onboarding'
@@ -246,6 +258,7 @@ export interface RootRouteChildren {
   PostAuthRoute: typeof PostAuthRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SignupRoute: typeof SignupRoute
+  SubscribeRoute: typeof SubscribeRoute
   ApiChatRoute: typeof ApiChatRoute
   ApiCheckoutRoute: typeof ApiCheckoutRoute
   ApiConversationsRoute: typeof ApiConversationsRouteWithChildren
@@ -256,6 +269,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/subscribe': {
+      id: '/subscribe'
+      path: '/subscribe'
+      fullPath: '/subscribe'
+      preLoaderRoute: typeof SubscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/signup': {
       id: '/signup'
       path: '/signup'
@@ -422,6 +442,7 @@ const rootRouteChildren: RootRouteChildren = {
   PostAuthRoute: PostAuthRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SignupRoute: SignupRoute,
+  SubscribeRoute: SubscribeRoute,
   ApiChatRoute: ApiChatRoute,
   ApiCheckoutRoute: ApiCheckoutRoute,
   ApiConversationsRoute: ApiConversationsRouteWithChildren,
