@@ -41,9 +41,9 @@ function SignupPage() {
       setError(error.message);
       return;
     }
-    // If session is established immediately (auto-confirm), go to pay portal.
+    // Always route through /post-auth so the subscription gate applies.
     if (data.session) {
-      navigate({ to: "/onboarding" });
+      navigate({ to: "/post-auth" });
       return;
     }
     setSent(true);
