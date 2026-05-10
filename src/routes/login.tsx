@@ -92,21 +92,21 @@ function LoginPage() {
         <button type="submit" disabled={loading} className="btn-primary w-full">
           {loading ? "Signing in…" : "Sign in"}
         </button>
-        <p className="text-center text-sm text-ink-soft">
+        <p className="text-center t-body-sm">
           <Link to="/forgot-password" className="text-link hover:text-foreground">
             Forgot password?
           </Link>
         </p>
       </form>
-      <p className="mt-8 text-center text-sm text-ink-soft">
+      <p className="mt-8 text-center t-body-sm">
         New here?{" "}
         <Link to="/signup" className="text-foreground text-link underline">
           Get access
         </Link>
       </p>
       <section className="mt-12 border-t border-rule pt-8 text-center">
-        <h2 className="font-serif text-2xl tracking-tight">No starting over</h2>
-        <p className="mt-3 text-sm text-ink-soft">
+        <h3 className="t-h3">No starting over</h3>
+        <p className="mt-3 t-body-sm">
           Your chats, goals, and training context stay connected so every
           answer builds from what AskDerivn already knows.
         </p>
@@ -130,20 +130,20 @@ export function AuthShell({
     <div className="flex min-h-screen flex-col bg-background text-foreground">
       <header className="border-b border-rule">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
-          <Link to="/" className="font-serif text-lg tracking-tight">
+          <Link to="/" className="t-wordmark">
             AskDerivn
           </Link>
           {rightLink && (
-            <Link to={rightLink.to} className="text-sm text-ink-soft text-link hover:text-foreground">
+            <Link to={rightLink.to} className="t-body-sm text-link hover:text-foreground">
               {rightLink.label}
             </Link>
           )}
         </div>
       </header>
       <main className="mx-auto w-full max-w-md flex-1 px-6 pt-20 pb-24">
-        <h1 className="font-serif text-4xl tracking-tight">{title}</h1>
+        <h1 className="t-h1">{title}</h1>
         {subtitle && (
-          <p className="mt-3 text-sm text-ink-soft">{subtitle}</p>
+          <p className="mt-3 t-body text-ink-soft">{subtitle}</p>
         )}
         <div className="mt-10">{children}</div>
       </main>
@@ -161,17 +161,17 @@ export function Field({
 }) {
   return (
     <label className="block">
-      <span className="block font-mono text-xs uppercase tracking-wider text-ink-soft">
+      <span className="block t-eyebrow">
         {label}
       </span>
-      <div className="mt-1">{children}</div>
+      <div className="mt-2">{children}</div>
     </label>
   );
 }
 
 export function Divider() {
   return (
-    <div className="flex items-center gap-3 text-xs text-ink-soft">
+    <div className="flex items-center gap-3 t-eyebrow">
       <div className="h-px flex-1 bg-rule" />
       <span>or</span>
       <div className="h-px flex-1 bg-rule" />

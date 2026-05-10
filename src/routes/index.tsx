@@ -23,7 +23,7 @@ function LandingPage() {
     <div className="min-h-screen bg-background text-foreground">
       <header className="border-b border-rule">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
-          <Link to="/" className="font-serif text-lg tracking-tight text-foreground">
+          <Link to="/" className="t-wordmark">
             AskDerivn
           </Link>
           <nav className="flex items-center gap-6 text-sm">
@@ -42,10 +42,10 @@ function LandingPage() {
 
       <main>
         <section className="mx-auto max-w-5xl px-6 pt-32 pb-24 text-center">
-          <h1 className="font-serif text-6xl leading-[1.02] tracking-tight md:text-8xl">
+          <h1 className="t-display">
             AskDerivn
           </h1>
-          <p className="mx-auto mt-8 max-w-2xl text-lg leading-relaxed text-foreground md:text-xl">
+          <p className="mx-auto mt-8 max-w-2xl t-body text-lg">
             Built to give clear answers and clarity toward fitness goals.
           </p>
 
@@ -68,10 +68,8 @@ function LandingPage() {
         <section className="border-t border-rule">
           <div className="mx-auto max-w-5xl px-6 py-20">
             <div className="mx-auto max-w-2xl text-center">
-              <h2 className="font-serif text-4xl tracking-tight md:text-5xl">
-                What you get
-              </h2>
-              <p className="mt-5 text-base leading-relaxed text-ink-soft">
+              <h2 className="t-h2">What you get</h2>
+              <p className="mt-3 t-body-sm">
                 Two things, one membership.
               </p>
             </div>
@@ -88,11 +86,11 @@ function LandingPage() {
                 },
               ].map((item, i) => (
                 <div key={i}>
-                  <div className="font-mono text-xs text-ink-soft">
+                  <div className="t-eyebrow">
                     {String(i + 1).padStart(2, "0")}
                   </div>
-                  <h3 className="mt-3 font-serif text-xl">{item.t}</h3>
-                  <p className="mt-3 text-sm leading-relaxed text-ink-soft">
+                  <h3 className="mt-2 t-h3">{item.t}</h3>
+                  <p className="mt-3 t-body-sm">
                     {item.d}
                   </p>
                 </div>
@@ -100,7 +98,7 @@ function LandingPage() {
             </div>
 
             <div className="mx-auto mt-12 max-w-2xl text-center">
-              <p className="text-sm text-ink-soft">
+              <p className="t-body-sm">
                 The PDF gives you the system. AskDerivn helps you apply it.
               </p>
             </div>
@@ -111,16 +109,14 @@ function LandingPage() {
           <div className="mx-auto max-w-5xl px-6 py-14 md:py-20">
             <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between md:gap-10">
               <div>
-                <div className="font-mono text-xs tracking-wider text-ink-soft">
-                  PRICING
-                </div>
-                <div className="mt-3 font-serif text-3xl tracking-tight md:text-4xl">
+                <div className="t-eyebrow">PRICING</div>
+                <div className="mt-2 font-serif text-3xl tracking-tight md:text-4xl">
                   $30/month
                 </div>
-                <p className="mt-2 text-sm text-ink-soft">Cancel anytime.</p>
+                <p className="mt-2 t-body-sm">Cancel anytime.</p>
               </div>
               <div className="flex flex-col gap-4 md:items-end md:text-right">
-                <p className="max-w-sm text-sm text-ink-soft">
+                <p className="max-w-sm t-body-sm">
                   Includes the 100-page PDF and AskDerivn chat access.
                 </p>
                 <Link
@@ -138,7 +134,7 @@ function LandingPage() {
 
         <section className="border-t border-rule">
           <div className="mx-auto max-w-3xl px-6 py-24 text-center">
-            <h2 className="font-serif text-4xl tracking-tight md:text-5xl">
+            <h2 className="t-h2">
               Ready when you are.
             </h2>
             <div className="mt-10 flex flex-wrap items-center justify-center gap-3">

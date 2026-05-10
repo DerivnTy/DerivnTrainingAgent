@@ -151,7 +151,7 @@ function ChatPage() {
         className="flex-1 overflow-y-auto pb-4 pt-6"
       >
         {loadingConv && (
-          <p className="text-sm text-ink-soft">Loading conversation…</p>
+          <p className="t-body-sm">Loading conversation…</p>
         )}
 
         <div className="space-y-6">
@@ -172,7 +172,7 @@ function ChatPage() {
                 key={m.id}
                 className={`animate-message-in ${showDivider ? "border-t border-rule pt-6" : ""}`}
               >
-                <div className="font-mono text-xs uppercase tracking-wider text-ink-soft">
+                <div className="t-eyebrow">
                   AskDerivn
                 </div>
                 <div className="mt-3 text-sm leading-relaxed">
@@ -188,10 +188,10 @@ function ChatPage() {
             <article
               className={`animate-message-in ${messages.length > 0 ? "border-t border-rule pt-8" : ""}`}
             >
-              <div className="font-mono text-xs uppercase tracking-wider text-ink-soft">
+              <div className="t-eyebrow">
                 AskDerivn
               </div>
-              <p className="mt-3 text-sm text-ink-soft animate-pulse">Thinking…</p>
+              <p className="mt-3 t-body-sm animate-pulse">Thinking…</p>
             </article>
           )}
 

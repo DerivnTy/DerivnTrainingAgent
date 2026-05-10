@@ -14,12 +14,12 @@ function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
+        <h1 className="t-display">404</h1>
+        <h2 className="mt-4 t-h2">Page not found</h2>
+        <p className="mt-3 t-body-sm">
           The page you're looking for doesn't exist or has been moved.
         </p>
-        <div className="mt-6">
+        <div className="mt-8">
           <Link to="/" className="btn-primary">
             Go home
           </Link>
@@ -36,18 +36,16 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          This page didn't load
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
+        <h1 className="t-h1">This page didn't load</h1>
+        <p className="mt-3 t-body-sm">
           Something went wrong on our end. You can try refreshing or head back home.
         </p>
         {error?.message && (
-          <p className="mt-3 font-mono text-xs text-muted-foreground/70 break-words">
+          <p className="mt-3 font-mono text-xs text-ink-soft/70 break-words">
             {error.message}
           </p>
         )}
-        <div className="mt-6 flex flex-wrap justify-center gap-2">
+        <div className="mt-8 flex flex-wrap justify-center gap-2">
           <button
             onClick={() => {
               router.invalidate();

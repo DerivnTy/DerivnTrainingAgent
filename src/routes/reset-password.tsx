@@ -59,7 +59,7 @@ function ResetPasswordPage() {
   if (done) {
     return (
       <AuthShell title="Password updated" subtitle="Signing you in…">
-        <p className="text-sm text-ink-soft">One moment.</p>
+        <p className="t-body-sm">One moment.</p>
       </AuthShell>
     );
   }
@@ -71,7 +71,7 @@ function ResetPasswordPage() {
       rightLink={{ to: "/login", label: "Sign in" }}
     >
       {!ready ? (
-        <p className="text-sm text-ink-soft">
+        <p className="t-body-sm">
           This link is invalid or has expired.{" "}
           <Link to="/forgot-password" className="text-foreground text-link underline">
             Request a new one

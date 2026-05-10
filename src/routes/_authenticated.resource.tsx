@@ -10,10 +10,10 @@ const PDF_URL = "/pdf/built-for-motion.pdf";
 function ResourcePage() {
   return (
     <main className="mx-auto h-full max-w-2xl overflow-y-auto px-6 pt-20 pb-24">
-      <div className="font-mono text-xs uppercase tracking-wider text-ink-soft">
+      <div className="t-eyebrow">
         PDF · 100 pages
       </div>
-      <h1 className="mt-3 font-serif text-4xl tracking-tight">
+      <h1 className="mt-3 t-h1">
         Built for Motion
       </h1>
       <p className="mt-4 text-sm leading-relaxed text-ink-soft">

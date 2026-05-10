@@ -289,7 +289,7 @@ function AccountPage() {
   if (loading) {
     return (
       <main className="mx-auto h-full max-w-2xl overflow-y-auto px-6 pt-20 pb-24">
-        <p className="text-sm text-ink-soft">Loading…</p>
+        <p className="t-body-sm">Loading…</p>
       </main>
     );
   }
@@ -297,15 +297,15 @@ function AccountPage() {
   return (
     <main className="mx-auto h-full max-w-2xl overflow-y-auto px-6 pt-4 pb-24">
       <div className="flex items-center justify-between gap-4">
-        <h1 className="font-serif text-4xl tracking-tight">Account</h1>
+        <h1 className="t-h1">Account</h1>
         <Link
           to="/chat"
-          className="font-mono text-xs uppercase tracking-wider text-ink-soft text-link hover:text-foreground"
+          className="t-eyebrow text-link hover:text-foreground"
         >
           ← Back to chat
         </Link>
       </div>
-      <p className="mt-3 text-sm text-ink-soft">
+      <p className="mt-3 t-body-sm">
         Manage your sign-in and the context AskDerivn uses to give better
         answers.
       </p>
@@ -330,7 +330,7 @@ function AccountPage() {
         {isEmailProvider && (
           <>
             <form onSubmit={onChangeEmail} className="mt-8 space-y-3">
-              <label className="block font-mono text-xs uppercase tracking-wider text-ink-soft">
+              <label className="block t-eyebrow">
                 Change email
               </label>
               <input
@@ -516,7 +516,7 @@ function AccountPage() {
         <div className="pt-6">
           {saveErr && <p className="mb-3 text-sm text-red-700">{saveErr}</p>}
           {savedMsg && (
-            <p className="mb-3 text-sm text-ink-soft">{savedMsg}</p>
+            <p className="mb-3 t-body-sm">{savedMsg}</p>
           )}
           <button
             type="submit"
@@ -543,7 +543,7 @@ function AccountPage() {
       <div className="mt-10 flex justify-end">
         <Link
           to="/chat"
-          className="font-mono text-xs uppercase tracking-wider text-ink-soft text-link hover:text-foreground"
+          className="t-eyebrow text-link hover:text-foreground"
         >
           ← Back to chat
         </Link>
@@ -561,7 +561,7 @@ function Section({
 }) {
   return (
     <section className="mt-12 border-t border-rule pt-10">
-      <h2 className="font-serif text-2xl tracking-tight">{title}</h2>
+      <h2 className="t-h2">{title}</h2>
       <div className="mt-6">{children}</div>
     </section>
   );
@@ -570,7 +570,7 @@ function Section({
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between border-b border-rule pb-3">
-      <dt className="font-mono text-xs uppercase tracking-wider text-ink-soft">
+      <dt className="t-eyebrow">
         {label}
       </dt>
       <dd className="text-sm">{value}</dd>
@@ -589,7 +589,7 @@ function Question({
 }) {
   return (
     <div className="py-6 first:pt-0">
-      <div className="font-mono text-xs uppercase tracking-wider text-ink-soft">
+      <div className="t-eyebrow">
         {label}
         {required && <span className="ml-1">*</span>}
       </div>

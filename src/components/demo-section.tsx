@@ -69,10 +69,10 @@ export function DemoSection() {
     <section className="border-t border-rule">
       <div className="mx-auto max-w-3xl px-6 py-24">
         <div className="text-center">
-          <h2 className="font-serif text-4xl tracking-tight md:text-5xl">
+          <h2 className="t-h2">
             Give it a try
           </h2>
-          <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-ink-soft">
+          <p className="mx-auto mt-3 max-w-xl t-body text-ink-soft">
             Ask a training, nutrition, running, recovery, or consistency
             question and see how AskDerivn thinks.
           </p>
@@ -94,7 +94,7 @@ export function DemoSection() {
             className="w-full resize-none rounded-3xl border border-rule bg-background px-5 py-4 text-base leading-relaxed text-foreground placeholder:text-ink-soft focus:outline-none focus:ring-2 focus:ring-foreground/20 disabled:opacity-60"
           />
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-            <span className="font-mono text-xs text-ink-soft">
+            <span className="t-eyebrow">
               {limitReached
                 ? "Demo limit reached"
                 : `${DEMO_LIMIT - count} demo question${DEMO_LIMIT - count === 1 ? "" : "s"} left`}
@@ -111,7 +111,7 @@ export function DemoSection() {
 
         {!limitReached && exchanges.length === 0 && (
           <div className="mt-8">
-            <div className="font-mono text-xs uppercase tracking-widest text-ink-soft">
+            <div className="t-eyebrow">
               Try one of these
             </div>
             <ul className="mt-3 flex flex-wrap gap-2">
@@ -121,7 +121,7 @@ export function DemoSection() {
                     type="button"
                     onClick={() => setInput(s)}
                     disabled={loading}
-                    className="rounded-full border border-rule px-4 py-2 text-sm text-ink-soft transition-colors hover:bg-accent hover:text-foreground"
+                    className="rounded-full border border-rule px-4 py-2 t-body-sm transition-colors hover:bg-accent hover:text-foreground"
                   >
                     {s}
                   </button>
@@ -132,25 +132,21 @@ export function DemoSection() {
         )}
 
         {error && (
-          <p className="mt-6 text-sm text-destructive">{error}</p>
+          <p className="mt-6 t-body-sm text-destructive">{error}</p>
         )}
 
         {exchanges.length > 0 && (
           <div className="mt-10 space-y-8">
             {exchanges.map((ex, i) => (
               <div key={i}>
-                <div className="font-mono text-xs uppercase tracking-widest text-ink-soft">
-                  You asked
-                </div>
-                <p className="mt-2 text-base text-foreground">{ex.question}</p>
+                <div className="t-eyebrow">You asked</div>
+                <p className="mt-2 t-body">{ex.question}</p>
 
-                <div className="mt-5 font-mono text-xs uppercase tracking-widest text-ink-soft">
-                  AskDerivn
-                </div>
+                <div className="mt-5 t-eyebrow">AskDerivn</div>
                 <div className="prose prose-sm mt-2 max-w-none text-foreground">
                   <ReactMarkdown>{ex.answer}</ReactMarkdown>
                 </div>
-                <p className="mt-4 text-xs leading-relaxed text-ink-soft">
+                <p className="mt-4 t-meta">
                   Full AskDerivn uses your goals, training level, schedule, and
                   limitations to give sharper answers.
                 </p>
@@ -161,7 +157,7 @@ export function DemoSection() {
 
         {limitReached && (
           <div className="mt-10 border-t border-rule pt-8 text-center">
-            <p className="font-serif text-xl text-foreground">
+            <p className="t-h3">
               Create an account to keep asking and unlock the full AskDerivn
               system.
             </p>

@@ -56,7 +56,7 @@ function PostAuthPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background text-foreground">
-      <div className="flex items-center gap-3 text-sm text-ink-soft">
+      <div className="flex items-center gap-3 t-body-sm">
         <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-ink-soft" />
         <span>{msg}</span>
       </div>

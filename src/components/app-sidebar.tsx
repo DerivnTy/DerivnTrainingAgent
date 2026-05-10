@@ -64,13 +64,13 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
     <div className="flex h-full flex-col bg-background">
       {/* Top */}
       <div className="border-b border-rule px-5 pb-4 pt-6">
-        <span className="block font-serif text-lg tracking-tight text-foreground">
+        <span className="block t-wordmark">
           AskDerivn
         </span>
         <Link
           to="/chat"
           onClick={onNavigate}
-          className="mt-5 block font-mono text-xs uppercase tracking-wider text-ink-soft text-link hover:text-foreground"
+          className="mt-5 block t-eyebrow text-link hover:text-foreground"
         >
           + New chat
         </Link>
@@ -79,7 +79,7 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
       {/* Conversations */}
       <div className="flex-1 overflow-y-auto px-3 py-4">
         {conversations.length === 0 ? (
-          <p className="px-2 text-xs text-ink-soft">No conversations yet.</p>
+          <p className="px-2 t-body-sm">No conversations yet.</p>
         ) : (
           <ul className="space-y-0.5">
             {conversations.map((c) => {
@@ -103,13 +103,13 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
                   <div className="flex shrink-0 gap-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                     <button
                       onClick={() => rename(c.id)}
-                      className="text-[10px] uppercase tracking-wider text-ink-soft text-link hover:text-foreground"
+                      className="t-eyebrow text-link hover:text-foreground"
                     >
                       Rename
                     </button>
                     <button
                       onClick={() => remove(c.id)}
-                      className="text-[10px] uppercase tracking-wider text-ink-soft text-link hover:text-foreground"
+                      className="t-eyebrow text-link hover:text-foreground"
                     >
                       Delete
                     </button>
@@ -123,7 +123,7 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
 
       {/* Utility links */}
       <div className="border-t border-rule px-5 py-4">
-        <nav className="flex flex-col gap-2 font-mono text-xs uppercase tracking-wider text-ink-soft">
+        <nav className="flex flex-col gap-2 t-eyebrow">
           <button
             onClick={() => {
               setPdfOpen(true);
