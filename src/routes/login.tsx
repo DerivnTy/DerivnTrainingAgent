@@ -161,10 +161,10 @@ export function Field({
 }) {
   return (
     <label className="block">
-      <span className="block font-mono text-xs uppercase tracking-wider text-ink-soft">
+      <span className="block t-eyebrow">
         {label}
       </span>
-      <div className="mt-1">{children}</div>
+      <div className="mt-2">{children}</div>
     </label>
   );
 }
