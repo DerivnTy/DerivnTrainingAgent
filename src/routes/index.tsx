@@ -23,7 +23,7 @@ function LandingPage() {
     <div className="min-h-screen bg-background text-foreground">
       <header className="border-b border-rule">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
-          <Link to="/" className="font-serif text-lg tracking-tight text-foreground">
+          <Link to="/" className="t-wordmark">
             AskDerivn
           </Link>
           <nav className="flex items-center gap-6 text-sm">
