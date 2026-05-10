@@ -171,7 +171,7 @@ export function Field({
 
 export function Divider() {
   return (
-    <div className="flex items-center gap-3 text-xs text-ink-soft">
+    <div className="flex items-center gap-3 t-eyebrow">
       <div className="h-px flex-1 bg-rule" />
       <span>or</span>
       <div className="h-px flex-1 bg-rule" />
