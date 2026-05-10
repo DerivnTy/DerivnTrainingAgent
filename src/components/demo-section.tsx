@@ -102,7 +102,7 @@ export function DemoSection() {
             <button
               type="submit"
               disabled={loading || limitReached || !input.trim()}
-              className="btn-primary btn-pill-lg disabled:opacity-50"
+              className="btn-primary btn-pill-lg opacity-40 disabled:opacity-40 [&:not(:disabled)]:opacity-100"
             >
               {loading ? "Thinking…" : "Ask AskDerivn"}
             </button>
