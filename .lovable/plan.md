@@ -1,37 +1,47 @@
 ## Goal
 
-After signup, send the user straight to Stripe Checkout instead of the in-app `/subscribe` page.
+Split the homepage's combined "What you get + price" block into two separate sections, each with its own `border-t border-rule` divider, so the page rhythm matches the rest of the site.
 
-## Current behavior
+## Final homepage order
 
-1. User signs up → redirected to `/post-auth`
-2. `/post-auth` resolves destination → `/subscribe` (since no active subscription)
-3. `/subscribe` shows the AskDerivn membership page with a "Start membership" button
-4. User clicks button → POST `/api/checkout` → redirected to Stripe
+1. Hero
+2. What you get
+3. Pricing
+4. How it works (`DemoSection`)
+5. "Ready when you are." CTA
+6. Footer
 
-The "another company page" the user is seeing is our own `/subscribe` page.
+(No changes to hero, DemoSection, final CTA, or footer.)
 
-## Change
+## Changes — `src/routes/index.tsx`
 
-Skip the `/subscribe` interstitial. When `resolvePostAuthDestination` returns `/subscribe`, `/post-auth` should call `/api/checkout` and redirect the browser straight to the Stripe Checkout URL.
+Replace the current combined section (the `<section className="border-t border-rule">` containing "What you get" + price + CTA) with **two** sibling sections.
 
-### Files
+### Section A — What you get
 
-**1. `src/routes/post-auth.tsx`**
-- After resolving destination: if `dest === "/subscribe"`, call `authedFetch("/api/checkout", { method: "POST" })`, parse `{ url }`, then `window.location.href = url`.
-- On checkout error, fall back to navigating to `/subscribe` so the user can retry (and see the error). Update the loading message to "Taking you to checkout…" in that branch.
-- Other destinations (`/onboarding`, `/chat`, `/login`) behave as today.
+- `border-t border-rule`, same `max-w-5xl` container, same vertical padding (`py-20`).
+- Centered heading "What you get" (serif, same sizes as today).
+- Short subtitle: "Two things, one membership."  *(replaces the current $30 subtitle so price lives only in the Pricing section)*
+- Two-column grid on desktop (`md:grid-cols-2`), single column on mobile — same `01 / 02` numbered items already in place:
+  - 01 Built for Motion PDF — existing copy.
+  - 02 AskDerivn chat — existing copy.
+- Closing line, centered, muted: "The PDF gives you the system. AskDerivn helps you apply it."
+- **No** price, **no** CTA in this section.
 
-**2. `src/lib/post-auth-route.ts` — `authenticatedBeforeLoad`**
-- Currently, any authed user hitting an `/_authenticated/*` route without an active sub is redirected to `/subscribe`. Keep that behavior (so `/subscribe` remains the safety-net page if Stripe fails or the user cancels). No change required here.
+### Section B — Pricing (new section)
 
-**3. `/subscribe` page**
-- Keep it. It still acts as the cancel/return target (Stripe `cancel_url` already points there) and the fallback if checkout fails.
+- New `<section className="border-t border-rule">` immediately after Section A.
+- Same `max-w-5xl` container, same `py-20` padding, centered content, cream background (inherits from `bg-background`).
+- Content stack (centered, `max-w-2xl mx-auto`):
+  - Small label: "Pricing" (serif, same scale as other section titles — `text-4xl md:text-5xl`).
+  - Price: `$30/month` (serif, large — `text-5xl`).
+  - Muted line: "Cancel anytime."
+  - "Get Access" pill button → `<Link to="/signup">`, same styling as other primary buttons (`h-12 px-7`, full pill, `bg-foreground text-background`). Large/easy-tap on mobile.
+  - Optional small line below button, muted: "Includes the 100-page PDF and AskDerivn chat access."
+- No bullet list, no cards, no gradients.
 
 ## Out of scope
-- No Stripe config changes.
-- No copy or design changes on `/subscribe`.
-- No change to email-verification flow.
 
-## After approval
-I will make the edits and verify by signing up with a fresh email in the preview.
+- No changes to `/subscribe`, `/signup`, auth flow, Stripe, or pricing logic.
+- No changes to design tokens or `styles.css`.
+- No copy changes elsewhere on the page.

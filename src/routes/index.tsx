@@ -72,8 +72,7 @@ function LandingPage() {
                 What you get
               </h2>
               <p className="mt-5 text-base leading-relaxed text-ink-soft">
-                A 100-page system guide plus private AskDerivn chat access for
-                $30/month. Cancel anytime.
+                Two things, one membership.
               </p>
             </div>
 
@@ -104,10 +103,20 @@ function LandingPage() {
               <p className="text-sm text-ink-soft">
                 The PDF gives you the system. AskDerivn helps you apply it.
               </p>
-              <div className="mt-6 font-serif text-2xl tracking-tight">
+            </div>
+          </div>
+        </section>
+
+        <section className="border-t border-rule">
+          <div className="mx-auto max-w-5xl px-6 py-20">
+            <div className="mx-auto max-w-2xl text-center">
+              <h2 className="font-serif text-4xl tracking-tight md:text-5xl">
+                Pricing
+              </h2>
+              <div className="mt-8 font-serif text-5xl tracking-tight">
                 $30/month
               </div>
-              <p className="mt-1 text-sm text-ink-soft">Cancel anytime.</p>
+              <p className="mt-3 text-sm text-ink-soft">Cancel anytime.</p>
               <div className="mt-8 flex justify-center">
                 <Link
                   to="/signup"
@@ -116,6 +125,9 @@ function LandingPage() {
                   Get Access
                 </Link>
               </div>
+              <p className="mt-6 text-sm text-ink-soft">
+                Includes the 100-page PDF and AskDerivn chat access.
+              </p>
             </div>
           </div>
         </section>
