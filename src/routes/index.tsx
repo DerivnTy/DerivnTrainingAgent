@@ -98,7 +98,7 @@ function LandingPage() {
             </div>
 
             <div className="mx-auto mt-12 max-w-2xl text-center">
-              <p className="text-sm text-ink-soft">
+              <p className="t-body-sm">
                 The PDF gives you the system. AskDerivn helps you apply it.
               </p>
             </div>
