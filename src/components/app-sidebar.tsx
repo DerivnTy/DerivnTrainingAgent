@@ -39,6 +39,18 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
     };
   }, [conversationsVersion]);
 
+  useEffect(() => {
+    let cancelled = false;
+    checkIsAdmin()
+      .then((r) => {
+        if (!cancelled) setIsAdmin(r.isAdmin);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   async function rename(id: string) {
     const current = conversations.find((c) => c.id === id);
     const title = window.prompt("Rename conversation", current?.title ?? "");
