@@ -50,13 +50,16 @@ function SignupPage() {
     setSent(true);
   };
 
-  const onGoogle = async () => {
+  const onOAuth = async (provider: "google" | "apple") => {
+    if (oauthLoading) return;
     setError(null);
-    const result = await lovable.auth.signInWithOAuth("google", {
+    setOauthLoading(provider);
+    const result = await lovable.auth.signInWithOAuth(provider, {
       redirect_uri: window.location.origin + "/post-auth",
     });
     if (result.error) {
-      setError(result.error.message ?? "Google sign-in failed");
+      setOauthLoading(null);
+      setError(result.error.message ?? `${provider === "google" ? "Google" : "Apple"} sign-in failed`);
       return;
     }
     if (result.redirected) return;
