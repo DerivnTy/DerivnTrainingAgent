@@ -4,6 +4,7 @@ import {
   resolvePostAuthDestination,
   waitForSession,
 } from "@/lib/post-auth-route";
+import { authedFetch } from "@/lib/auth-helpers";
 
 export const Route = createFileRoute("/post-auth")({
   component: PostAuthPage,
@@ -12,7 +13,7 @@ export const Route = createFileRoute("/post-auth")({
 
 function PostAuthPage() {
   const navigate = useNavigate();
-  const [msg] = useState("Loading your account…");
+  const [msg, setMsg] = useState("Loading your account…");
 
   useEffect(() => {
     let cancelled = false;
@@ -28,6 +29,24 @@ function PostAuthPage() {
         session.user.email
       );
       if (cancelled) return;
+
+      if (dest === "/subscribe") {
+        setMsg("Taking you to checkout…");
+        try {
+          const res = await authedFetch("/api/checkout", { method: "POST" });
+          if (!res.ok) throw new Error(await res.text());
+          const { url } = await res.json();
+          if (!url) throw new Error("No checkout URL");
+          window.location.href = url;
+          return;
+        } catch (e) {
+          console.error("checkout redirect failed", e);
+          if (cancelled) return;
+          navigate({ to: "/subscribe" });
+          return;
+        }
+      }
+
       navigate({ to: dest });
     })();
     return () => {
