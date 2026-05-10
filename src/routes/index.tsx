@@ -66,22 +66,26 @@ function LandingPage() {
         </section>
 
         <section className="border-t border-rule">
-          <div className="mx-auto max-w-5xl px-6 py-24">
-            <div className="mx-auto max-w-3xl text-center">
+          <div className="mx-auto max-w-5xl px-6 py-20">
+            <div className="mx-auto max-w-2xl text-center">
               <h2 className="font-serif text-4xl tracking-tight md:text-5xl">
                 What you get
               </h2>
+              <p className="mt-5 text-base leading-relaxed text-ink-soft">
+                A 100-page system guide plus private AskDerivn chat access for
+                $30/month. Cancel anytime.
+              </p>
             </div>
 
-            <div className="mx-auto mt-16 grid max-w-4xl gap-12 md:grid-cols-2 text-center">
+            <div className="mx-auto mt-12 grid max-w-4xl gap-10 md:grid-cols-2 text-center">
               {[
                 {
-                  t: "100-page PDF handbook",
-                  d: "A complete Derivn guide covering training structure, running, nutrition, recovery, habits, progress tracking, and common mistakes.",
+                  t: "Built for Motion PDF",
+                  d: "The full Derivn guide covering training structure, running, nutrition, recovery, habits, progress tracking, and common mistakes.",
                 },
                 {
-                  t: "AskDerivn coaching brain",
-                  d: "A private assistant built from the Derivn coaching system, thousands of workouts, and real coaching transcripts. Designed to turn unclear fitness questions into clear next actions.",
+                  t: "AskDerivn chat",
+                  d: "A private coaching assistant built from the Derivn system, thousands of workouts, and real coaching transcripts.",
                 },
               ].map((item, i) => (
                 <div key={i}>
@@ -96,28 +100,15 @@ function LandingPage() {
               ))}
             </div>
 
-            <p className="mx-auto mt-16 max-w-2xl text-center font-serif text-xl text-foreground">
-              The PDF gives you the system. AskDerivn helps you apply it.
-            </p>
-
-            <div className="mx-auto mt-20 max-w-md text-center">
-              <div className="font-mono text-xs uppercase tracking-wider text-ink-soft">
-                Membership
-              </div>
-              <div className="mt-3 font-serif text-3xl tracking-tight">
+            <div className="mx-auto mt-12 max-w-2xl text-center">
+              <p className="text-sm text-ink-soft">
+                The PDF gives you the system. AskDerivn helps you apply it.
+              </p>
+              <div className="mt-6 font-serif text-2xl tracking-tight">
                 $30/month
               </div>
-              <p className="mt-2 text-sm text-ink-soft">Cancel anytime.</p>
-
-              <ul className="mt-8 space-y-2 text-sm text-ink-soft">
-                <li>AskDerivn chat access</li>
-                <li>100-page Built for Motion PDF</li>
-                <li>Saved conversations</li>
-                <li>Personalized profile context</li>
-                <li>Derivn-system-guided answers</li>
-              </ul>
-
-              <div className="mt-10 flex justify-center">
+              <p className="mt-1 text-sm text-ink-soft">Cancel anytime.</p>
+              <div className="mt-8 flex justify-center">
                 <Link
                   to="/signup"
                   className="inline-flex items-center justify-center rounded-full bg-foreground text-background hover:opacity-90 h-12 px-7 text-sm font-medium transition-all duration-200 active:scale-[0.98]"
