@@ -2,25 +2,37 @@
 import { redirect } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 
-export type PostAuthDestination = "/login" | "/onboarding" | "/chat" | "/admin";
+export type PostAuthDestination =
+  | "/login"
+  | "/subscribe"
+  | "/onboarding"
+  | "/chat";
 
 export async function resolvePostAuthDestination(
   userId: string,
   _email?: string | null
 ): Promise<PostAuthDestination> {
-  // Admin check disabled — admin_users table does not exist in this project.
-
   const { data: profile, error } = await supabase
     .from("profiles")
-    .select("profile_completed_at, goal")
+    .select(
+      "profile_completed_at, goal, subscription_status, subscription_current_period_end"
+    )
     .eq("id", userId)
     .single();
 
-  if (error || !profile) return "/onboarding";
+  if (error || !profile) return "/subscribe";
+
+  const periodEnd = profile.subscription_current_period_end
+    ? new Date(profile.subscription_current_period_end)
+    : null;
+  const subActive =
+    profile.subscription_status === "active" &&
+    (!periodEnd || periodEnd.getTime() > Date.now());
+
+  if (!subActive) return "/subscribe";
 
   const profileComplete =
     Boolean(profile.profile_completed_at) || Boolean(profile.goal);
-
   return profileComplete ? "/chat" : "/onboarding";
 }
 
@@ -52,18 +64,38 @@ export async function authenticatedBeforeLoad(pathname: string) {
   if (!session) {
     throw redirect({ to: "/login" });
   }
+
+  // /account is always allowed for signed-in users (billing management).
+  if (pathname.startsWith("/account")) return;
+
   const dest = await resolvePostAuthDestination(
     session.user.id,
     session.user.email
   );
 
+  if (dest === "/subscribe") {
+    throw redirect({ to: "/subscribe" });
+  }
   if (dest === "/onboarding" && pathname !== "/onboarding") {
     throw redirect({ to: "/onboarding" });
   }
   if (dest === "/chat" && pathname === "/onboarding") {
     throw redirect({ to: "/chat" });
   }
-  if (dest === "/admin" && pathname !== "/admin") {
-    throw redirect({ to: "/admin" });
+}
+
+export async function subscribeBeforeLoad() {
+  if (typeof window === "undefined") return;
+  const { data } = await supabase.auth.getSession();
+  const session = data.session;
+  if (!session) {
+    throw redirect({ to: "/login" });
+  }
+  const dest = await resolvePostAuthDestination(
+    session.user.id,
+    session.user.email
+  );
+  if (dest !== "/subscribe") {
+    throw redirect({ to: dest });
   }
 }
