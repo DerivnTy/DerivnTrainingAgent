@@ -64,13 +64,9 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
     <div className="flex h-full flex-col bg-background">
       {/* Top */}
       <div className="border-b border-rule px-5 pb-4 pt-6">
-        <Link
-          to="/"
-          onClick={onNavigate}
-          className="block font-serif text-lg tracking-tight text-foreground text-link"
-        >
+        <span className="block font-serif text-lg tracking-tight text-foreground">
           AskDerivn
-        </Link>
+        </span>
         <Link
           to="/chat"
           onClick={onNavigate}
