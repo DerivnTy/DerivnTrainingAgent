@@ -123,7 +123,7 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
 
       {/* Utility links */}
       <div className="border-t border-rule px-5 py-4">
-        <nav className="flex flex-col gap-2 font-mono text-xs uppercase tracking-wider text-ink-soft">
+        <nav className="flex flex-col gap-2 t-eyebrow">
           <button
             onClick={() => {
               setPdfOpen(true);
