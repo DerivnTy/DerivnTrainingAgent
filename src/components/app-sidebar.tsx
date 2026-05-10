@@ -79,7 +79,7 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
       {/* Conversations */}
       <div className="flex-1 overflow-y-auto px-3 py-4">
         {conversations.length === 0 ? (
-          <p className="px-2 text-xs text-ink-soft">No conversations yet.</p>
+          <p className="px-2 t-body-sm">No conversations yet.</p>
         ) : (
           <ul className="space-y-0.5">
             {conversations.map((c) => {
