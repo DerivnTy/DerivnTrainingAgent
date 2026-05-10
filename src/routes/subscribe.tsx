@@ -52,10 +52,10 @@ function SubscribePage() {
     <div className="flex min-h-screen flex-col bg-background text-foreground">
       <header className="border-b border-rule">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
-          <Link to="/" className="font-serif text-lg tracking-tight text-foreground">AskDerivn</Link>
+          <Link to="/" className="t-wordmark">AskDerivn</Link>
           <button
             onClick={onSignOut}
-            className="text-sm text-ink-soft text-link hover:text-foreground"
+            className="t-body-sm text-link hover:text-foreground"
           >
             Sign out
           </button>
@@ -63,16 +63,16 @@ function SubscribePage() {
       </header>
 
       <main className="mx-auto w-full max-w-md flex-1 px-6 pt-20 pb-24">
-        <h1 className="font-serif text-4xl tracking-tight">
+        <h1 className="t-h1">
           AskDerivn Membership
         </h1>
         <div className="mt-6 flex items-baseline gap-2">
-          <span className="font-serif text-5xl tracking-tight">$30</span>
-          <span className="text-sm text-ink-soft">/month</span>
+          <span className="font-serif text-3xl tracking-tight md:text-4xl">$30</span>
+          <span className="t-body-sm">/month</span>
         </div>
-        <p className="mt-2 text-sm text-ink-soft">Cancel anytime.</p>
+        <p className="mt-2 t-body-sm">Cancel anytime.</p>
 
-        <ul className="mt-10 space-y-3 text-sm">
+        <ul className="mt-10 space-y-3 t-body-sm">
           {VALUE_ITEMS.map((item) => (
             <li key={item} className="flex items-start gap-3">
               <span
