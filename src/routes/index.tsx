@@ -113,7 +113,7 @@ function LandingPage() {
               <h2 className="font-serif text-4xl tracking-tight md:text-5xl">
                 Pricing
               </h2>
-              <div className="mt-8 font-serif text-5xl tracking-tight">
+              <div className="mt-8 font-serif tracking-tight text-2xl">
                 $30/month
               </div>
               <p className="mt-3 text-sm text-ink-soft">Cancel anytime.</p>
