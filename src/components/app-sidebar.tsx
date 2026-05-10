@@ -128,16 +128,15 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
       {/* Utility links */}
       <div className="border-t border-rule px-5 py-4">
         <nav className="flex flex-col gap-2 font-mono text-xs uppercase tracking-wider text-ink-soft">
-          <a
-            href="/pdf/built-for-motion.pdf"
-            download
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => onNavigate?.()}
+          <button
+            onClick={() => {
+              setPdfOpen(true);
+              onNavigate?.();
+            }}
             className="text-left text-link hover:text-foreground"
           >
             Download PDF
-          </a>
+          </button>
           <Link
             to="/account"
             onClick={onNavigate}
