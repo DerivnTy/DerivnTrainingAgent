@@ -172,7 +172,7 @@ function ChatPage() {
                 key={m.id}
                 className={`animate-message-in ${showDivider ? "border-t border-rule pt-6" : ""}`}
               >
-                <div className="font-mono text-xs uppercase tracking-wider text-ink-soft">
+                <div className="t-eyebrow">
                   AskDerivn
                 </div>
                 <div className="mt-3 text-sm leading-relaxed">
@@ -188,7 +188,7 @@ function ChatPage() {
             <article
               className={`animate-message-in ${messages.length > 0 ? "border-t border-rule pt-8" : ""}`}
             >
-              <div className="font-mono text-xs uppercase tracking-wider text-ink-soft">
+              <div className="t-eyebrow">
                 AskDerivn
               </div>
               <p className="mt-3 text-sm text-ink-soft animate-pulse">Thinking…</p>

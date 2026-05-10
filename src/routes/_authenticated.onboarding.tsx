@@ -231,7 +231,7 @@ function OnboardingPage() {
 
   return (
     <main className="mx-auto h-full max-w-2xl overflow-y-auto px-6 pt-16 pb-24">
-      <h1 className="font-serif text-4xl tracking-tight">Set your context</h1>
+      <h1 className="t-h1">Set your context</h1>
       <p className="mt-3 text-sm text-ink-soft">
         AskDerivn uses this to give answers that fit your goal, schedule,
         training level, and limitations.
@@ -396,7 +396,7 @@ function Question({
 }) {
   return (
     <div className="py-8 first:pt-0">
-      <div className="font-serif text-xl tracking-tight text-foreground">
+      <div className="t-h3">
         {label}
         {required && <span className="ml-1 text-ink-soft">*</span>}
       </div>
