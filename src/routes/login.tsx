@@ -92,21 +92,21 @@ function LoginPage() {
         <button type="submit" disabled={loading} className="btn-primary w-full">
           {loading ? "Signing in…" : "Sign in"}
         </button>
-        <p className="text-center text-sm text-ink-soft">
+        <p className="text-center t-body-sm">
           <Link to="/forgot-password" className="text-link hover:text-foreground">
             Forgot password?
           </Link>
         </p>
       </form>
-      <p className="mt-8 text-center text-sm text-ink-soft">
+      <p className="mt-8 text-center t-body-sm">
         New here?{" "}
         <Link to="/signup" className="text-foreground text-link underline">
           Get access
         </Link>
       </p>
       <section className="mt-12 border-t border-rule pt-8 text-center">
-        <h2 className="font-serif text-2xl tracking-tight">No starting over</h2>
-        <p className="mt-3 text-sm text-ink-soft">
+        <h3 className="t-h3">No starting over</h3>
+        <p className="mt-3 t-body-sm">
           Your chats, goals, and training context stay connected so every
           answer builds from what AskDerivn already knows.
         </p>
