@@ -103,13 +103,13 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
                   <div className="flex shrink-0 gap-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                     <button
                       onClick={() => rename(c.id)}
-                      className="text-[10px] uppercase tracking-wider text-ink-soft text-link hover:text-foreground"
+                      className="t-eyebrow text-link hover:text-foreground"
                     >
                       Rename
                     </button>
                     <button
                       onClick={() => remove(c.id)}
-                      className="text-[10px] uppercase tracking-wider text-ink-soft text-link hover:text-foreground"
+                      className="t-eyebrow text-link hover:text-foreground"
                     >
                       Delete
                     </button>
