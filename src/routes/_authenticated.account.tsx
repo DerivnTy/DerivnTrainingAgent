@@ -105,7 +105,7 @@ const empty: Form = {
 
 function AccountPage() {
   const [email, setEmail] = useState<string | null>(null);
-  const [provider, setProvider] = useState<string | null>(null);
+  // (sign-in provider tracking removed — email/password is the only method)
   const [subStatus, setSubStatus] = useState<string | null>(null);
   const [periodEnd, setPeriodEnd] = useState<string | null>(null);
 
@@ -131,7 +131,7 @@ function AccountPage() {
       if (!s.session) return;
       const user = s.session.user;
       setEmail(user.email ?? null);
-      setProvider(user.app_metadata?.provider ?? null);
+      // provider no longer used
 
       const { data } = await supabase
         .from("profiles")
@@ -174,7 +174,7 @@ function AccountPage() {
     })();
   }, []);
 
-  const isEmailProvider = !provider || provider === "email";
+  
 
   const setField = <K extends keyof Form>(k: K, v: Form[K]) =>
     setForm((f) => ({ ...f, [k]: v }));
@@ -685,6 +685,3 @@ function NumberField({
   );
 }
 
-function capitalize(s: string) {
-  return s.charAt(0).toUpperCase() + s.slice(1);
-}
