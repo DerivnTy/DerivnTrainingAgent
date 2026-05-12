@@ -25,7 +25,7 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
   const { conversationsVersion, refreshConversations } = useChatContext();
   const [conversations, setConversations] = useState<ConversationSummary[]>([]);
   const [pdfOpen, setPdfOpen] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
+  
 
   // Rename modal state
   const [renameId, setRenameId] = useState<string | null>(null);
@@ -55,24 +55,6 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
       cancelled = true;
     };
   }, [conversationsVersion]);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const { data: sess } = await supabase.auth.getSession();
-      const uid = sess.session?.user.id;
-      if (!uid) return;
-      const { data } = await supabase
-        .from("admin_users")
-        .select("user_id")
-        .eq("user_id", uid)
-        .maybeSingle();
-      if (!cancelled) setIsAdmin(Boolean(data));
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   function openRename(id: string) {
     const current = conversations.find((c) => c.id === id);
@@ -193,16 +175,6 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
           >
             Account
           </Link>
-          {isAdmin && (
-            <Link
-              to="/admin"
-              onClick={onNavigate}
-              className="text-link hover:text-foreground"
-              activeProps={{ className: "text-foreground" }}
-            >
-              Admin
-            </Link>
-          )}
           <button
             type="button"
             onClick={signOut}

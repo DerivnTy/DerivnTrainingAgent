@@ -1,7 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
 import { SiteFooter } from "@/components/site-footer";
 
 export const Route = createFileRoute("/login")({
@@ -16,15 +15,13 @@ function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [oauthLoading, setOauthLoading] = useState<"google" | "apple" | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // Surface any error left by post-auth (e.g. "no account for that Google login")
+  // Surface any error left from a previous flow (e.g. forgotten password).
   if (typeof window !== "undefined" && error === null) {
     const stored = window.sessionStorage.getItem("auth_error");
     if (stored) {
       window.sessionStorage.removeItem("auth_error");
-      // defer to next tick so we don't setState during render
       queueMicrotask(() => setError(stored));
     }
   }
@@ -42,49 +39,9 @@ function LoginPage() {
     navigate({ to: "/post-auth" });
   };
 
-  const onOAuth = async (provider: "google" | "apple") => {
-    if (oauthLoading) return;
-    setError(null);
-    setOauthLoading(provider);
-    if (typeof window !== "undefined") {
-      window.sessionStorage.setItem("oauth_intent", "login");
-    }
-    const result = await lovable.auth.signInWithOAuth(provider, {
-      redirect_uri: window.location.origin + "/post-auth",
-    });
-    if (result.error) {
-      setOauthLoading(null);
-      setError(result.error.message ?? `${provider === "google" ? "Google" : "Apple"} sign-in failed`);
-      return;
-    }
-    if (result.redirected) return;
-    navigate({ to: "/post-auth" });
-  };
-
   return (
     <AuthShell title="Welcome back" subtitle="Pick up right where you left off." rightLink={{ to: "/signup", label: "Get access" }}>
-      <div className="space-y-2">
-        <button
-          type="button"
-          onClick={() => onOAuth("google")}
-          disabled={!!oauthLoading}
-          className="btn-secondary w-full"
-        >
-          {oauthLoading === "google" ? "Redirecting…" : "Continue with Google"}
-        </button>
-        <button
-          type="button"
-          onClick={() => onOAuth("apple")}
-          disabled={!!oauthLoading}
-          className="btn-secondary w-full"
-        >
-          {oauthLoading === "apple" ? "Redirecting…" : "Continue with Apple"}
-        </button>
-      </div>
-      <div className="mt-6">
-        <Divider />
-      </div>
-      <form onSubmit={onSubmit} className="mt-6 space-y-4">
+      <form onSubmit={onSubmit} className="space-y-4">
         <Field label="Email">
           <input
             type="email"

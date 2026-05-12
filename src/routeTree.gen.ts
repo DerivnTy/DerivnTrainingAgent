@@ -24,7 +24,6 @@ import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AuthenticatedResourceRouteImport } from './routes/_authenticated.resource'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated.onboarding'
 import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated.chat'
-import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.admin'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated.account'
 import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe-webhook'
 import { Route as ApiPublicDemoChatRouteImport } from './routes/api/public/demo-chat'
@@ -104,11 +103,6 @@ const AuthenticatedChatRoute = AuthenticatedChatRouteImport.update({
   path: '/chat',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
 const AuthenticatedAccountRoute = AuthenticatedAccountRouteImport.update({
   id: '/account',
   path: '/account',
@@ -139,7 +133,6 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/subscribe': typeof SubscribeRoute
   '/account': typeof AuthenticatedAccountRoute
-  '/admin': typeof AuthenticatedAdminRoute
   '/chat': typeof AuthenticatedChatRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/resource': typeof AuthenticatedResourceRoute
@@ -160,7 +153,6 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/subscribe': typeof SubscribeRoute
   '/account': typeof AuthenticatedAccountRoute
-  '/admin': typeof AuthenticatedAdminRoute
   '/chat': typeof AuthenticatedChatRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/resource': typeof AuthenticatedResourceRoute
@@ -183,7 +175,6 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/subscribe': typeof SubscribeRoute
   '/_authenticated/account': typeof AuthenticatedAccountRoute
-  '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/chat': typeof AuthenticatedChatRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/resource': typeof AuthenticatedResourceRoute
@@ -206,7 +197,6 @@ export interface FileRouteTypes {
     | '/signup'
     | '/subscribe'
     | '/account'
-    | '/admin'
     | '/chat'
     | '/onboarding'
     | '/resource'
@@ -227,7 +217,6 @@ export interface FileRouteTypes {
     | '/signup'
     | '/subscribe'
     | '/account'
-    | '/admin'
     | '/chat'
     | '/onboarding'
     | '/resource'
@@ -249,7 +238,6 @@ export interface FileRouteTypes {
     | '/signup'
     | '/subscribe'
     | '/_authenticated/account'
-    | '/_authenticated/admin'
     | '/_authenticated/chat'
     | '/_authenticated/onboarding'
     | '/_authenticated/resource'
@@ -386,13 +374,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedChatRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/admin': {
-      id: '/_authenticated/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AuthenticatedAdminRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
     '/_authenticated/account': {
       id: '/_authenticated/account'
       path: '/account'
@@ -426,7 +407,6 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteChildren {
   AuthenticatedAccountRoute: typeof AuthenticatedAccountRoute
-  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedChatRoute: typeof AuthenticatedChatRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedResourceRoute: typeof AuthenticatedResourceRoute
@@ -434,7 +414,6 @@ interface AuthenticatedRouteChildren {
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAccountRoute: AuthenticatedAccountRoute,
-  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedChatRoute: AuthenticatedChatRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedResourceRoute: AuthenticatedResourceRoute,

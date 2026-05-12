@@ -2,7 +2,6 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { isDevBypassEmailServer } from "@/lib/dev-bypass";
 
 export type AuthedUser = {
   userId: string;
@@ -70,12 +69,6 @@ export async function requireActiveSubscription(
       `missing_profile:${error?.message ?? "no_row"}`,
       "missing_profile"
     );
-  }
-
-  // TODO: remove before public launch — preview-only dev bypass
-  if (request && isDevBypassEmailServer(email, request)) {
-    console.log("[sub] dev bypass active for", email);
-    return profile as SubProfile;
   }
 
   const status = profile.subscription_status;
