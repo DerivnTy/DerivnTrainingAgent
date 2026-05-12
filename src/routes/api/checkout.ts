@@ -107,19 +107,26 @@ export const Route = createFileRoute("/api/checkout")({
             request.headers.get("origin") ??
             new URL(request.url).origin;
 
-          const session = await stripe.checkout.sessions.create({
-            mode: "subscription",
-            customer: customerId,
-            line_items: [{ price: priceId, quantity: 1 }],
-            success_url: `${origin}/post-auth?checkout=success`,
-            cancel_url: `${origin}/subscribe`,
-            allow_promotion_codes: true,
-            client_reference_id: userId,
-            metadata: { supabase_user_id: userId },
-            subscription_data: {
+          const idempotencyKey = `checkout:${userId}:${Math.floor(
+            Date.now() / 60000
+          )}`;
+          const session = await stripe.checkout.sessions.create(
+            {
+              mode: "subscription",
+              customer: customerId,
+              line_items: [{ price: priceId, quantity: 1 }],
+              success_url: `${origin}/post-auth?checkout=success`,
+              cancel_url: `${origin}/subscribe`,
+              allow_promotion_codes: true,
+              client_reference_id: userId,
               metadata: { supabase_user_id: userId },
+              subscription_data: {
+                metadata: { supabase_user_id: userId },
+              },
             },
-          });
+            { idempotencyKey }
+          );
+
 
           return Response.json({ url: session.url });
         } catch (e) {
