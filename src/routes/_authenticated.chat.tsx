@@ -168,6 +168,7 @@ function ChatPage() {
       refreshConversations();
 
       if (!conversationId && newConversationId) {
+        skipReloadRef.current.add(newConversationId);
         navigate({ to: "/chat", search: { c: newConversationId } });
       }
     } catch (e) {
