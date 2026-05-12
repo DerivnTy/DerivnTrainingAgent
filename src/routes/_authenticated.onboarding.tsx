@@ -328,11 +328,11 @@ function OnboardingPage() {
                 placeholder="Briefly describe what matters for training."
                 value={form.pain_notes}
                 onChange={(e) => setField("pain_notes", e.target.value)}
-                className="w-full border-b border-rule bg-transparent py-2 text-sm input-soft"
+                className="w-full border-b border-rule bg-transparent py-2 t-body-sm input-soft"
               />
             </div>
           )}
-          <p className="mt-3 text-xs text-ink-soft">
+          <p className="mt-3 t-meta">
             AskDerivn cannot diagnose or treat injuries, but this context helps
             it avoid unsafe or unrealistic guidance.
           </p>
@@ -360,11 +360,11 @@ function OnboardingPage() {
             placeholder="Example: work schedule, sleep issues, food preferences, upcoming events, travel, confidence level, or anything that affects consistency."
             value={form.other_notes}
             onChange={(e) => setField("other_notes", e.target.value)}
-            className="w-full border-b border-rule bg-transparent py-2 text-sm input-soft"
+            className="w-full border-b border-rule bg-transparent py-2 t-body-sm input-soft"
           />
         </Question>
 
-        {error && <p className="text-sm text-red-700">{error}</p>}
+        {error && <p className="t-error">{error}</p>}
 
         <div className="pt-4">
           <button
@@ -375,7 +375,7 @@ function OnboardingPage() {
             {saving ? "Saving…" : "Save and continue"}
           </button>
           {!canSubmit && (
-            <p className="mt-3 text-xs text-ink-soft">
+            <p className="mt-3 t-meta">
               Answer the required questions to continue.
             </p>
           )}
@@ -486,14 +486,14 @@ function NumberField({
 }) {
   return (
     <label className="block">
-      <span className="block text-xs text-ink-soft">{label}</span>
+      <span className="block t-meta">{label}</span>
       <input
         type="number"
         min={min}
         max={max}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="mt-1 w-full border-b border-rule bg-transparent py-2 text-sm input-soft"
+        className="mt-1 w-full border-b border-rule bg-transparent py-2 t-body-sm input-soft"
       />
     </label>
   );

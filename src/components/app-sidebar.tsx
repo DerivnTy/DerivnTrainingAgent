@@ -214,7 +214,7 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
               }
             }}
             placeholder="Conversation name"
-            className="w-full border-b border-rule bg-transparent py-2 text-sm input-soft"
+            className="w-full border-b border-rule bg-transparent py-2 t-body-sm input-soft"
             autoFocus
           />
           <DialogFooter className="gap-2 sm:gap-2">
