@@ -70,7 +70,7 @@ function LandingPage() {
           <div className="mx-auto max-w-5xl px-6 py-20 md:py-24">
             <div className="grid gap-12 md:grid-cols-2 md:items-center">
               <div className="mx-auto w-full max-w-sm md:mx-0">
-                <div className="overflow-hidden rounded-2xl border border-rule bg-card">
+                <div className="aspect-[4/5] overflow-hidden rounded-2xl border border-rule bg-card">
                   <img
                     src={coachPortrait}
                     alt="Ty Nordene, founder of AskDerivn"
