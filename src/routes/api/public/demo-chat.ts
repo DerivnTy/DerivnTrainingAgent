@@ -48,39 +48,45 @@ export const Route = createFileRoute("/api/public/demo-chat")({
             return jsonErr(500, "Demo is not configured.");
           }
 
-          const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${apiKey}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              model: "google/gemini-2.5-flash",
-              max_tokens: 350,
-              messages: [
-                { role: "system", content: DEMO_PROMPT },
-                { role: "user", content },
-              ],
-            }),
-          });
+          const upstream = await fetch(
+            "https://ai.gateway.lovable.dev/v1/chat/completions",
+            {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${apiKey}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                model: "google/gemini-3-flash-preview",
+                stream: true,
+                max_tokens: 350,
+                messages: [
+                  { role: "system", content: DEMO_PROMPT },
+                  { role: "user", content },
+                ],
+              }),
+            }
+          );
 
-          if (!res.ok) {
-            const text = await res.text().catch(() => "");
-            console.error("[demo-chat] gateway error", res.status, text);
-            if (res.status === 429)
+          if (!upstream.ok || !upstream.body) {
+            const text = await upstream.text().catch(() => "");
+            console.error("[demo-chat] gateway error", upstream.status, text);
+            if (upstream.status === 429)
               return jsonErr(429, "The demo is busy right now. Try again in a moment.");
-            if (res.status === 402)
+            if (upstream.status === 402)
               return jsonErr(402, "Demo is temporarily unavailable.");
             return jsonErr(502, "Demo could not respond. Please try again.");
           }
 
-          const data = (await res.json()) as {
-            choices?: Array<{ message?: { content?: string } }>;
-          };
-          const answer = data.choices?.[0]?.message?.content?.trim() ?? "";
-          if (!answer) return jsonErr(502, "Empty response. Please try again.");
-
-          return Response.json({ answer });
+          return new Response(upstream.body, {
+            status: 200,
+            headers: {
+              "Content-Type": "text/event-stream",
+              "Cache-Control": "no-cache, no-transform",
+              Connection: "keep-alive",
+              "X-Accel-Buffering": "no",
+            },
+          });
         } catch (e) {
           const msg = e instanceof Error ? e.message : String(e);
           console.error("[demo-chat] unhandled", msg);
