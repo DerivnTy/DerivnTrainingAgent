@@ -39,7 +39,7 @@ function AuthGuard() {
 
   return (
     <ChatProvider>
-      <div className="flex h-screen w-full bg-background text-foreground">
+      <div className="mobile-full-height flex h-screen w-full bg-background text-foreground">
         {/* Desktop sidebar */}
         <aside className="hidden h-full w-52 shrink-0 border-r border-rule md:block">
           <AppSidebar />
