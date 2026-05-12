@@ -101,7 +101,7 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
         <Link
           to="/chat"
           onClick={onNavigate}
-          className="mt-5 block t-eyebrow text-link hover:text-foreground"
+          className="mt-5 block t-body text-link hover:text-foreground"
         >
           + New chat
         </Link>
