@@ -11,6 +11,11 @@ export function AddToHomeScreenBanner() {
     try {
       if (localStorage.getItem(KEY)) return;
     } catch (e) {}
+    // Only show on touch-capable, small-viewport devices (phones/tablets).
+    const isTouch =
+      window.matchMedia?.("(pointer: coarse)").matches ?? false;
+    const isSmall = window.innerWidth < 820;
+    if (!isTouch || !isSmall) return;
     const timer = setTimeout(() => {
       setShow(true);
     }, 1500);

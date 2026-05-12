@@ -105,7 +105,7 @@ const empty: Form = {
 
 function AccountPage() {
   const [email, setEmail] = useState<string | null>(null);
-  const [provider, setProvider] = useState<string | null>(null);
+  // (sign-in provider tracking removed — email/password is the only method)
   const [subStatus, setSubStatus] = useState<string | null>(null);
   const [periodEnd, setPeriodEnd] = useState<string | null>(null);
 
@@ -131,7 +131,7 @@ function AccountPage() {
       if (!s.session) return;
       const user = s.session.user;
       setEmail(user.email ?? null);
-      setProvider(user.app_metadata?.provider ?? null);
+      // provider no longer used
 
       const { data } = await supabase
         .from("profiles")
@@ -174,7 +174,7 @@ function AccountPage() {
     })();
   }, []);
 
-  const isEmailProvider = !provider || provider === "email";
+  
 
   const setField = <K extends keyof Form>(k: K, v: Form[K]) =>
     setForm((f) => ({ ...f, [k]: v }));
@@ -314,48 +314,40 @@ function AccountPage() {
       <Section title="Account info">
         <dl className="space-y-4 text-sm">
           <Row label="Email" value={email ?? "—"} />
-          <Row
-            label="Sign-in method"
-            value={provider ? capitalize(provider) : "Email"}
-          />
           <Row label="Membership" value={subStatus ?? "inactive"} />
           {periodEnd && (
             <Row
-              label="Renews / ends"
+              label={subStatus === "active" ? "Renews on" : "Ends on"}
               value={new Date(periodEnd).toLocaleDateString()}
             />
           )}
         </dl>
 
-        {isEmailProvider && (
-          <>
-            <form onSubmit={onChangeEmail} className="mt-8 space-y-3">
-              <label className="block t-eyebrow">
-                Change email
-              </label>
-              <input
-                type="email"
-                value={newEmail}
-                onChange={(e) => setNewEmail(e.target.value)}
-                placeholder="new@email.com"
-                className="w-full border-b border-rule bg-transparent py-2 text-sm input-soft"
-              />
-              <button type="submit" className="btn-secondary">
-                Send confirmation
-              </button>
-              {emailMsg && <p className="text-xs text-ink-soft">{emailMsg}</p>}
-              {emailErr && <p className="text-xs text-red-700">{emailErr}</p>}
-            </form>
+        <form onSubmit={onChangeEmail} className="mt-8 space-y-3">
+          <label className="block t-eyebrow">
+            Change email
+          </label>
+          <input
+            type="email"
+            value={newEmail}
+            onChange={(e) => setNewEmail(e.target.value)}
+            placeholder="new@email.com"
+            className="w-full border-b border-rule bg-transparent py-2 text-sm input-soft"
+          />
+          <button type="submit" className="btn-secondary">
+            Send confirmation
+          </button>
+          {emailMsg && <p className="text-xs text-ink-soft">{emailMsg}</p>}
+          {emailErr && <p className="text-xs text-red-700">{emailErr}</p>}
+        </form>
 
-            <div className="mt-8 space-y-2">
-              <button type="button" onClick={onResetPassword} className="btn-secondary">
-                Send password reset email
-              </button>
-              {resetMsg && <p className="text-xs text-ink-soft">{resetMsg}</p>}
-              {resetErr && <p className="text-xs text-red-700">{resetErr}</p>}
-            </div>
-          </>
-        )}
+        <div className="mt-8 space-y-2">
+          <button type="button" onClick={onResetPassword} className="btn-secondary">
+            Send password reset email
+          </button>
+          {resetMsg && <p className="text-xs text-ink-soft">{resetMsg}</p>}
+          {resetErr && <p className="text-xs text-red-700">{resetErr}</p>}
+        </div>
 
         <div className="mt-8 space-y-3">
           <button
@@ -693,6 +685,3 @@ function NumberField({
   );
 }
 
-function capitalize(s: string) {
-  return s.charAt(0).toUpperCase() + s.slice(1);
-}
