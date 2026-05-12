@@ -1,48 +1,64 @@
 ## Goal
 
-Update `DERIVNOS_PROMPT` in `src/server/derivnos.ts` so AskDerivn keeps using its internal reasoning framework but stops outputting it as labeled sections ("Direct answer:", "Why it matters:", "What to do now:", "One smart follow-up question:"). Responses should read like a sharp coach talking, not a worksheet.
+Make replies feel instant on both the home demo and the authenticated chat. Today users wait 5–15s because we use the OpenAI Assistants API (thread create + 1s polling) and never stream — the whole reply lands at once. After this change, the first words appear in well under a second and stream in token‑by‑token.
 
-## Single file change
+## What changes for the user
 
-**`src/server/derivnos.ts`** — rewrite the `RESPONSE FORMAT` section and tighten related rules. Keep `buildProfileBlock`, the `ProfileLike` type, and the export name unchanged.
+- Home demo: starts answering almost immediately, words appear as they're generated.
+- Authenticated chat: same — no more "Thinking…" spinner sitting for 10+ seconds.
+- Tone and behavior stay the same (the full DerivnOS coaching prompt is preserved).
+- File Search over uploaded Derivn PDFs is removed (per your choice). The model will rely on the system prompt + your saved profile + conversation history, which is what makes the actual coaching voice anyway.
 
-### What changes in the prompt
+## Technical changes
 
-1. **Strengthen the "internal vs. external" split.** Keep the existing QUIET THINKING LAYER but add an explicit rule: the four-part structure (answer → why → next action → optional follow-up) is an *internal* shape only. Never surface it as labels, headings, or bolded section names.
+### 1. Authenticated chat — `src/routes/api/chat.ts` (the big win)
 
-2. **Replace the current RESPONSE FORMAT section** with output rules that explicitly forbid:
-   - Labels like "Direct answer:", "Why it matters:", "What to do now:", "Follow-up:", "TL;DR:", "Summary:".
-   - Bolded section headers, numbered phases, or template scaffolding.
-   - Any phrasing that reads like a worksheet, checklist, or system prompt echo.
-   - Restating the user's question back as a heading.
+Replace the OpenAI Assistants flow with a streaming Lovable AI Gateway call.
 
-   And require:
-   - Start directly with the answer in the coach's voice.
-   - Use short natural paragraphs. Bullets only when listing real items (exercises, foods, steps in a workout) — never to label reasoning stages.
-   - Weave the "why" into the same paragraph as the answer when possible.
-   - Put the next action as a normal sentence, not a labeled step.
-   - The follow-up question, when used, is a single conversational sentence at the end — no label, no "Quick question:" prefix required (optional soft lead-in like "One thing I'd want to know" or "Quick check —" is fine but not mandatory).
-   - Only use explicit headings/sections when the user asks for a breakdown, plan, program, or structured format.
+- Remove: thread create, message create, run create, the 1s polling loop, run cancel, message list. Remove `openai_thread_id` usage from the request path (column can stay in DB, just unused).
+- Keep: auth + subscription + profile + usage cap checks, saving the user message, saving the assistant message at the end, conversation create/update.
+- New flow:
+  1. Load conversation history from `messages` table (last ~30 turns, ascending).
+  2. Build messages array: `system: DERIVNOS_PROMPT + profile block`, then history, then new user message.
+  3. POST to `https://ai.gateway.lovable.dev/v1/chat/completions` with `model: "google/gemini-3-flash-preview"`, `stream: true`.
+  4. Pipe the SSE response straight back to the client (`Content-Type: text/event-stream`). Tee a parallel reader that accumulates `choices[0].delta.content` so we can save the full assistant message + token usage to Supabase after `[DONE]`.
+  5. Surface 429 (rate limit) and 402 (credits) as JSON errors before opening the stream, the way the docs require.
 
-3. **Add 2–3 inline good/bad examples** modeled on the user's examples (returning-from-time-off workout, "help me lose weight", sore-legs run question) so the model has concrete style anchors. Each example shows the bad labeled version and the good natural version side by side.
+Side effects:
+- `OPENAI_API_KEY` and `OPENAI_ASSISTANT_ID` are no longer needed by `/api/chat`. We'll leave the secrets in place (no deletion) in case you want to restore Assistants later.
+- Token usage tracking switches from `run.usage` to the gateway's `usage` field on the final SSE chunk (same `prompt_tokens` / `completion_tokens` shape).
 
-4. **Keep untouched:** identity, source authority order, answer-first rule, when-to-ask vs. when-not-to-ask, intent inference cues, curiosity checklists, core coaching rules, safety boundaries, tone.
+### 2. Authenticated chat UI — `src/routes/_authenticated.chat.tsx`
 
-### What does not change
+Switch `send()` from `await res.json()` to streaming:
 
-- `src/routes/api/chat.ts` — already injects `DERIVNOS_PROMPT` on every run, no edit needed.
-- `src/routes/api/public/demo-chat.ts` — uses its own `DEMO_PROMPT` with a deliberately different short 3-part structure for the public demo. Out of scope unless you want the demo updated too (flagging for confirmation below).
-- Model, streaming, history, profile injection, auth, Stripe — untouched.
+- Use `fetch(...).body.getReader()` + a line-by-line SSE parser (per the AI Gateway streaming guide — handle CRLF, `:` keepalives, `[DONE]`, partial JSON across chunks, final flush).
+- Optimistically append an empty assistant message right after the user message (no more "Thinking…" placeholder), then update its `content` as each delta arrives.
+- On `[DONE]`, call `refreshConversations()` and, for a brand-new conversation, navigate to `/chat?c=<id>` (the server returns the conversation_id in the first SSE event as a custom `event: meta` line; see Technical details below).
+- Keep all existing 401 / 402 / 428 / 429 / 5xx handling.
 
-## Verification
+### 3. Home demo — `src/routes/api/public/demo-chat.ts` + `src/components/demo-section.tsx`
 
-Manual smoke test in `/chat` after the prompt update:
-- "What should I do for a workout today?" → flowing prose + clean exercise bullets, no "Direct answer:" labels, ends with at most one natural follow-up question.
-- "Help me lose weight." → conversational answer, no template headings, single follow-up about tracking.
-- "Should I run today if my legs are sore?" → natural recovery guidance, single follow-up about yesterday's session.
-- "What is protein?" → short definition, no follow-up, no labels.
-- "Give me a structured 4-week plan." → structured/sectioned output is allowed here because the user asked for structure.
+Same treatment, simpler:
 
-## One thing to confirm
+- Server: switch from non-streaming `fetch` + `res.json()` to streaming. Forward the gateway's SSE body with the same CORS/error handling. Keep the 500-char input cap and the demo prompt.
+- Client (`demo-section.tsx`): replace the `await res.json()` with the same SSE reader + progressive render of the answer bubble.
 
-Do you also want the same "no labeled sections" rewrite applied to the **public demo** prompt in `src/routes/api/public/demo-chat.ts`? It currently *requires* `**Direct answer**`, `**Why**`, `**What to do next**` bold labels by design. If yes, I'll update it in the same pass; if no, I'll leave the demo as-is.
+### 4. Small UX polish that compounds the perceived speed
+
+- Submit the user's message into the UI synchronously (already done) and disable the input only while the network request is in flight, not after streaming has started, so the screen is never blank waiting.
+- Auto-scroll the chat container as tokens arrive.
+- No retries on the client (a fast failure + clear toast is faster than silent retries).
+
+## Out of scope (not changing now)
+
+- Conversation list, sidebar, auth, profile, billing, Stripe, PDF dialog — untouched.
+- DB schema — no migration needed. `openai_thread_id` column stays as nullable/legacy.
+- Model choice is fixed to `google/gemini-3-flash-preview`. We can A/B against `gemini-2.5-flash-lite` or `gpt-5-nano` later if we want to push latency even lower.
+
+## Technical details (for reference)
+
+- First-token latency target: < 800ms p50, < 1.5s p95. Most of the win comes from removing the Assistants `runs.create` + 1s `runs.retrieve` polling cycle (which alone adds 2–8s before any text exists).
+- SSE forwarding from a TanStack server route: return `new Response(upstream.body, { headers: { "Content-Type": "text/event-stream", "Cache-Control": "no-cache, no-transform", Connection: "keep-alive", ...corsHeaders }})`. To also persist the assistant message, use `upstream.body.tee()` — pipe one branch to the client, consume the other in a background `Promise` that writes to Supabase on completion.
+- Conversation ID for new chats: emit a single `event: meta\ndata: {"conversation_id":"..."}\n\n` line before forwarding the gateway stream. The client parses meta events separately from `data:` deltas.
+- Error mapping (gateway → client): 429 → "Demo is busy, try again." / 402 → "AskDerivn is temporarily over capacity." / other → generic "Couldn't respond, try again." Surface as toasts in chat, inline in demo.

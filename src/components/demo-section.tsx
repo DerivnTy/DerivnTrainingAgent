@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import ReactMarkdown from "react-markdown";
+import { readChatStream } from "@/lib/sse";
 
 const SUGGESTIONS = [
   "Should I run today if my legs are sore?",
@@ -39,27 +40,52 @@ export function DemoSection() {
     }
     setError(null);
     setLoading(true);
+
+    // Push the exchange optimistically with an empty answer so we can stream into it.
+    const idx = exchanges.length;
+    setExchanges((prev) => [...prev, { question: q, answer: "" }]);
+    setInput("");
+
+    let answer = "";
+
     try {
       const res = await fetch("/api/public/demo-chat", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "text/event-stream",
+        },
         body: JSON.stringify({ content: q }),
       });
-      const data = (await res.json().catch(() => ({}))) as {
-        answer?: string;
-        error?: string;
-      };
-      if (!res.ok || !data.answer) {
+
+      if (!res.ok) {
+        const data = (await res.json().catch(() => ({}))) as { error?: string };
         setError(data.error ?? "Something went wrong. Try again.");
-      } else {
-        setExchanges((prev) => [...prev, { question: q, answer: data.answer! }]);
-        setInput("");
-        const next = getCount() + 1;
-        window.sessionStorage.setItem(STORAGE_KEY, String(next));
-        setCount(next);
+        setExchanges((prev) => prev.filter((_, i) => i !== idx));
+        return;
       }
+
+      await readChatStream(res, {
+        onDelta: (chunk) => {
+          answer += chunk;
+          setExchanges((prev) =>
+            prev.map((ex, i) => (i === idx ? { ...ex, answer } : ex))
+          );
+        },
+      });
+
+      if (!answer.trim()) {
+        setError("Empty response. Please try again.");
+        setExchanges((prev) => prev.filter((_, i) => i !== idx));
+        return;
+      }
+
+      const next = getCount() + 1;
+      window.sessionStorage.setItem(STORAGE_KEY, String(next));
+      setCount(next);
     } catch {
       setError("Network error. Please try again.");
+      setExchanges((prev) => prev.filter((_, i) => i !== idx));
     } finally {
       setLoading(false);
     }
