@@ -34,13 +34,21 @@ function SubscribePage() {
         const text = await res.text();
         throw new Error(text || "Could not start checkout");
       }
-      const { url } = await res.json();
-      if (!url) throw new Error("No checkout URL returned");
-      window.location.href = url;
+      const body = (await res.json()) as {
+        url?: string;
+        alreadyActive?: boolean;
+      };
+      if (body.alreadyActive) {
+        navigate({ to: "/post-auth" });
+        return;
+      }
+      if (!body.url) throw new Error("No checkout URL returned");
+      window.location.href = body.url;
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not start checkout");
       setLoading(false);
     }
+
   };
 
   const onSignOut = async () => {
