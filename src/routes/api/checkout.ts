@@ -34,11 +34,63 @@ export const Route = createFileRoute("/api/checkout")({
           // Look up profile / customer
           const { data: profile } = await supabaseAdmin
             .from("profiles")
-            .select("stripe_customer_id, email")
+            .select(
+              "stripe_customer_id, email, subscription_status, subscription_current_period_end"
+            )
             .eq("id", userId)
             .single();
 
+          // Guard 1: profile already shows an active subscription.
+          const periodEnd = profile?.subscription_current_period_end
+            ? new Date(profile.subscription_current_period_end)
+            : null;
+          if (
+            profile?.subscription_status === "active" &&
+            (!periodEnd || periodEnd.getTime() > Date.now())
+          ) {
+            return Response.json({ alreadyActive: true });
+          }
+
           let customerId = profile?.stripe_customer_id ?? null;
+
+          // Guard 2: existing Stripe customer may already have an active or
+          // trialing subscription that the webhook hasn't synced to profiles
+          // yet. Check Stripe directly to prevent a duplicate purchase.
+          if (customerId) {
+            for (const status of ["active", "trialing"] as const) {
+              const list = await stripe.subscriptions.list({
+                customer: customerId,
+                status,
+                limit: 1,
+              });
+              const existing = list.data[0];
+              if (existing) {
+                const itemEnd = existing.items.data[0]?.current_period_end;
+                await supabaseAdmin
+                  .from("profiles")
+                  .update({
+                    subscription_status: "active",
+                    subscription_current_period_end: itemEnd
+                      ? new Date(itemEnd * 1000).toISOString()
+                      : null,
+                    stripe_customer_id: customerId,
+                  })
+                  .eq("id", userId);
+                // Backfill metadata if missing on the existing subscription.
+                if (!existing.metadata?.supabase_user_id) {
+                  try {
+                    await stripe.subscriptions.update(existing.id, {
+                      metadata: { supabase_user_id: userId },
+                    });
+                  } catch (err) {
+                    console.warn("Failed to backfill sub metadata", err);
+                  }
+                }
+                return Response.json({ alreadyActive: true });
+              }
+            }
+          }
+
           if (!customerId) {
             const customer = await stripe.customers.create({
               email: email ?? profile?.email ?? undefined,
