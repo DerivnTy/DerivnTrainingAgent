@@ -97,6 +97,7 @@ function LandingPage() {
         </section>
 
         <section className="border-t border-rule">
+          <div className="mx-auto max-w-5xl px-6 py-20">
             <div className="mx-auto max-w-2xl text-center">
               <h2 className="t-h2">What you get</h2>
               <p className="mt-3 t-body-sm">
