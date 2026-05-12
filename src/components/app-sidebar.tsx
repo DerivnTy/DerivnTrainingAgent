@@ -160,7 +160,15 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
           <button
             type="button"
             onClick={() => {
-              setPdfOpen(true);
+              const isMobile =
+                typeof window !== "undefined" &&
+                (window.matchMedia("(max-width: 767px)").matches ||
+                  /iPhone|iPad|iPod|Android/i.test(navigator.userAgent));
+              if (isMobile) {
+                window.open("/pdf/built-for-motion.pdf", "_blank", "noopener,noreferrer");
+              } else {
+                setPdfOpen(true);
+              }
               onNavigate?.();
             }}
             className="text-left text-link hover:text-foreground"
