@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { ArrowUp } from "lucide-react";
 import { authedFetch } from "@/lib/auth-helpers";
@@ -39,6 +39,7 @@ function ChatPage() {
   const [loadingConv, setLoadingConv] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  const shouldStickToBottomRef = useRef(true);
   // Conversations we just created locally — skip the server reload so the
   // freshly streamed messages aren't wiped while persistence catches up.
   const skipReloadRef = useRef<Set<string>>(new Set());
@@ -75,7 +76,24 @@ function ChatPage() {
   }, [conversationId]);
 
   useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
+    const node = scrollRef.current;
+    if (!node) return;
+
+    const updateStickiness = () => {
+      const distanceFromBottom = node.scrollHeight - node.scrollTop - node.clientHeight;
+      shouldStickToBottomRef.current = distanceFromBottom < 80;
+    };
+
+    updateStickiness();
+    node.addEventListener("scroll", updateStickiness, { passive: true });
+    return () => node.removeEventListener("scroll", updateStickiness);
+  }, []);
+
+  useLayoutEffect(() => {
+    const node = scrollRef.current;
+    if (!node) return;
+    if (!shouldStickToBottomRef.current && !streaming && !sending) return;
+    node.scrollTo({ top: node.scrollHeight, behavior: "auto" });
   }, [messages, sending, streaming]);
 
   async function send(text: string) {
@@ -183,7 +201,7 @@ function ChatPage() {
 
   return (
     <main className="mx-auto flex h-full w-full max-w-3xl flex-col px-4">
-      <div ref={scrollRef} className="flex-1 overflow-y-auto pb-4 pt-6">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto overscroll-contain pb-4 pt-6">
         {loadingConv && <p className="t-body-sm">Loading conversation…</p>}
 
         <div className="space-y-6">
