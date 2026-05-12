@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import OpenAI from "openai";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import {
   authenticate,
@@ -13,6 +12,9 @@ import {
   getUsedTokens,
 } from "@/server/usage.server";
 import { DERIVNOS_PROMPT, buildProfileBlock } from "@/server/derivnos";
+
+const MODEL = "google/gemini-3-flash-preview";
+const HISTORY_LIMIT = 30;
 
 function jsonErr(
   status: number,
@@ -67,38 +69,30 @@ export const Route = createFileRoute("/api/chat")({
           if (content.length > 8000)
             return jsonErr(400, "Message too long.", "too_long");
 
-          // 6. Secrets
-          const apiKey = process.env.OPENAI_API_KEY;
-          const assistantId = process.env.OPENAI_ASSISTANT_ID;
-          if (!apiKey || !assistantId) {
-            console.error("[chat] missing OPENAI secrets", {
-              hasKey: !!apiKey,
-              hasAssistant: !!assistantId,
-            });
+          // 6. Lovable AI Gateway key
+          const apiKey = process.env.LOVABLE_API_KEY;
+          if (!apiKey) {
+            console.error("[chat] missing LOVABLE_API_KEY");
             return jsonErr(
               500,
               "AskDerivn is not configured.",
-              "missing_openai_secrets",
+              "missing_lovable_api_key",
               "config"
             );
           }
-          const openai = new OpenAI({ apiKey });
 
           // 7. Resolve conversation
           let conversationId = body.conversation_id ?? null;
-          let threadId: string | null = null;
-
           if (conversationId) {
             const { data: conv, error: convErr } = await supabaseAdmin
               .from("conversations")
-              .select("id, user_id, openai_thread_id")
+              .select("id, user_id")
               .eq("id", conversationId)
               .single();
             if (convErr || !conv || conv.user_id !== userId) {
               console.error("[chat] conversation not found", convErr?.message);
               return jsonErr(404, "Conversation not found.", "conv_not_found");
             }
-            threadId = conv.openai_thread_id;
           } else {
             const title = content.slice(0, 60);
             const { data: created, error: createErr } = await supabaseAdmin
@@ -117,25 +111,13 @@ export const Route = createFileRoute("/api/chat")({
             conversationId = created.id;
           }
 
-          // 8. Ensure thread
-          if (!threadId) {
-            try {
-              const thread = await openai.beta.threads.create();
-              threadId = thread.id;
-              await supabaseAdmin
-                .from("conversations")
-                .update({ openai_thread_id: threadId })
-                .eq("id", conversationId);
-            } catch (e) {
-              const msg = e instanceof Error ? e.message : String(e);
-              console.error("[chat] thread create failed", msg);
-              return jsonErr(
-                502,
-                "AskDerivn could not start a session.",
-                `thread_create:${msg}`
-              );
-            }
-          }
+          // 8. Load conversation history
+          const { data: history } = await supabaseAdmin
+            .from("messages")
+            .select("role, content, created_at")
+            .eq("conversation_id", conversationId)
+            .order("created_at", { ascending: true })
+            .limit(HISTORY_LIMIT);
 
           // 9. Save user message
           await supabaseAdmin.from("messages").insert({
@@ -153,146 +135,172 @@ export const Route = createFileRoute("/api/chat")({
             .eq("id", userId)
             .single();
 
-          const additionalInstructions =
+          const systemPrompt =
             DERIVNOS_PROMPT + "\n\n" + buildProfileBlock(profile);
 
-          // 11. Append user message to OpenAI thread
-          let userMessageId: string;
+          const messages: Array<{ role: string; content: string }> = [
+            { role: "system", content: systemPrompt },
+          ];
+          for (const m of history ?? []) {
+            if (m.role === "user" || m.role === "assistant") {
+              messages.push({ role: m.role, content: m.content });
+            }
+          }
+          messages.push({ role: "user", content });
+
+          // 11. Call Lovable AI Gateway with streaming
+          let upstream: Response;
           try {
-            const m = await openai.beta.threads.messages.create(threadId!, {
-              role: "user",
-              content,
-            });
-            userMessageId = m.id;
+            upstream = await fetch(
+              "https://ai.gateway.lovable.dev/v1/chat/completions",
+              {
+                method: "POST",
+                headers: {
+                  Authorization: `Bearer ${apiKey}`,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  model: MODEL,
+                  messages,
+                  stream: true,
+                }),
+              }
+            );
           } catch (e) {
             const msg = e instanceof Error ? e.message : String(e);
-            console.error("[chat] openai message create failed", msg);
-            return jsonErr(502, "AskDerivn could not accept the message.", `msg_create:${msg}`);
+            console.error("[chat] gateway fetch failed", msg);
+            return jsonErr(502, "AskDerivn could not respond. Please try again.", `gw_fetch:${msg}`);
           }
 
-          // 12. Create + manually poll run
-          let run;
-          try {
-            run = await openai.beta.threads.runs.create(threadId!, {
-              assistant_id: assistantId,
-              additional_instructions: additionalInstructions,
-            });
-          } catch (e) {
-            const msg = e instanceof Error ? e.message : String(e);
-            console.error("[chat] run create failed", msg);
-            return jsonErr(502, "AskDerivn could not start a response.", `run_create:${msg}`);
-          }
-
-          const startedAt = Date.now();
-          const MAX_MS = 25_000;
-          while (
-            run.status === "queued" ||
-            run.status === "in_progress" ||
-            run.status === "cancelling"
-          ) {
-            if (Date.now() - startedAt > MAX_MS) {
-              console.error("[chat] run timeout", run.id, run.status);
-              try {
-                await openai.beta.threads.runs.cancel(run.id, { thread_id: threadId! });
-              } catch {}
+          if (!upstream.ok || !upstream.body) {
+            const text = await upstream.text().catch(() => "");
+            console.error("[chat] gateway error", upstream.status, text);
+            if (upstream.status === 429)
               return jsonErr(
-                504,
-                "AskDerivn took too long to respond. Please try again.",
-                `run_timeout status=${run.status}`,
-                "run_timeout"
+                429,
+                "AskDerivn is busy right now. Try again in a moment.",
+                `gw_429:${text}`,
+                "rate_limited"
               );
-            }
-            await new Promise((r) => setTimeout(r, 1000));
-            try {
-              run = await openai.beta.threads.runs.retrieve(run.id, {
-                thread_id: threadId!,
-              });
-            } catch (e) {
-              const msg = e instanceof Error ? e.message : String(e);
-              console.error("[chat] run retrieve failed", msg);
-              return jsonErr(502, "AskDerivn lost the connection.", `run_retrieve:${msg}`);
-            }
-          }
-
-          if (run.status !== "completed") {
-            const errMsg = run.last_error?.message ?? "no error message";
-            console.error("[chat] run not completed", run.status, errMsg);
+            if (upstream.status === 402)
+              return jsonErr(
+                402,
+                "AskDerivn is temporarily over capacity. Please try again shortly.",
+                `gw_402:${text}`,
+                "credits_exhausted"
+              );
             return jsonErr(
               502,
               "AskDerivn could not respond. Please try again.",
-              `run_${run.status}:${errMsg}`,
-              `run_${run.status}`
+              `gw_${upstream.status}:${text}`
             );
           }
 
-          // 13. Track usage
-          if (run.usage) {
-            try {
-              await addUsage(
-                userId,
-                period,
-                run.usage.prompt_tokens ?? 0,
-                run.usage.completion_tokens ?? 0
-              );
-            } catch (e) {
-              console.error("[chat] usage update failed", e);
-            }
-          }
+          // 12. Tee the body: one branch goes to client, the other to persistence
+          const [clientStream, persistStream] = upstream.body.tee();
 
-          // 14. Read newest assistant message after the user message
-          let assistantText = "";
-          try {
-            const list = await openai.beta.threads.messages.list(threadId!, {
-              order: "asc",
-              after: userMessageId,
-              limit: 10,
-            });
-            for (const m of list.data) {
-              if (m.role !== "assistant") continue;
-              for (const part of m.content) {
-                if (part.type === "text") assistantText += part.text.value;
+          // Background: accumulate the assistant text + usage, then save
+          const persistPromise = (async () => {
+            const reader = persistStream.getReader();
+            const decoder = new TextDecoder();
+            let buffer = "";
+            let assistantText = "";
+            let promptTokens = 0;
+            let completionTokens = 0;
+            try {
+              while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                buffer += decoder.decode(value, { stream: true });
+                let nl: number;
+                while ((nl = buffer.indexOf("\n")) !== -1) {
+                  let line = buffer.slice(0, nl);
+                  buffer = buffer.slice(nl + 1);
+                  if (line.endsWith("\r")) line = line.slice(0, -1);
+                  if (!line.startsWith("data: ")) continue;
+                  const json = line.slice(6).trim();
+                  if (!json || json === "[DONE]") continue;
+                  try {
+                    const parsed = JSON.parse(json);
+                    const delta = parsed.choices?.[0]?.delta?.content;
+                    if (typeof delta === "string") assistantText += delta;
+                    if (parsed.usage) {
+                      promptTokens = parsed.usage.prompt_tokens ?? promptTokens;
+                      completionTokens =
+                        parsed.usage.completion_tokens ?? completionTokens;
+                    }
+                  } catch {
+                    // partial JSON across chunks — put back and wait
+                    buffer = line + "\n" + buffer;
+                    break;
+                  }
+                }
+              }
+            } catch (e) {
+              console.error("[chat] persist stream read error", e);
+            }
+
+            if (assistantText.trim()) {
+              try {
+                await supabaseAdmin.from("messages").insert({
+                  conversation_id: conversationId,
+                  role: "assistant",
+                  content: assistantText,
+                });
+                await supabaseAdmin
+                  .from("conversations")
+                  .update({ updated_at: new Date().toISOString() })
+                  .eq("id", conversationId);
+              } catch (e) {
+                console.error("[chat] save assistant failed", e);
               }
             }
-          } catch (e) {
-            const msg = e instanceof Error ? e.message : String(e);
-            console.error("[chat] message list failed", msg);
-            return jsonErr(502, "AskDerivn responded but we couldn't read it.", `msg_list:${msg}`);
-          }
 
-          if (!assistantText.trim()) {
-            console.error("[chat] empty assistant response", run.id);
-            return jsonErr(
-              502,
-              "AskDerivn returned an empty response. Please try again.",
-              "empty_assistant_message",
-              "empty_response"
-            );
-          }
+            if (promptTokens || completionTokens) {
+              try {
+                await addUsage(userId, period, promptTokens, completionTokens);
+              } catch (e) {
+                console.error("[chat] usage update failed", e);
+              }
+            }
+          })();
 
-          // 15. Save assistant message
-          const { data: saved, error: saveErr } = await supabaseAdmin
-            .from("messages")
-            .insert({
-              conversation_id: conversationId,
-              role: "assistant",
-              content: assistantText,
-            })
-            .select("id, role, content, created_at")
-            .single();
+          // Make sure persist runs to completion in the background
+          persistPromise.catch((e) => console.error("[chat] persist task", e));
 
-          if (saveErr || !saved) {
-            console.error("[chat] save assistant failed", saveErr?.message);
-            return jsonErr(500, "Could not save the response.", `save:${saveErr?.message}`);
-          }
+          // 13. Build response: prepend a meta event with conversation_id, then
+          // forward the gateway SSE body unchanged.
+          const encoder = new TextEncoder();
+          const metaEvent = encoder.encode(
+            `event: meta\ndata: ${JSON.stringify({ conversation_id: conversationId })}\n\n`
+          );
 
-          await supabaseAdmin
-            .from("conversations")
-            .update({ updated_at: new Date().toISOString() })
-            .eq("id", conversationId);
+          const reader = clientStream.getReader();
+          const out = new ReadableStream({
+            async start(controller) {
+              controller.enqueue(metaEvent);
+              try {
+                while (true) {
+                  const { done, value } = await reader.read();
+                  if (done) break;
+                  controller.enqueue(value);
+                }
+              } catch (e) {
+                console.error("[chat] client stream forward error", e);
+              } finally {
+                controller.close();
+              }
+            },
+          });
 
-          return Response.json({
-            conversation_id: conversationId,
-            message: saved,
+          return new Response(out, {
+            status: 200,
+            headers: {
+              "Content-Type": "text/event-stream",
+              "Cache-Control": "no-cache, no-transform",
+              Connection: "keep-alive",
+              "X-Accel-Buffering": "no",
+            },
           });
         } catch (e) {
           const msg = e instanceof Error ? e.message : String(e);
