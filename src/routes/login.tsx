@@ -33,7 +33,14 @@ function LoginPage() {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
     if (error) {
-      setError(error.message);
+      const msg = error.message?.toLowerCase() ?? "";
+      if (msg.includes("invalid login") || msg.includes("invalid_credentials")) {
+        setError("That email and password don't match. Try again or reset your password.");
+      } else if (msg.includes("email not confirmed")) {
+        setError("Please confirm your email address before signing in.");
+      } else {
+        setError(error.message);
+      }
       return;
     }
     navigate({ to: "/post-auth" });
