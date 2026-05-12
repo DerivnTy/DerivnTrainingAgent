@@ -80,7 +80,7 @@ function LandingPage() {
                 </div>
               </div>
               <div>
-                <h2 className="t-h2 font-black">THE COACH</h2>
+                <h2 className="t-h2 font-black text-xl">THE COACH</h2>
                 <p className="mt-5 t-body-sm">
                   I built AskDerivn so the system I use with my own clients is available to anyone who
                   wants real coaching, not another generic fitness app.
