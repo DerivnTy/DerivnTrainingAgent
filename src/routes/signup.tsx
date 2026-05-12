@@ -36,7 +36,23 @@ function SignupPage() {
     });
     setLoading(false);
     if (error) {
-      setError(error.message);
+      const msg = error.message?.toLowerCase() ?? "";
+      if (
+        msg.includes("already registered") ||
+        msg.includes("already exists") ||
+        msg.includes("user already") ||
+        msg.includes("email") && msg.includes("exists")
+      ) {
+        setError("This email is already in use. Try signing in instead.");
+      } else {
+        setError(error.message);
+      }
+      return;
+    }
+    // Supabase returns a user with empty identities array when the email is
+    // already registered (to avoid leaking account existence). Detect it here.
+    if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+      setError("This email is already in use. Try signing in instead.");
       return;
     }
     if (data.session) {
