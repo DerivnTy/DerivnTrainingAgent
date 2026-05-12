@@ -95,7 +95,7 @@ export function AddToHomeScreenBanner() {
           <button
             type="button"
             onClick={handleGotIt}
-            className="rounded-full bg-foreground px-6 py-2.5 t-eyebrow text-background transition-opacity hover:opacity-90 active:scale-[0.97]"
+            className="btn-primary"
           >
             Got it
           </button>

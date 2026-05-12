@@ -16,14 +16,14 @@ export function PdfViewerDialog({
         className="flex h-[90vh] w-[95vw] max-w-4xl flex-col gap-0 overflow-hidden border border-rule bg-background p-0 sm:rounded-lg [&>button]:hidden"
       >
         <header className="flex shrink-0 items-center justify-between border-b border-rule px-5 py-3">
-          <div className="font-serif text-base tracking-tight text-foreground">
+          <div className="t-wordmark">
             Built for Motion
           </div>
           <div className="flex items-center gap-1">
             <a
               href={PDF_URL}
               download
-              className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs text-ink-soft transition-colors hover:bg-accent hover:text-foreground"
+              className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 t-meta text-link transition-colors hover:bg-accent hover:text-foreground"
               title="Download PDF"
             >
               <Download className="h-3.5 w-3.5" />
@@ -46,7 +46,7 @@ export function PdfViewerDialog({
           aria-label="Built for Motion PDF"
         >
           <div className="flex h-full flex-col items-center justify-center gap-3 p-6 text-center">
-            <p className="text-sm text-ink-soft">
+            <p className="t-body-sm">
               Your browser can&rsquo;t preview the PDF inline.
             </p>
             <a href={PDF_URL} download className="btn-primary">

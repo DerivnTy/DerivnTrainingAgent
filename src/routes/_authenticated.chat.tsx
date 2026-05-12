@@ -209,7 +209,7 @@ function ChatPage() {
             if (m.role === "user") {
               return (
                 <div key={m.id} className="flex justify-end animate-message-in">
-                  <div className="max-w-[80%] rounded-2xl bg-primary px-4 py-2 text-sm leading-relaxed text-primary-foreground whitespace-pre-wrap">
+                  <div className="max-w-[80%] rounded-2xl bg-primary px-4 py-2 t-body text-primary-foreground whitespace-pre-wrap">
                     {m.content}
                   </div>
                 </div>
@@ -223,8 +223,8 @@ function ChatPage() {
                 className={`animate-message-in ${showDivider ? "border-t border-rule pt-6" : ""}`}
               >
                 <div className="t-eyebrow">AskDerivn</div>
-                <div className="mt-3 text-sm leading-relaxed">
-                  <div className="prose prose-sm prose-neutral max-w-none [&_p]:my-3 [&_ul]:my-3 [&_ol]:my-3 [&_li]:my-1">
+                <div className="mt-3 t-body">
+                  <div className="prose prose-base prose-neutral max-w-none [&_p]:my-3 [&_ul]:my-3 [&_ol]:my-3 [&_li]:my-1">
                     <ReactMarkdown>{m.content}</ReactMarkdown>
                   </div>
                 </div>
@@ -243,7 +243,7 @@ function ChatPage() {
 
           {error && (
             <div className="border-t border-rule pt-6">
-              <p className="text-sm text-red-700">{error}</p>
+              <p className="t-error">{error}</p>
             </div>
           )}
         </div>
@@ -260,10 +260,10 @@ function ChatPage() {
                 onClick={() => send(s.title)}
                 className="rounded-2xl bg-accent/60 px-3 py-3 text-left transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-accent active:scale-[0.98]"
               >
-                <div className="text-sm font-semibold text-foreground">
+                <div className="t-body-sm font-semibold text-foreground">
                   {s.title}
                 </div>
-                <div className="mt-0.5 text-xs text-ink-soft">{s.sub}</div>
+                <div className="mt-0.5 t-meta">{s.sub}</div>
               </button>
             ))}
           </div>
@@ -281,7 +281,7 @@ function ChatPage() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask AskDerivn"
-            className="flex-1 bg-transparent py-1 text-sm outline-none placeholder:text-ink-soft"
+            className="flex-1 bg-transparent py-1 t-body outline-none placeholder:text-ink-soft"
           />
           <button
             type="submit"

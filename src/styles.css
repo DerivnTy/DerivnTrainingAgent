@@ -236,6 +236,13 @@
     letter-spacing: -0.015em;
     color: var(--foreground);
   }
+
+  .t-error {
+    font-family: var(--font-sans);
+    font-size: 0.875rem;      /* 14 */
+    line-height: 1.55;
+    color: var(--destructive);
+  }
 }
 
 /* ============================================================
