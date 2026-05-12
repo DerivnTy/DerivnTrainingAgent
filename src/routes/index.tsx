@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteFooter } from "@/components/site-footer";
 import { DemoSection } from "@/components/demo-section";
 import { rootBeforeLoad } from "@/lib/post-auth-route";
+import coachPortrait from "@/assets/coach-portrait.jpeg";
 
 export const Route = createFileRoute("/")({
   beforeLoad: () => rootBeforeLoad(),
