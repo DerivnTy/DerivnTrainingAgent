@@ -156,7 +156,7 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void } = {}) {
 
       {/* Utility links */}
       <div className="border-t border-rule px-5 py-4">
-        <nav className="flex flex-col gap-2 t-eyebrow">
+        <nav className="flex flex-col gap-2 t-body">
           <button
             type="button"
             onClick={() => {
