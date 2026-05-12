@@ -6,28 +6,12 @@ export type PostAuthDestination =
   | "/login"
   | "/subscribe"
   | "/onboarding"
-  | "/chat"
-  | "/admin";
-
-async function isCurrentUserAdmin(userId: string): Promise<boolean> {
-  try {
-    const { data } = await supabase
-      .from("admin_users")
-      .select("user_id")
-      .eq("user_id", userId)
-      .maybeSingle();
-    return Boolean(data);
-  } catch {
-    return false;
-  }
-}
+  | "/chat";
 
 export async function resolvePostAuthDestination(
   userId: string,
   _email?: string | null
 ): Promise<PostAuthDestination> {
-  if (await isCurrentUserAdmin(userId)) return "/admin";
-
   const { data: profile, error } = await supabase
     .from("profiles")
     .select(
@@ -84,24 +68,11 @@ export async function authenticatedBeforeLoad(pathname: string) {
   // /account is always allowed for signed-in users (billing management).
   if (pathname.startsWith("/account")) return;
 
-  // /admin: only admins; everyone else gets bounced to their normal destination.
-  if (pathname.startsWith("/admin")) {
-    if (await isCurrentUserAdmin(session.user.id)) return;
-    const dest = await resolvePostAuthDestination(
-      session.user.id,
-      session.user.email
-    );
-    throw redirect({ to: dest === "/admin" ? "/chat" : dest });
-  }
-
   const dest = await resolvePostAuthDestination(
     session.user.id,
     session.user.email
   );
 
-  if (dest === "/admin") {
-    throw redirect({ to: "/admin" });
-  }
   if (dest === "/subscribe") {
     throw redirect({ to: "/subscribe" });
   }

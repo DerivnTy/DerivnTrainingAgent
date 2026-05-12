@@ -1,8 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
-import { AuthShell, Field, Divider } from "./login";
+import { AuthShell, Field } from "./login";
 
 export const Route = createFileRoute("/signup")({
   component: SignupPage,
@@ -17,10 +16,8 @@ function SignupPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [oauthLoading, setOauthLoading] = useState<"google" | "apple" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [sent, setSent] = useState(false);
-  const [showEmailForm, setShowEmailForm] = useState(false);
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -42,31 +39,11 @@ function SignupPage() {
       setError(error.message);
       return;
     }
-    // Always route through /post-auth so the subscription gate applies.
     if (data.session) {
       navigate({ to: "/post-auth" });
       return;
     }
     setSent(true);
-  };
-
-  const onOAuth = async (provider: "google" | "apple") => {
-    if (oauthLoading) return;
-    setError(null);
-    setOauthLoading(provider);
-    if (typeof window !== "undefined") {
-      window.sessionStorage.setItem("oauth_intent", "signup");
-    }
-    const result = await lovable.auth.signInWithOAuth(provider, {
-      redirect_uri: window.location.origin + "/post-auth",
-    });
-    if (result.error) {
-      setOauthLoading(null);
-      setError(result.error.message ?? `${provider === "google" ? "Google" : "Apple"} sign-in failed`);
-      return;
-    }
-    if (result.redirected) return;
-    navigate({ to: "/post-auth" });
   };
 
   if (sent) {
@@ -91,74 +68,41 @@ function SignupPage() {
       subtitle="Create your AskDerivn account. Membership is $30/month. Cancel anytime."
       rightLink={{ to: "/login", label: "Sign in" }}
     >
-      <div className="space-y-2">
-        <button
-          type="button"
-          onClick={() => onOAuth("google")}
-          disabled={!!oauthLoading}
-          className="btn-secondary w-full"
-        >
-          {oauthLoading === "google" ? "Redirecting…" : "Continue with Google"}
+      <form onSubmit={onSubmit} className="space-y-4">
+        <Field label="Email">
+          <input
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full border-b border-rule bg-transparent py-2 text-sm input-soft"
+          />
+        </Field>
+        <Field label="Password">
+          <input
+            type="password"
+            required
+            minLength={8}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full border-b border-rule bg-transparent py-2 text-sm input-soft"
+          />
+        </Field>
+        <Field label="Confirm password">
+          <input
+            type="password"
+            required
+            minLength={8}
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            className="w-full border-b border-rule bg-transparent py-2 text-sm input-soft"
+          />
+        </Field>
+        {error && <p className="text-sm text-red-700">{error}</p>}
+        <button type="submit" disabled={loading} className="btn-primary w-full">
+          {loading ? "Creating…" : "Next"}
         </button>
-        <button
-          type="button"
-          onClick={() => onOAuth("apple")}
-          disabled={!!oauthLoading}
-          className="btn-secondary w-full"
-        >
-          {oauthLoading === "apple" ? "Redirecting…" : "Continue with Apple"}
-        </button>
-      </div>
-      {!showEmailForm ? (
-        <button
-          type="button"
-          onClick={() => setShowEmailForm(true)}
-          className="btn-primary mt-3 w-full"
-        >
-          Create an account
-        </button>
-      ) : (
-        <>
-          <div className="mt-6">
-            <Divider />
-          </div>
-          <form onSubmit={onSubmit} className="mt-6 space-y-4">
-            <Field label="Email">
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full border-b border-rule bg-transparent py-2 text-sm input-soft"
-              />
-            </Field>
-            <Field label="Password">
-              <input
-                type="password"
-                required
-                minLength={8}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full border-b border-rule bg-transparent py-2 text-sm input-soft"
-              />
-            </Field>
-            <Field label="Confirm password">
-              <input
-                type="password"
-                required
-                minLength={8}
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full border-b border-rule bg-transparent py-2 text-sm input-soft"
-              />
-            </Field>
-            {error && <p className="text-sm text-red-700">{error}</p>}
-            <button type="submit" disabled={loading} className="btn-primary w-full">
-              {loading ? "Creating…" : "Next"}
-            </button>
-          </form>
-        </>
-      )}
+      </form>
       <p className="mt-8 text-center t-body-sm">
         Already have an account?{" "}
         <Link to="/login" className="text-foreground text-link underline">
