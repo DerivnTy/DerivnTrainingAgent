@@ -89,7 +89,7 @@ function LandingPage() {
                 <p className="mt-4 t-body-sm">
                   AskDerivn is trained on the Derivn framework, thousands of workouts, and real
                   coaching conversations. The goal is simple: clear answers, sustainable structure,
-                  and steady progress toward your goals — without the noise.
+                  and steady progress toward your goals.
                 </p>
               </div>
             </div>
