@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteFooter } from "@/components/site-footer";
 import { DemoSection } from "@/components/demo-section";
 import { rootBeforeLoad } from "@/lib/post-auth-route";
+import coachPortrait from "@/assets/coach-portrait.jpeg";
 
 export const Route = createFileRoute("/")({
   beforeLoad: () => rootBeforeLoad(),
@@ -62,6 +63,36 @@ function LandingPage() {
             >
               Sign In
             </Link>
+          </div>
+        </section>
+
+        <section className="border-t border-rule">
+          <div className="mx-auto max-w-5xl px-6 py-20 md:py-24">
+            <div className="grid gap-12 md:grid-cols-2 md:items-center">
+              <div className="mx-auto w-full max-w-sm md:mx-0">
+                <div className="overflow-hidden rounded-2xl border border-rule bg-card">
+                  <img
+                    src={coachPortrait}
+                    alt="Ty Nordene, founder of AskDerivn"
+                    className="block h-full w-full object-cover"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+              <div>
+                <div className="t-eyebrow">THE COACH</div>
+                <h2 className="mt-4 t-h2">Hi, I'm Ty.</h2>
+                <p className="mt-5 t-body-sm">
+                  I built AskDerivn so the system I use with my own clients is available to anyone who
+                  wants real coaching, not another generic fitness app.
+                </p>
+                <p className="mt-4 t-body-sm">
+                  AskDerivn is trained on the Derivn framework, thousands of workouts, and real
+                  coaching conversations. The goal is simple: clear answers, sustainable structure,
+                  and steady progress toward your goals — without the noise.
+                </p>
+              </div>
+            </div>
           </div>
         </section>
 
