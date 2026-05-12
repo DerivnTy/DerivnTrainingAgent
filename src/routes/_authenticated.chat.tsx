@@ -39,12 +39,19 @@ function ChatPage() {
   const [loadingConv, setLoadingConv] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  // Conversations we just created locally — skip the server reload so the
+  // freshly streamed messages aren't wiped while persistence catches up.
+  const skipReloadRef = useRef<Set<string>>(new Set());
 
   // Load messages whenever active conversation changes
   useEffect(() => {
     setError(null);
     if (!conversationId) {
       setMessages([]);
+      return;
+    }
+    if (skipReloadRef.current.has(conversationId)) {
+      skipReloadRef.current.delete(conversationId);
       return;
     }
     let cancelled = false;
@@ -161,6 +168,7 @@ function ChatPage() {
       refreshConversations();
 
       if (!conversationId && newConversationId) {
+        skipReloadRef.current.add(newConversationId);
         navigate({ to: "/chat", search: { c: newConversationId } });
       }
     } catch (e) {
