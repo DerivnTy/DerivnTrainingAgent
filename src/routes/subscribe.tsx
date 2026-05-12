@@ -95,14 +95,6 @@ function SubscribePage() {
             {loading ? "Starting…" : "Start membership"}
           </button>
           {error && <p className="text-sm text-red-700">{error}</p>}
-          <button
-            type="button"
-            onClick={onSignOut}
-            className="btn-secondary w-full"
-            disabled={loading}
-          >
-            Sign out
-          </button>
         </div>
       </main>
 
