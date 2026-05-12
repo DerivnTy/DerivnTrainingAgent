@@ -1,64 +1,50 @@
 ## Goal
+Make every piece of text on the site use the design-system typography tokens defined in `src/styles.css` (`t-display`, `t-h1`, `t-h2`, `t-h3`, `t-eyebrow`, `t-body`, `t-body-sm`, `t-meta`, `t-wordmark`) so sizing, weight, family and color are consistent and readable in the right contexts.
 
-Make replies feel instant on both the home demo and the authenticated chat. Today users wait 5–15s because we use the OpenAI Assistants API (thread create + 1s polling) and never stream — the whole reply lands at once. After this change, the first words appear in well under a second and stream in token‑by‑token.
+No new fonts, no new tokens — just consistent application of what exists.
 
-## What changes for the user
+## What I found
 
-- Home demo: starts answering almost immediately, words appear as they're generated.
-- Authenticated chat: same — no more "Thinking…" spinner sitting for 10+ seconds.
-- Tone and behavior stay the same (the full DerivnOS coaching prompt is preserved).
-- File Search over uploaded Derivn PDFs is removed (per your choice). The model will rely on the system prompt + your saved profile + conversation history, which is what makes the actual coaching voice anyway.
+The token system is solid, but several files still use raw Tailwind utilities (`text-xs`, `text-sm`, `font-serif text-base`, `text-sm text-red-700`, etc.). A few placements also hurt readability — most notably the chat conversation body and the "Done" CTA in the Add-to-Home-Screen banner.
 
-## Technical changes
+### Issues to fix
 
-### 1. Authenticated chat — `src/routes/api/chat.ts` (the big win)
+1. **Chat conversation copy is too small** — `_authenticated.chat.tsx` lines 212, 226: user + assistant messages use `text-sm` (14px). Chat is the primary surface; bump to `t-body` (16px) so paragraphs read comfortably on mobile.
+2. **Suggestion card subtitle** — line 266 uses `text-xs text-ink-soft`; replace with `t-meta` (same intent, semantic).
+3. **Chat input field** — line 284 uses raw `text-sm`; switch to `t-body` so what you type matches what you read.
+4. **A2HS "Done" CTA** — `add-to-home-screen-banner.tsx` line 98 styles a primary button with `t-eyebrow` (11px uppercase mono). Replace the inline classes with `btn-primary` so it matches every other primary action on the site.
+5. **PDF dialog header** — `pdf-viewer-dialog.tsx` line 19 uses `font-serif text-base`; replace with `t-wordmark` for a consistent brand mark.
+6. **PDF dialog "Open in new tab" link** (line 26) and body copy (line 49): switch `text-xs` → `t-meta`, `text-sm` → `t-body-sm`.
+7. **Error messages** — `text-sm text-red-700` appears in login, signup, reset-password, forgot-password, subscribe, account, onboarding, chat. Standardize to a single class. Add a small component class `.t-error` in `styles.css` ( `t-body-sm` weight, `var(--destructive)` color) and apply it everywhere.
+8. **Helper / hint copy under inputs** — `_authenticated.account.tsx` and `_authenticated.onboarding.tsx` use `text-xs text-ink-soft` for hints, char-counts, and footnotes. Replace with `t-meta` (12px, ink-soft) — same look, semantic.
+9. **Form input fields** — account, onboarding, login, signup, reset, forgot, rename dialog all use `text-sm` on `<input>`. Move them to `t-body-sm` for one source of truth (same 14px, sans, but consistent).
+10. **Account page small UI bits** — `<dd className="text-sm">` (line 569), pill chips `text-sm` (lines 613/646/427/460), sign-out & section labels — replace plain `text-sm` body copy with `t-body-sm`; leave button-shaped pills using `text-sm` alone (their pill class controls the rest).
+11. **Index hero subtext** — `t-body text-lg` (index line 49) double-sets size. Drop `text-lg` and let `t-body` rule, or define the larger size inline only — pick `t-body` and add `md:text-lg` for desktop emphasis.
+12. **Index nav** — `<nav className="... text-sm">` (line 30): change to `t-body-sm` for parity with footer/utility nav.
+13. **Post-auth status row** uses `t-body-sm` already — leave.
+14. **Drawer/Dialog/Tooltip shadcn primitives** — these come from shadcn and are used by Lovable internals; leave their defaults alone unless they appear visually in our screens. Spot-check Dialog title/description in the rename and delete modals — currently fine because they sit on `t-h?` parents. No change.
 
-Replace the OpenAI Assistants flow with a streaming Lovable AI Gateway call.
+### What I will NOT change
+- Headings already on `t-display` / `t-h1` / `t-h2` / `t-h3`.
+- Wordmark spots already on `t-wordmark`.
+- Pricing display `font-serif text-5xl/3xl` — intentional editorial flourish.
+- shadcn `ui/*` primitives (badges, alerts, etc.) unless surfaced in user screens.
+- Sidebar items (just updated last turn).
 
-- Remove: thread create, message create, run create, the 1s polling loop, run cancel, message list. Remove `openai_thread_id` usage from the request path (column can stay in DB, just unused).
-- Keep: auth + subscription + profile + usage cap checks, saving the user message, saving the assistant message at the end, conversation create/update.
-- New flow:
-  1. Load conversation history from `messages` table (last ~30 turns, ascending).
-  2. Build messages array: `system: DERIVNOS_PROMPT + profile block`, then history, then new user message.
-  3. POST to `https://ai.gateway.lovable.dev/v1/chat/completions` with `model: "google/gemini-3-flash-preview"`, `stream: true`.
-  4. Pipe the SSE response straight back to the client (`Content-Type: text/event-stream`). Tee a parallel reader that accumulates `choices[0].delta.content` so we can save the full assistant message + token usage to Supabase after `[DONE]`.
-  5. Surface 429 (rate limit) and 402 (credits) as JSON errors before opening the stream, the way the docs require.
+## Files to edit
+- `src/styles.css` — add `.t-error` helper class.
+- `src/routes/_authenticated.chat.tsx`
+- `src/routes/_authenticated.account.tsx`
+- `src/routes/_authenticated.onboarding.tsx`
+- `src/routes/login.tsx`
+- `src/routes/signup.tsx`
+- `src/routes/reset-password.tsx`
+- `src/routes/forgot-password.tsx`
+- `src/routes/subscribe.tsx`
+- `src/routes/index.tsx`
+- `src/components/add-to-home-screen-banner.tsx`
+- `src/components/pdf-viewer-dialog.tsx`
+- `src/components/app-sidebar.tsx` (rename input only)
 
-Side effects:
-- `OPENAI_API_KEY` and `OPENAI_ASSISTANT_ID` are no longer needed by `/api/chat`. We'll leave the secrets in place (no deletion) in case you want to restore Assistants later.
-- Token usage tracking switches from `run.usage` to the gateway's `usage` field on the final SSE chunk (same `prompt_tokens` / `completion_tokens` shape).
-
-### 2. Authenticated chat UI — `src/routes/_authenticated.chat.tsx`
-
-Switch `send()` from `await res.json()` to streaming:
-
-- Use `fetch(...).body.getReader()` + a line-by-line SSE parser (per the AI Gateway streaming guide — handle CRLF, `:` keepalives, `[DONE]`, partial JSON across chunks, final flush).
-- Optimistically append an empty assistant message right after the user message (no more "Thinking…" placeholder), then update its `content` as each delta arrives.
-- On `[DONE]`, call `refreshConversations()` and, for a brand-new conversation, navigate to `/chat?c=<id>` (the server returns the conversation_id in the first SSE event as a custom `event: meta` line; see Technical details below).
-- Keep all existing 401 / 402 / 428 / 429 / 5xx handling.
-
-### 3. Home demo — `src/routes/api/public/demo-chat.ts` + `src/components/demo-section.tsx`
-
-Same treatment, simpler:
-
-- Server: switch from non-streaming `fetch` + `res.json()` to streaming. Forward the gateway's SSE body with the same CORS/error handling. Keep the 500-char input cap and the demo prompt.
-- Client (`demo-section.tsx`): replace the `await res.json()` with the same SSE reader + progressive render of the answer bubble.
-
-### 4. Small UX polish that compounds the perceived speed
-
-- Submit the user's message into the UI synchronously (already done) and disable the input only while the network request is in flight, not after streaming has started, so the screen is never blank waiting.
-- Auto-scroll the chat container as tokens arrive.
-- No retries on the client (a fast failure + clear toast is faster than silent retries).
-
-## Out of scope (not changing now)
-
-- Conversation list, sidebar, auth, profile, billing, Stripe, PDF dialog — untouched.
-- DB schema — no migration needed. `openai_thread_id` column stays as nullable/legacy.
-- Model choice is fixed to `google/gemini-3-flash-preview`. We can A/B against `gemini-2.5-flash-lite` or `gpt-5-nano` later if we want to push latency even lower.
-
-## Technical details (for reference)
-
-- First-token latency target: < 800ms p50, < 1.5s p95. Most of the win comes from removing the Assistants `runs.create` + 1s `runs.retrieve` polling cycle (which alone adds 2–8s before any text exists).
-- SSE forwarding from a TanStack server route: return `new Response(upstream.body, { headers: { "Content-Type": "text/event-stream", "Cache-Control": "no-cache, no-transform", Connection: "keep-alive", ...corsHeaders }})`. To also persist the assistant message, use `upstream.body.tee()` — pipe one branch to the client, consume the other in a background `Promise` that writes to Supabase on completion.
-- Conversation ID for new chats: emit a single `event: meta\ndata: {"conversation_id":"..."}\n\n` line before forwarding the gateway stream. The client parses meta events separately from `data:` deltas.
-- Error mapping (gateway → client): 429 → "Demo is busy, try again." / 402 → "AskDerivn is temporarily over capacity." / other → generic "Couldn't respond, try again." Surface as toasts in chat, inline in demo.
+## Verification
+After edits I'll re-grep for stray `text-xs`, `text-sm text-red-700`, and `font-serif text-` outside `ui/*` and confirm only intentional uses remain, then visually spot-check the chat, landing, login, account, and onboarding screens at the 390px mobile viewport.

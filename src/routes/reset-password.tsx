@@ -87,7 +87,7 @@ function ResetPasswordPage() {
               minLength={8}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full border-b border-rule bg-transparent py-2 text-sm input-soft"
+              className="w-full border-b border-rule bg-transparent py-2 t-body-sm input-soft"
             />
           </Field>
           <Field label="Confirm password">
@@ -97,10 +97,10 @@ function ResetPasswordPage() {
               minLength={8}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full border-b border-rule bg-transparent py-2 text-sm input-soft"
+              className="w-full border-b border-rule bg-transparent py-2 t-body-sm input-soft"
             />
           </Field>
-          {error && <p className="text-sm text-red-700">{error}</p>}
+          {error && <p className="t-error">{error}</p>}
           <button type="submit" disabled={loading} className="btn-primary w-full">
             {loading ? "Updating…" : "Update password"}
           </button>

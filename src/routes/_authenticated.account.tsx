@@ -312,7 +312,7 @@ function AccountPage() {
 
       {/* ACCOUNT INFO */}
       <Section title="Account info">
-        <dl className="space-y-4 text-sm">
+        <dl className="space-y-4 t-body-sm">
           <Row label="Email" value={email ?? "—"} />
           <Row label="Membership" value={subStatus ?? "inactive"} />
           {periodEnd && (
@@ -332,21 +332,21 @@ function AccountPage() {
             value={newEmail}
             onChange={(e) => setNewEmail(e.target.value)}
             placeholder="new@email.com"
-            className="w-full border-b border-rule bg-transparent py-2 text-sm input-soft"
+            className="w-full border-b border-rule bg-transparent py-2 t-body-sm input-soft"
           />
           <button type="submit" className="btn-secondary">
             Send confirmation
           </button>
-          {emailMsg && <p className="text-xs text-ink-soft">{emailMsg}</p>}
-          {emailErr && <p className="text-xs text-red-700">{emailErr}</p>}
+          {emailMsg && <p className="t-meta">{emailMsg}</p>}
+          {emailErr && <p className="t-error">{emailErr}</p>}
         </form>
 
         <div className="mt-8 space-y-2">
           <button type="button" onClick={onResetPassword} className="btn-secondary">
             Send password reset email
           </button>
-          {resetMsg && <p className="text-xs text-ink-soft">{resetMsg}</p>}
-          {resetErr && <p className="text-xs text-red-700">{resetErr}</p>}
+          {resetMsg && <p className="t-meta">{resetMsg}</p>}
+          {resetErr && <p className="t-error">{resetErr}</p>}
         </div>
 
         <div className="mt-8 space-y-3">
@@ -358,7 +358,7 @@ function AccountPage() {
           >
             {portalLoading ? "Opening…" : "Manage billing"}
           </button>
-          {portalErr && <p className="text-xs text-red-700">{portalErr}</p>}
+          {portalErr && <p className="t-error">{portalErr}</p>}
           <button type="button" onClick={signOut} className="btn-secondary w-full">
             Sign out
           </button>
@@ -442,7 +442,7 @@ function AccountPage() {
               placeholder="Food preferences, schedule, meal timing, biggest struggle, anything relevant."
               value={form.nutrition_context}
               onChange={(e) => setField("nutrition_context", e.target.value)}
-              className="w-full border-b border-rule bg-transparent py-2 text-sm input-soft"
+              className="w-full border-b border-rule bg-transparent py-2 t-body-sm input-soft"
             />
           </Question>
 
@@ -485,11 +485,11 @@ function AccountPage() {
                   placeholder="Briefly describe what matters for training."
                   value={form.pain_notes}
                   onChange={(e) => setField("pain_notes", e.target.value)}
-                  className="w-full border-b border-rule bg-transparent py-2 text-sm input-soft"
+                  className="w-full border-b border-rule bg-transparent py-2 t-body-sm input-soft"
                 />
               </div>
             )}
-            <p className="mt-3 text-xs text-ink-soft">
+            <p className="mt-3 t-meta">
               AskDerivn cannot diagnose or treat injuries. This context helps
               it avoid unrealistic or unsafe guidance.
             </p>
@@ -501,13 +501,13 @@ function AccountPage() {
               placeholder="Work schedule, sleep issues, food preferences, travel, upcoming events, confidence level, or anything that affects consistency."
               value={form.other_notes}
               onChange={(e) => setField("other_notes", e.target.value)}
-              className="w-full border-b border-rule bg-transparent py-2 text-sm input-soft"
+              className="w-full border-b border-rule bg-transparent py-2 t-body-sm input-soft"
             />
           </Question>
         </Section>
 
         <div className="pt-6">
-          {saveErr && <p className="mb-3 text-sm text-red-700">{saveErr}</p>}
+          {saveErr && <p className="mb-3 t-error">{saveErr}</p>}
           {savedMsg && (
             <p className="mb-3 t-body-sm">{savedMsg}</p>
           )}
@@ -519,14 +519,14 @@ function AccountPage() {
             {saving ? "Saving…" : "Save changes"}
           </button>
           {!canSave && (
-            <p className="mt-3 text-xs text-ink-soft">
+            <p className="mt-3 t-meta">
               Fill in the required training fields to save.
             </p>
           )}
         </div>
       </form>
 
-      <p className="mt-12 text-xs text-ink-soft">
+      <p className="mt-12 t-meta">
         Need to start from scratch?{" "}
         <Link to="/onboarding" className="underline">
           Redo onboarding
@@ -566,7 +566,7 @@ function Row({ label, value }: { label: string; value: string }) {
       <dt className="t-eyebrow">
         {label}
       </dt>
-      <dd className="text-sm">{value}</dd>
+      <dd className="t-body-sm">{value}</dd>
     </div>
   );
 }
@@ -672,14 +672,14 @@ function NumberField({
 }) {
   return (
     <label className="block">
-      <span className="block text-xs text-ink-soft">{label}</span>
+      <span className="block t-meta">{label}</span>
       <input
         type="number"
         min={min}
         max={max}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="mt-1 w-full border-b border-rule bg-transparent py-2 text-sm input-soft"
+        className="mt-1 w-full border-b border-rule bg-transparent py-2 t-body-sm input-soft"
       />
     </label>
   );

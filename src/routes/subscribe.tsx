@@ -102,7 +102,7 @@ function SubscribePage() {
           >
             {loading ? "Starting…" : "Start membership"}
           </button>
-          {error && <p className="text-sm text-red-700">{error}</p>}
+          {error && <p className="t-error">{error}</p>}
         </div>
       </main>
 

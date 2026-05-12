@@ -27,7 +27,7 @@ function LandingPage() {
           <Link to="/" className="t-wordmark">
             AskDerivn
           </Link>
-          <nav className="flex items-center gap-6 text-sm">
+          <nav className="flex items-center gap-6 t-body-sm">
             <Link to="/login" className="text-ink-soft hover:text-foreground transition-colors">
               Sign In
             </Link>
@@ -46,7 +46,7 @@ function LandingPage() {
           <h1 className="t-display">
             AskDerivn
           </h1>
-          <p className="mx-auto mt-8 max-w-2xl t-body text-lg">
+          <p className="mx-auto mt-8 max-w-2xl t-body md:text-lg text-ink-soft">
             Built to give clear answers and clarity toward fitness goals.
           </p>
 
