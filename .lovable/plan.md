@@ -1,40 +1,65 @@
-# Customer Flow Audit
+# Lock down the Get Access → Stripe flow
 
-Goal: walk every customer-facing path end-to-end, fix anything that misroutes or confuses a paying user. I'll test in the browser after fixes, not just read code.
+## Current flow (already in place)
 
-## Flows to verify
+1. Home/`demo-section` "Get Access" → `/signup`
+2. `signup.tsx` calls `supabase.auth.signUp` with `emailRedirectTo = /post-auth`. If a session exists immediately (email confirm off), navigates to `/post-auth`; otherwise shows "check your email".
+3. `/post-auth`:
+   - waits for the Supabase session
+   - calls `resolvePostAuthDestination` (looks at `profiles.subscription_status`)
+   - if destination is `/subscribe`, calls `POST /api/checkout` with the user's bearer token and redirects the browser to the Stripe Checkout `url`
+   - on return from Stripe with `?checkout=success`, polls `profiles` until `subscription_status = active` before resolving destination again
+4. `/api/checkout` validates the bearer token, looks up the profile, reuses or creates a `stripe_customer_id`, then creates a `mode: subscription` Checkout Session with `client_reference_id = userId`, `metadata.supabase_user_id = userId`, and the same metadata on `subscription_data`.
+5. `/api/public/stripe-webhook` verifies the Stripe signature, then on `checkout.session.completed` and `customer.subscription.*` updates `profiles.subscription_status`, `subscription_current_period_end`, and `stripe_customer_id` keyed by `metadata.supabase_user_id` (with a `client_reference_id` backfill and a customer-id fallback).
+6. `_authenticated.tsx` `beforeLoad` calls `authenticatedBeforeLoad`, which sends any signed-in user without an active subscription to `/subscribe` for every protected route except `/account`. `/subscribe` `beforeLoad` redirects users who already have an active subscription back to `/chat` or `/onboarding`.
 
-1. **Landing (`/`)** → header "Sign In" / "Get Access", hero CTAs, pricing card "Get Access", demo 2-question limit, final CTA section, footer.
-2. **Signup** → email/password → email verification → `/post-auth` → `/subscribe` → Stripe Checkout → return to `/post-auth` → `/onboarding` → `/chat`.
-3. **Login** → existing user → `/post-auth` → correct destination based on subscription + onboarding state.
-4. **Forgot password** → email link → `/reset-password` → set new password → `/post-auth` → correct destination.
-5. **Chat** → starters, send, new conversation creation, switch conversations, rename, delete, sub-expired error, profile-incomplete error, sign-out kicks to `/login`.
-6. **Account** → change email, send password reset, open Stripe billing portal, edit profile context, sign out.
-7. **Subscribe page** → start membership, Stripe cancel returns to `/subscribe`, sign out works.
-8. **PDF** → sidebar "Download PDF" opens viewer, viewer download button works.
-9. **Add-to-Home-Screen modal** → "Got it" closes, "Don't tell me again" persists.
+So the account is already tied to the Stripe customer + subscription via `stripe_customer_id` on the profile and `supabase_user_id` in Stripe metadata, and unpaid users can't reach `/chat` or `/onboarding`.
 
-## Issues found in static review (will fix)
+## What's still loose
 
-1. **`/account` is broken for legacy Google/Apple users.** The page reads `user.app_metadata.provider`; if it's not `"email"` it hides the change-email and reset-password forms. Since OAuth is gone, those users now have no way to manage their account from the UI. Fix: always show both forms regardless of provider, and remove the "Sign-in method" row (or just show "Email").
+- **Double-charge risk**: `/api/checkout` always creates a brand-new Checkout Session. If a user pays, the webhook is delayed, then they click "Start membership" again (or refresh `/post-auth`), Stripe will happily create a second subscription on the same customer.
+- **Rapid double-click**: no idempotency key on session creation, so a quick double-click can create two parallel Checkout Sessions for the same user.
+- **No server-side "already subscribed" short-circuit**: the only guard is in the client `beforeLoad`, which trusts the local profile row. If the row hasn't been updated by the webhook yet, the client lets them start a new checkout.
 
-2. **Stripe success → race condition.** Checkout `success_url` is `/post-auth`, which checks `subscription_status` from `profiles`. The Stripe webhook updates that asynchronously, so the user can land on `/post-auth` and bounce back to `/subscribe` if the webhook hasn't fired yet. Fix: in `/post-auth`, when arriving from a checkout return, poll `profiles.subscription_status` for ~5–8 seconds before deciding the destination.
+## Changes
 
-3. **`/resource` page is orphaned.** Sidebar uses the in-app PDF viewer dialog and never links to `/resource`. Either link it or delete the route. Recommend deleting it (the dialog already covers the use case).
+### 1. `src/routes/api/checkout.ts` — guard against duplicate subscriptions
 
-4. **A2HS modal shows on desktop.** It blocks the chat with iPhone/Android instructions on a 1200px viewport, which is confusing. Fix: only show on touch devices / small viewports.
+Before creating a new Checkout Session:
 
-5. **`/subscribe` has two "Sign out" buttons.** Header link + bottom button. Keep only the header one.
+1. Re-read `profiles` for the authenticated `userId` (already happens). If `subscription_status === "active"` and `subscription_current_period_end` is null or in the future, return `{ alreadyActive: true, redirect: "/post-auth" }` with `200` instead of creating a session.
+2. If a `stripe_customer_id` exists, also call `stripe.subscriptions.list({ customer, status: "active", limit: 1 })` and `{ status: "trialing", limit: 1 }`. If either returns a subscription, treat the user as already paid: backfill `profiles` (`subscription_status`, `subscription_current_period_end`, `stripe_customer_id`) using that subscription, then return the same `alreadyActive` response. This catches the "webhook hasn't fired yet" race.
+3. When creating the Checkout Session, pass an `idempotencyKey` of `checkout:{userId}:{Math.floor(Date.now() / 60000)}` so duplicate requests within the same minute return the same session instead of a new one.
 
-6. **Cosmetic:** `/account` "Renews / ends" doesn't say which it is. Fix: label by `subscription_status` (`Renews on …` if active, `Ends on …` if cancelled).
+### 2. `src/routes/post-auth.tsx` — handle the `alreadyActive` response
 
-## Test method
+After `POST /api/checkout`:
 
-After the fixes I'll drive the browser through flows 1, 2 (up to Stripe redirect), 3, 4, 5, 6, 7, 8, 9 against the preview. I won't complete a real Stripe purchase — I'll verify the redirect to Stripe Checkout succeeds and stop there, then verify the cancel-return path manually. For flow 4 (password reset) I'll verify the request side; the email link itself can't be clicked from the sandbox.
+- If the JSON body has `alreadyActive: true`, do not redirect to Stripe. Re-run `resolvePostAuthDestination` and `navigate({ to: dest })` (will land on `/onboarding` or `/chat`).
+- Keep the existing happy-path behavior (`window.location.href = url`).
 
-## What I won't change
+### 3. `src/routes/subscribe.tsx` — same handling on the manual button
 
-- Stripe webhook logic, RLS policies, API endpoints, AI/chat backend — the request is about consumer flow, not backend rewrites.
-- Visual design — only the broken/confusing bits above.
+`onStart` already calls `/api/checkout`. Apply the same `alreadyActive` branch: if returned, `navigate({ to: "/post-auth" })` so the standard resolver places the user correctly. This means even if the `beforeLoad` guard was somehow bypassed, the server still refuses to start a second checkout.
 
-Sound good? Hit Implement and I'll execute the fixes and the browser walkthrough.
+### 4. Sanity passes (no behavior change expected, just verify)
+
+- Confirm `index.tsx` `rootBeforeLoad` already redirects signed-in users away from `/`. It does.
+- Confirm `_authenticated.tsx` blocks `/chat` and `/onboarding` for unpaid users. It does (via `authenticatedBeforeLoad`).
+- Confirm `signup.tsx` and `login.tsx` both navigate to `/post-auth` so checkout is the only next step. They do.
+- Confirm the Stripe webhook keys subscription updates by `supabase_user_id` (primary) with `stripe_customer_id` fallback. It does.
+
+## Out of scope
+
+- No schema changes.
+- No change to the webhook handler (it already correctly ties subscriptions back to the user via metadata).
+- No change to the `/account` billing portal route.
+
+## Result
+
+After these changes:
+
+- A user who has already paid cannot start a second Checkout Session, even if their local profile row hasn't been refreshed yet — the server checks Stripe directly.
+- A rapid double-click produces a single Checkout Session via the idempotency key.
+- A user who creates an account and bails before paying still cannot reach `/chat` or `/onboarding` — the existing `_authenticated` guard sends them to `/subscribe` on every visit.
+- Every successful payment is tied back to the Supabase user via `client_reference_id` + `metadata.supabase_user_id` on both the session and the subscription, and persisted on `profiles.stripe_customer_id`.

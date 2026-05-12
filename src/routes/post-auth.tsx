@@ -71,9 +71,21 @@ function PostAuthPage() {
         try {
           const res = await authedFetch("/api/checkout", { method: "POST" });
           if (!res.ok) throw new Error(await res.text());
-          const { url } = await res.json();
-          if (!url) throw new Error("No checkout URL");
-          window.location.href = url;
+          const body = (await res.json()) as {
+            url?: string;
+            alreadyActive?: boolean;
+          };
+          if (body.alreadyActive) {
+            const next = await resolvePostAuthDestination(
+              session.user.id,
+              session.user.email
+            );
+            if (cancelled) return;
+            navigate({ to: next === "/subscribe" ? "/chat" : next });
+            return;
+          }
+          if (!body.url) throw new Error("No checkout URL");
+          window.location.href = body.url;
           return;
         } catch (e) {
           console.error("checkout redirect failed", e);
@@ -84,6 +96,7 @@ function PostAuthPage() {
       }
 
       navigate({ to: dest });
+
     })();
     return () => {
       cancelled = true;
