@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { ArrowUp } from "lucide-react";
 import { authedFetch } from "@/lib/auth-helpers";
+import { readChatStream } from "@/lib/sse";
 import { useChatContext } from "@/lib/chat-context";
 import { AddToHomeScreenBanner } from "@/components/add-to-home-screen-banner";
 
@@ -34,6 +35,7 @@ function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
+  const [streaming, setStreaming] = useState(false);
   const [loadingConv, setLoadingConv] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -67,49 +69,50 @@ function ChatPage() {
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
-  }, [messages, sending]);
-
-  const [debug, setDebug] = useState<string | null>(null);
+  }, [messages, sending, streaming]);
 
   async function send(text: string) {
     const trimmed = text.trim();
     if (!trimmed || sending) return;
     setError(null);
-    setDebug(null);
     setInput("");
 
     const tempUser: Message = {
-      id: `tmp-${Date.now()}`,
+      id: `tmp-user-${Date.now()}`,
       role: "user",
       content: trimmed,
     };
+    const assistantId = `tmp-assistant-${Date.now()}`;
     setMessages((m) => [...m, tempUser]);
     setSending(true);
+
+    let assistantStarted = false;
+    let assistantText = "";
+    let newConversationId: string | null = null;
 
     try {
       const res = await authedFetch("/api/chat", {
         method: "POST",
+        headers: { Accept: "text/event-stream" },
         body: JSON.stringify({
           conversation_id: conversationId ?? null,
           content: trimmed,
         }),
       });
 
-      const data = (await res.json().catch(() => ({}))) as {
-        conversation_id?: string;
-        message?: Message;
-        error?: string;
-        debug?: string;
-        reason?: string;
-      };
-
       if (!res.ok) {
+        const data = (await res
+          .json()
+          .catch(() => ({}))) as {
+          error?: string;
+          reason?: string;
+        };
         if (res.status === 401 || data.reason === "unauthenticated") {
           window.location.href = "/login";
           return;
         }
         if (res.status === 402) {
-          setError("Subscription required.");
+          setError(data.error || "Subscription required.");
           setSending(false);
           return;
         }
@@ -118,27 +121,53 @@ function ChatPage() {
           return;
         }
         setError(data.error || "AskDerivn could not respond. Please try again.");
-        if (data.debug) setDebug(data.debug);
         setSending(false);
         return;
       }
 
-      if (!data.message || !data.conversation_id) {
-        setError("AskDerivn could not respond. Please try again.");
-        setSending(false);
-        return;
+      setStreaming(true);
+
+      await readChatStream(res, {
+        onMeta: (meta) => {
+          const cid = meta.conversation_id;
+          if (typeof cid === "string") newConversationId = cid;
+        },
+        onDelta: (chunk) => {
+          assistantText += chunk;
+          setMessages((m) => {
+            if (!assistantStarted) {
+              assistantStarted = true;
+              return [
+                ...m,
+                {
+                  id: assistantId,
+                  role: "assistant",
+                  content: assistantText,
+                },
+              ];
+            }
+            return m.map((msg) =>
+              msg.id === assistantId ? { ...msg, content: assistantText } : msg
+            );
+          });
+        },
+      });
+
+      if (!assistantText.trim()) {
+        setError("AskDerivn returned an empty response. Please try again.");
+        setMessages((m) => m.filter((msg) => msg.id !== assistantId));
       }
 
-      setMessages((m) => [...m, data.message!]);
       refreshConversations();
 
-      if (!conversationId) {
-        navigate({ to: "/chat", search: { c: data.conversation_id } });
+      if (!conversationId && newConversationId) {
+        navigate({ to: "/chat", search: { c: newConversationId } });
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Network error");
     } finally {
       setSending(false);
+      setStreaming(false);
     }
   }
 
@@ -146,13 +175,8 @@ function ChatPage() {
 
   return (
     <main className="mx-auto flex h-full w-full max-w-3xl flex-col px-4">
-      <div
-        ref={scrollRef}
-        className="flex-1 overflow-y-auto pb-4 pt-6"
-      >
-        {loadingConv && (
-          <p className="t-body-sm">Loading conversation…</p>
-        )}
+      <div ref={scrollRef} className="flex-1 overflow-y-auto pb-4 pt-6">
+        {loadingConv && <p className="t-body-sm">Loading conversation…</p>}
 
         <div className="space-y-6">
           {messages.map((m, i) => {
@@ -172,9 +196,7 @@ function ChatPage() {
                 key={m.id}
                 className={`animate-message-in ${showDivider ? "border-t border-rule pt-6" : ""}`}
               >
-                <div className="t-eyebrow">
-                  AskDerivn
-                </div>
+                <div className="t-eyebrow">AskDerivn</div>
                 <div className="mt-3 text-sm leading-relaxed">
                   <div className="prose prose-sm prose-neutral max-w-none [&_p]:my-3 [&_ul]:my-3 [&_ol]:my-3 [&_li]:my-1">
                     <ReactMarkdown>{m.content}</ReactMarkdown>
@@ -184,13 +206,11 @@ function ChatPage() {
             );
           })}
 
-          {sending && (
+          {sending && !streaming && (
             <article
               className={`animate-message-in ${messages.length > 0 ? "border-t border-rule pt-8" : ""}`}
             >
-              <div className="t-eyebrow">
-                AskDerivn
-              </div>
+              <div className="t-eyebrow">AskDerivn</div>
               <p className="mt-3 t-body-sm animate-pulse">Thinking…</p>
             </article>
           )}
@@ -198,9 +218,6 @@ function ChatPage() {
           {error && (
             <div className="border-t border-rule pt-6">
               <p className="text-sm text-red-700">{error}</p>
-              {debug && (
-                <p className="mt-2 font-mono text-xs text-ink-soft">debug: {debug}</p>
-              )}
             </div>
           )}
         </div>
