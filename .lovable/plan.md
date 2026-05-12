@@ -1,65 +1,49 @@
-# Lock down the Get Access → Stripe flow
+# Update AskDerivn thinking + response behavior
 
-## Current flow (already in place)
+## Goal
 
-1. Home/`demo-section` "Get Access" → `/signup`
-2. `signup.tsx` calls `supabase.auth.signUp` with `emailRedirectTo = /post-auth`. If a session exists immediately (email confirm off), navigates to `/post-auth`; otherwise shows "check your email".
-3. `/post-auth`:
-   - waits for the Supabase session
-   - calls `resolvePostAuthDestination` (looks at `profiles.subscription_status`)
-   - if destination is `/subscribe`, calls `POST /api/checkout` with the user's bearer token and redirects the browser to the Stripe Checkout `url`
-   - on return from Stripe with `?checkout=success`, polls `profiles` until `subscription_status = active` before resolving destination again
-4. `/api/checkout` validates the bearer token, looks up the profile, reuses or creates a `stripe_customer_id`, then creates a `mode: subscription` Checkout Session with `client_reference_id = userId`, `metadata.supabase_user_id = userId`, and the same metadata on `subscription_data`.
-5. `/api/public/stripe-webhook` verifies the Stripe signature, then on `checkout.session.completed` and `customer.subscription.*` updates `profiles.subscription_status`, `subscription_current_period_end`, and `stripe_customer_id` keyed by `metadata.supabase_user_id` (with a `client_reference_id` backfill and a customer-id fallback).
-6. `_authenticated.tsx` `beforeLoad` calls `authenticatedBeforeLoad`, which sends any signed-in user without an active subscription to `/subscribe` for every protected route except `/account`. `/subscribe` `beforeLoad` redirects users who already have an active subscription back to `/chat` or `/onboarding`.
+Replace the `DERIVNOS_PROMPT` in `src/server/derivnos.ts` with an updated prompt that makes AskDerivn:
 
-So the account is already tied to the Stripe customer + subscription via `stripe_customer_id` on the profile and `supabase_user_id` in Stripe metadata, and unpaid users can't reach `/chat` or `/onboarding`.
+- Quietly think through the question first (don't expose internal reasoning)
+- Answer first, then ask **one** smart follow-up
+- Behave like a sharp coach, not a form or generic chatbot
+- Apply Derivn rules + safety boundaries as already defined
 
-## What's still loose
+No client/UI changes. No schema changes. No model or routing changes. The new prompt is automatically used by every chat run because `src/routes/api/chat.ts` injects `DERIVNOS_PROMPT` on every call.
 
-- **Double-charge risk**: `/api/checkout` always creates a brand-new Checkout Session. If a user pays, the webhook is delayed, then they click "Start membership" again (or refresh `/post-auth`), Stripe will happily create a second subscription on the same customer.
-- **Rapid double-click**: no idempotency key on session creation, so a quick double-click can create two parallel Checkout Sessions for the same user.
-- **No server-side "already subscribed" short-circuit**: the only guard is in the client `beforeLoad`, which trusts the local profile row. If the row hasn't been updated by the webhook yet, the client lets them start a new checkout.
+## Single file change
 
-## Changes
+**`src/server/derivnos.ts`** — replace the body of the exported `DERIVNOS_PROMPT` string. Keep the export name, the `buildProfileBlock` helper, and the `ProfileLike` type exactly as they are so nothing downstream breaks.
 
-### 1. `src/routes/api/checkout.ts` — guard against duplicate subscriptions
+The new prompt will include, in order:
 
-Before creating a new Checkout Session:
+1. **Identity** — AskDerivn is a DerivnOS-guided coaching assistant, not a generic chatbot.
+2. **Quiet thinking layer** — internally process: what is the user really asking, what context do we already have (profile + history), what's missing, what risk class, which Derivn rule, what next action. Never expose this scaffolding to the user.
+3. **Core equation** — Known Client Data + Unknown Variables + Coaching Rules + Desired Outcome = Structured Coaching Response.
+4. **Source authority order** — saved profile → uploaded Derivn docs (File Search) → Derivn rules → general exercise science → never client panic / social claims.
+5. **Answer-first rule** — always give a useful answer before asking anything. Ask exactly one follow-up when it would sharpen the next reply. Never ask multiple questions. Never make the whole answer depend on the follow-up unless it's a safety case.
+6. **When to ask a follow-up** — vague request, change/overcorrection, fat loss, plateau, soreness, pain, nutrition change, running, lifting, recovery, emotional wording (frustration, panic, "I ruined everything").
+7. **When NOT to ask** — simple definitions, food lists, quick examples, when context is already sufficient.
+8. **Question style** — coach-like, single sentence. Include the good/bad examples from the spec.
+9. **Response format** — direct answer → why it matters → what to do now → one follow-up. Delivered as natural prose, not labeled sections, unless the user asks for structure.
+10. **Intent inference cues** — map common phrasings ("I feel like I ruined everything", "should I cut calories", "my legs are cooked", "I need to lose weight fast") to the right interpretation + response posture.
+11. **Curiosity checklists** — fat loss, training, running, nutrition. Pick the single most relevant item per response, never dump the whole list.
+12. **Core coaching rules** — keep the existing set (repeatable weeks, never miss twice, don't overcorrect, protein anchors, recovery is training, pain changes the path, 48h between heavy lower + hard run, etc.).
+13. **Safety boundaries** — keep the existing medical/ED/PED rules. For chest pain, fainting, severe dizziness, numbness, sharp worsening pain, ED behavior, pregnancy-specific medical concerns, or medication questions: keep the response brief, ask one clarifying safety question if needed, and route to an appropriate qualified professional.
+14. **Tone** — human, direct, calm, short, skimmable. No hype, no shame, no lectures, no "as an AI" disclaimers, no "I need more information before I can answer."
 
-1. Re-read `profiles` for the authenticated `userId` (already happens). If `subscription_status === "active"` and `subscription_current_period_end` is null or in the future, return `{ alreadyActive: true, redirect: "/post-auth" }` with `200` instead of creating a session.
-2. If a `stripe_customer_id` exists, also call `stripe.subscriptions.list({ customer, status: "active", limit: 1 })` and `{ status: "trialing", limit: 1 }`. If either returns a subscription, treat the user as already paid: backfill `profiles` (`subscription_status`, `subscription_current_period_end`, `stripe_customer_id`) using that subscription, then return the same `alreadyActive` response. This catches the "webhook hasn't fired yet" race.
-3. When creating the Checkout Session, pass an `idempotencyKey` of `checkout:{userId}:{Math.floor(Date.now() / 60000)}` so duplicate requests within the same minute return the same session instead of a new one.
+## What does not change
 
-### 2. `src/routes/post-auth.tsx` — handle the `alreadyActive` response
+- `src/routes/api/chat.ts` — already prepends `DERIVNOS_PROMPT` and the profile block to every run.
+- `buildProfileBlock` — still feeds the user's saved profile in as the "Known Client Data" block the prompt references.
+- Model selection, streaming, conversation history handling, Stripe/auth flow — untouched.
 
-After `POST /api/checkout`:
+## Verification
 
-- If the JSON body has `alreadyActive: true`, do not redirect to Stripe. Re-run `resolvePostAuthDestination` and `navigate({ to: dest })` (will land on `/onboarding` or `/chat`).
-- Keep the existing happy-path behavior (`window.location.href = url`).
+After the prompt update, run a manual chat to confirm:
 
-### 3. `src/routes/subscribe.tsx` — same handling on the manual button
+- Asking "Help me lose weight" returns a useful answer plus exactly one follow-up (tracking question).
+- Asking "What is protein?" returns a definition with no follow-up.
+- Asking "I have chest pain when I run" triggers the safety branch and recommends a qualified professional.
 
-`onStart` already calls `/api/checkout`. Apply the same `alreadyActive` branch: if returned, `navigate({ to: "/post-auth" })` so the standard resolver places the user correctly. This means even if the `beforeLoad` guard was somehow bypassed, the server still refuses to start a second checkout.
-
-### 4. Sanity passes (no behavior change expected, just verify)
-
-- Confirm `index.tsx` `rootBeforeLoad` already redirects signed-in users away from `/`. It does.
-- Confirm `_authenticated.tsx` blocks `/chat` and `/onboarding` for unpaid users. It does (via `authenticatedBeforeLoad`).
-- Confirm `signup.tsx` and `login.tsx` both navigate to `/post-auth` so checkout is the only next step. They do.
-- Confirm the Stripe webhook keys subscription updates by `supabase_user_id` (primary) with `stripe_customer_id` fallback. It does.
-
-## Out of scope
-
-- No schema changes.
-- No change to the webhook handler (it already correctly ties subscriptions back to the user via metadata).
-- No change to the `/account` billing portal route.
-
-## Result
-
-After these changes:
-
-- A user who has already paid cannot start a second Checkout Session, even if their local profile row hasn't been refreshed yet — the server checks Stripe directly.
-- A rapid double-click produces a single Checkout Session via the idempotency key.
-- A user who creates an account and bails before paying still cannot reach `/chat` or `/onboarding` — the existing `_authenticated` guard sends them to `/subscribe` on every visit.
-- Every successful payment is tied back to the Supabase user via `client_reference_id` + `metadata.supabase_user_id` on both the session and the subscription, and persisted on `profiles.stripe_customer_id`.
+No automated tests exist for the prompt; manual smoke check in `/chat` is sufficient.
