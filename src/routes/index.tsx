@@ -74,7 +74,7 @@ function LandingPage() {
                   <img
                     src={coachPortrait}
                     alt="Ty Nordene, founder of AskDerivn"
-                    className="block h-full w-full object-cover"
+                    className="block h-full w-full object-cover scale-110 origin-center"
                     loading="lazy"
                   />
                 </div>
