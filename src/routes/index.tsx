@@ -67,35 +67,6 @@ function LandingPage() {
         </section>
 
         <section className="border-t border-rule">
-          <div className="mx-auto max-w-5xl px-6 py-20 md:py-24">
-            <div className="grid gap-12 md:grid-cols-2 md:items-center">
-              <div className="mx-auto w-full max-w-sm md:mx-0">
-                <div className="overflow-hidden rounded-2xl border border-rule bg-card">
-                  <img
-                    src={coachPortrait}
-                    alt="Ty Nordene, founder of AskDerivn"
-                    className="block h-full w-full object-cover"
-                    loading="lazy"
-                  />
-                </div>
-              </div>
-              <div>
-                <h2 className="t-h2">THE COACH</h2>
-                <p className="mt-5 t-body-sm">
-                  I built AskDerivn so the system I use with my own clients is available to anyone who
-                  wants real coaching, not another generic fitness app.
-                </p>
-                <p className="mt-4 t-body-sm">
-                  AskDerivn is trained on the Derivn framework, thousands of workouts, and real
-                  coaching conversations. The goal is simple: clear answers, sustainable structure,
-                  and steady progress toward your goals.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="border-t border-rule">
           <div className="mx-auto max-w-5xl px-6 py-20">
             <div className="mx-auto max-w-2xl text-center">
               <h2 className="t-h2">What you get</h2>
@@ -131,6 +102,35 @@ function LandingPage() {
               <p className="t-body-sm">
                 The PDF gives you the system. AskDerivn helps you apply it.
               </p>
+            </div>
+          </div>
+        </section>
+
+        <section className="border-t border-rule">
+          <div className="mx-auto max-w-5xl px-6 py-20 md:py-24">
+            <div className="grid gap-12 md:grid-cols-2 md:items-center">
+              <div className="mx-auto w-full max-w-sm md:mx-0">
+                <div className="overflow-hidden rounded-2xl border border-rule bg-card">
+                  <img
+                    src={coachPortrait}
+                    alt="Ty Nordene, founder of AskDerivn"
+                    className="block h-full w-full object-cover"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+              <div>
+                <h2 className="t-h2">THE COACH</h2>
+                <p className="mt-5 t-body-sm">
+                  I built AskDerivn so the system I use with my own clients is available to anyone who
+                  wants real coaching, not another generic fitness app.
+                </p>
+                <p className="mt-4 t-body-sm">
+                  AskDerivn is trained on the Derivn framework, thousands of workouts, and real
+                  coaching conversations. The goal is simple: clear answers, sustainable structure,
+                  and steady progress toward your goals.
+                </p>
+              </div>
             </div>
           </div>
         </section>
