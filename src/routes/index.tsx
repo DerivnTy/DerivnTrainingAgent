@@ -80,7 +80,8 @@ function LandingPage() {
                 </div>
               </div>
               <div>
-                <p className="t-body-sm">
+                <div className="t-eyebrow">WHY USE ASKDERIVN?</div>
+                <p className="mt-3 t-body-sm">
                   I built AskDerivn so the system I use with my own clients is available to anyone who
                   wants real coaching, not another generic fitness app.
                 </p>
